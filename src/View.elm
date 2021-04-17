@@ -25,7 +25,12 @@ view model =
     , htmlAttribute <| Html.Attributes.id "top"
     ] <|
     column [ height fill, width fill, clip, inFront displayFooter]
-    [ BoonChart.boonChart [] {} |> html
+    [ BoonChart.boonChart
+      [ Html.Attributes.style "width" "100%"
+      , Html.Attributes.style "height" "100%"
+      , Html.Attributes.id "graph"
+      ]
+      {} |> html
     ]
 
 displayFooter : Element msg
