@@ -25,20 +25,9 @@ boonChart attributes {} =
       |> outlined (solid 0.005 (transparent))
   ]
     |> stack
-    --|> shift (0.5, -0.5)
     |> align topLeft
     |> List.singleton
     |> group
     |> scale size
     |> debug
-    |> Collage.Render.svgExplicit
-      ( {-( [ -0.5 * width
-          , -0.5 * height
-          , width
-          , height
-          ]
-            |> List.map String.fromFloat
-            |> String.join " "
-            |> Svg.Attributes.viewBox
-        ) ::-} attributes
-      )
+    |> Collage.Render.svgExplicit attributes

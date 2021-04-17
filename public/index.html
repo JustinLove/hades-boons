@@ -23,12 +23,41 @@
   let canvas = document.createElement("canvas");
   let context = canvas.getContext("2d");
 
+  // ------------------ MeasureText ------------------
   if (app.ports && app.ports.getTextWidth) {
     app.ports.getTextWidth.subscribe(function(params) {
       context.font = params.font;
       let metrics = context.measureText(params.text);
       app.ports.textSize.send({text: params.text, width: metrics.width})
     })
+  }
+
+  // ------------------ Log ------------------
+  var logCommand = function(message) {
+    switch(message.kind) {
+      case 'debug':
+        console.debug(message.note, message.value)
+        break
+      case 'log':
+        console.log(message.note)
+        break
+      case 'info':
+        console.info(message.note)
+        break
+      case 'warn':
+        console.warn(message.note)
+        break
+      case 'error':
+        console.error(message.note, message.value)
+        break
+      default:
+        console.log('unknown message', message)
+        break;
+    }
+  }
+
+  if (app.ports.logCommand) {
+    app.ports.logCommand.subscribe(logCommand)
   }
 
   var panZoom = function() {
@@ -43,6 +72,7 @@
     })
   }
   panZoom()
+
 </script>
 <script defer src="svgxuse.js"></script>
 
