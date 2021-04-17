@@ -1,0 +1,34 @@
+body { margin: 0; overflow: hidden; }
+#top { padding: 8px; }
+h2 { text-align: center; margin: 0;}
+.error-message { text-align: center; margin-top: 2em; }
+footer { position: fixed; bottom: 0;}
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.2em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+#top.dark {
+  background-color: black;
+  color: #e5e3e8;
+}
+.dark .icon-github { color: #888; }
+.dark .icon-twitter { color: #55acee; }
+.dark .icon-twitch { color: #6441A4; }
+.dark a:link, .dark a:visited { color: #6441a4; }
+.dark a:hover, .dark a:active { color: rgb(218, 216, 222); }
+
+#top.light {
+  background-color: #fff;
+  color: #232127;
+}
+.light .icon-github { color: #888; }
+.light .icon-twitter { color: #55acee; }
+.light .icon-twitch { color: #e2dbf0; }
+.light a:link, .light a:visited { color: #e2dbf0; }
+.light a:hover, .light a:active { color: rgb(218, 216, 222); }
