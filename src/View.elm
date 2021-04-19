@@ -30,7 +30,7 @@ view model =
       , Html.Attributes.style "height" "100%"
       , Html.Attributes.id "graph"
       ]
-      {} |> html
+      {traits = model.traits} |> html
     ]
 
 displayFooter : Element msg

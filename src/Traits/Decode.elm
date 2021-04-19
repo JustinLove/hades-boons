@@ -2,19 +2,20 @@ module Traits.Decode exposing (traits)
 
 import Traits exposing (..)
 
-import Dict exposing (Dict)
+import Color exposing (Color)
 import Json.Decode exposing (..)
 import Set exposing (Set)
 
-traits : Decoder (Dict TraitId God)
+traits : Decoder (List God)
 traits =
-  dict god
+  list god
 
 god : Decoder God
 god =
-  map4 God
-    (field "LootColor" string)
-    (field "Color" string)
+  map5 God
+    (field "Name" string)
+    (field "LootColor" color)
+    (field "Color" color)
     (field "Traits" (list trait))
     (field "LinkedUpgrades" (list trait))
 
@@ -37,3 +38,10 @@ requirements =
 set : Decoder comparable -> Decoder (Set comparable)
 set decoder =
   list decoder |> map Set.fromList
+
+color : Decoder Color
+color =
+  map3 Color.rgb255
+    (index 0 int)
+    (index 1 int)
+    (index 2 int)

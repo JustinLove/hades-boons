@@ -1,15 +1,16 @@
 module Traits exposing (..)
 
-import Dict exposing (Dict)
+import Color exposing (Color)
 import Set exposing (Set)
 
 type alias TraitId = String
 
-type alias Traits = Dict String God
+type alias Traits = List God
 
 type alias God =
-  { lootColor : String
-  , color : String
+  { name : String
+  , lootColor : Color
+  , color : Color
   , traits : List Trait
   , linkedUpgrades : List Trait
   }

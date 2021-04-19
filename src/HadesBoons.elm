@@ -24,6 +24,7 @@ type Msg
 type alias Model =
   { location : Url
   , navigationKey : Navigation.Key
+  , traits : Traits
   }
 
 main = Browser.application
@@ -42,6 +43,7 @@ init flags location key =
     --, windowWidth = 320
     --, windowHeight = 300
     --, labelWidths = Dict.empty
+    , traits = []
     }
   , fetchTraits
     --, Dom.getViewport
@@ -62,8 +64,7 @@ update msg model =
     Navigate (Browser.External url) ->
       (model, Navigation.load url)
     GotTraits (Ok traits) ->
-      let _ = Debug.log "traits" traits in
-      (model, Cmd.none)
+      ({model | traits = traits}, Cmd.none)
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
     --WindowSize (width, height) ->

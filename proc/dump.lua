@@ -10,7 +10,7 @@ dofile("D:/Games/Epic Games/Hades/Content/Scripts/ConsumableData.lua")
 Texts = dofile("output/HelpText.en.lua").Texts
 Animations = dofile("output/GUIAnimations.lua").Animations
 
-print('{')
+print('[')
 --print('  imagepath="pkg/GUI/textures/";')
 
 local function ArrayConcat(arrays)
@@ -40,7 +40,7 @@ local function ArrayOfStrings(a)
 end
 
 local function Color255(color)
-	return string.format('#%0.2x%0.2x%0.2x', color[1], color[2], color[3])
+	return string.format('[%d,%d,%d]', color[1], color[2], color[3])
 end
 
 local function TraitName(id)
@@ -122,19 +122,20 @@ end
 
 printed = {}
 
-order1 = {"AphroditeUpgrade", "AresUpgrade", "AthenaUpgrade", "DemeterUpgrade", "DionysusUpgrade", "PoseidonUpgrade", "ArtemisUpgrade", "ZeusUpgrade"}
-order2 = {"AphroditeUpgrade", "AresUpgrade", "DemeterUpgrade", "DionysusUpgrade", "PoseidonUpgrade", "AthenaUpgrade", "ArtemisUpgrade", "ZeusUpgrade"}
+order1 = {"HermesUpgrade","AphroditeUpgrade", "AresUpgrade", "AthenaUpgrade", "DemeterUpgrade", "DionysusUpgrade", "PoseidonUpgrade", "ArtemisUpgrade", "ZeusUpgrade"}
+order2 = {"HermesUpgrade","AphroditeUpgrade", "AresUpgrade", "DemeterUpgrade", "DionysusUpgrade", "PoseidonUpgrade", "AthenaUpgrade", "ArtemisUpgrade", "ZeusUpgrade"}
 
 order = order2
 
 gods = {}
-for i = #order, 1, -1 do
+for i = 1, #order, 1 do
 	local god = ''
 	local godName = order[i]
 	local data = LootData[godName]
-	god = god .. '  "' .. godName .. '": {\n'
-	god = god .. '    "LootColor": "' .. Color255(data.LootColor) .. '",\n'
-	god = god .. '    "Color": "' .. Color255(data.Color) .. '",\n'
+	god = god .. '  {\n'
+	god = god .. '    "Name": "' .. godName .. '",\n'
+	god = god .. '    "LootColor": ' .. Color255(data.LootColor) .. ',\n'
+	god = god .. '    "Color": ' .. Color255(data.Color) .. ',\n'
 	if data.LinkedUpgrades then
 		local traits = GodTraits(ArrayConcat({data.WeaponUpgrades, data.Traits}))
 		if data.Consumables then
@@ -175,4 +176,4 @@ for i = #order, 1, -1 do
 	table.insert(gods, god)
 end
 print(table.concat(gods, ',\n'))
-print('}')
+print(']')
