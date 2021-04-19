@@ -6,8 +6,9 @@ WeaponSets = {}
 HeroVoiceLines = {}
 dofile("D:/Games/Epic Games/Hades/Content/Scripts/LootData.lua")
 dofile("D:/Games/Epic Games/Hades/Content/Scripts/TraitData.lua")
-Texts = dofile("HelpText.en.lua").Texts
-Animations = dofile("GUIAnimations.lua").Animations
+dofile("D:/Games/Epic Games/Hades/Content/Scripts/ConsumableData.lua")
+Texts = dofile("output/HelpText.en.lua").Texts
+Animations = dofile("output/GUIAnimations.lua").Animations
 
 print('{')
 --print('  imagepath="pkg/GUI/textures/";')
@@ -45,12 +46,16 @@ end
 local function TraitName(id)
 	for i,data in ipairs(Texts) do
 		if data.Id == id then
-			return data.DisplayName
+			if data.DisplayName then
+				return data.DisplayName
+			elseif data.InheritFrom then
+				return TraitName(data.InheritFrom)
+			end
 		end
 	end
 end
 
-local function TraitIcon(id)
+local function IconPath(id)
 	local name = id .. '_Large'
 	for i,data in ipairs(Animations) do
 		if data.Name == name then
@@ -64,6 +69,24 @@ local function TraitIcon(id)
 	return name:gsub("\\", "/")
 end
 
+local function TraitIcon(trait)
+	if TraitData[trait] then
+		if TraitData[trait].Icon then
+			return IconPath(TraitData[trait].Icon)
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				icon = TraitIcon(parent)
+				if icon then
+					return icon
+				end
+			end
+		end
+	end
+	if ConsumableData[trait] and ConsumableData[trait].Icon then
+		return IconPath(ConsumableData[trait].Icon)
+	end
+end
+
 local function GodTrait(trait, extra)
 	local name = trait
 	local image = ""
@@ -75,8 +98,9 @@ local function GodTrait(trait, extra)
 	if extra then
 		item = item .. '        ' .. extra .. ',\n'
 	end
-	if TraitData[trait] and TraitData[trait].Icon then
-		item = item .. '        "icon": ' .. String(TraitIcon(TraitData[trait].Icon)) .. ',\n'
+	icon = TraitIcon(trait)
+	if icon then
+		item = item .. '        "icon": ' .. String(icon) .. ',\n'
 	end
 	item = item .. '        "trait": ' .. String(trait) .. ',\n'
 	item = item .. '        "name": ' .. String(name) .. '\n'
@@ -112,7 +136,18 @@ for i = #order, 1, -1 do
 	god = god .. '    "LootColor": "' .. Color255(data.LootColor) .. '",\n'
 	god = god .. '    "Color": "' .. Color255(data.Color) .. '",\n'
 	if data.LinkedUpgrades then
-		local traits = GodTraits(ArrayConcat({data.WeaponUpgrades, data.Traits, data.Consumables}))
+		local traits = GodTraits(ArrayConcat({data.WeaponUpgrades, data.Traits}))
+		if data.Consumables then
+			for i,toget in ipairs(data.Consumables) do
+				if ConsumableData[toget] then
+					local extra
+					if ConsumableData[toget].RequiredOneOfTraits then
+						extra = String('OneOf') .. ':' .. ArrayOfStrings(ConsumableData[toget].RequiredOneOfTraits)
+					end
+					table.insert(traits, GodTrait(toget, extra))
+				end
+			end
+		end
 		god = god .. '    "Traits": [\n'
 		god = god .. table.concat(traits, ',\n') .. '\n'
 		god = god .. '\n    ],\n'
@@ -134,7 +169,7 @@ for i = #order, 1, -1 do
 		end
 		god = god .. '    "LinkedUpgrades": [\n'
 		god = god .. table.concat(links, ',\n') .. '\n'
-		god = god .. '\n    ]\n'
+		god = god .. '    ]\n'
 		god = god .. '  }\n'
 	end
 	table.insert(gods, god)

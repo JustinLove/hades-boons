@@ -1,4 +1,4 @@
-system('lua54 src/hades.lua > output/hades.dot')
+system('lua54 proc/hades.lua > output/hades.dot')
 system('cat output/hades.dot')
 #system('dot output/hades.dot -Ktwopi -Tpng > output/hades.png')
 svg = `dot output/hades.dot -Ktwopi -Tsvg`

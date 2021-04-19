@@ -21,7 +21,7 @@ god =
 trait : Decoder Trait
 trait =
   map4 Trait
-    (oneOf [ (field "icon" string), succeed ""])
+    (field "icon" string)
     (field "trait" string)
     (field "name" string)
     requirements

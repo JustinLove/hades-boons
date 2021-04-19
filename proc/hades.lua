@@ -6,6 +6,7 @@ WeaponSets = {}
 HeroVoiceLines = {}
 dofile("D:/Games/Epic Games/Hades/Content/Scripts/LootData.lua")
 dofile("D:/Games/Epic Games/Hades/Content/Scripts/TraitData.lua")
+dofile("D:/Games/Epic Games/Hades/Content/Scripts/ConsumableData.lua")
 Texts = dofile("output/HelpText.en.lua").Texts
 Animations = dofile("output/GUIAnimations.lua").Animations
 
@@ -27,7 +28,11 @@ end
 local function TraitName(id)
 	for i,data in ipairs(Texts) do
 		if data.Id == id then
-			return data.DisplayName
+			if data.DisplayName then
+				return data.DisplayName
+			elseif data.InheritFrom then
+				return TraitName(data.InheritFrom)
+			end
 		end
 	end
 end
@@ -97,6 +102,9 @@ local function JoinKey(reqs, toget, weight)
 		print('    ' .. join .. ' -> ' .. toget .. ' [ weight='..weight..', len='..(1/weight)..'];')
 	end
 	for o,req in ipairs(reqs) do
+		if req == 'PoseidonPickedUpMinorLootTrait' then
+			req = 'RandomMinorLootDrop'
+		end
 		edge = req .. '-' .. join
 		if not printed[edge] then
 			print('    ' .. req .. ' -> ' .. join .. ' [ weight=2, len=0.5 ] ;')
@@ -136,7 +144,6 @@ for god,data in pairs(LootData) do
 		print('    label="' .. god .. '"')
 		GodTraits(god, data.WeaponUpgrades, data)
 		GodTraits(god, data.Traits, data)
-		GodTraits(god, data.Consumables, data)
 		for toget,reqs in pairs(data.LinkedUpgrades) do
 			if not printed[toget] then
 				if reqs.OneOf then
@@ -147,6 +154,20 @@ for god,data in pairs(LootData) do
 			end
 		end
 		print('  }')
+	end
+	if data.Consumables then
+		--GodTraits(god, data.Consumables, data)
+		for i,toget in ipairs(data.Consumables) do
+			if not printed[toget] and ConsumableData[toget] then
+				if ConsumableData[toget].RequiredOneOfTraits then
+					GodTrait(toget, data)
+					join = JoinKey(ConsumableData[toget].RequiredOneOfTraits, toget, 1)
+					printed[toget] = true
+				else
+					GodTraits(god, {toget}, data)
+				end
+			end
+		end
 	end
 end
 for god,data in pairs(LootData) do
@@ -165,4 +186,5 @@ for god,data in pairs(LootData) do
 		end
 	end
 end
+print('    PoseidonUpgrade -> ForcePoseidonBoonTrait [ style="invis", len=0.4 ];')
 print('}')
