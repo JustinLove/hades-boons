@@ -11,8 +11,12 @@ import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
 import Json.Decode
 
+type alias Point = (Float, Float)
+
 type Msg
-  = None
+  = OnMouseMove Point
+  | OnMouseDown Point
+  | OnMouseUp Point
 
 document tagger model =
   { title = "Hades Boons"
@@ -30,7 +34,13 @@ view model =
       , Html.Attributes.style "height" "100%"
       , Html.Attributes.id "graph"
       ]
-      {traits = model.traits} |> html
+      { traits = model.traits
+      , onMouseMove = OnMouseMove
+      , onMouseDown = OnMouseDown
+      , onMouseUp = OnMouseUp
+      , drag = model.drag
+      , offset = model.offset
+      } |> html
     ]
 
 displayFooter : Element msg
