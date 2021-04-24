@@ -38,11 +38,12 @@ god =
 
 trait : Decoder Trait
 trait =
-  map4 Trait
+  map5 Trait
     (field "icon" string)
     (field "trait" string)
     (field "name" string)
     requirements
+    (succeed UnknownBoon)
 
 requirements : Decoder Requirements
 requirements =

@@ -74,7 +74,7 @@ update msg model =
     Navigate (Browser.External url) ->
       (model, Navigation.load url)
     GotTraits (Ok traits) ->
-      ({model | traits = traits}, Cmd.none)
+      ({model | traits = identifyBoons traits}, Cmd.none)
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
     --WindowSize (width, height) ->
