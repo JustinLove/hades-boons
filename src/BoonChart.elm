@@ -9,6 +9,8 @@ import Collage.Text as Text
 import Collage.Events as Events
 import Color exposing (Color)
 import Html exposing (Html)
+import Html.Events
+import Json.Decode as Decode
 import Svg
 import Svg.Attributes
 
@@ -21,8 +23,10 @@ type alias BoonChart msg =
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
+  , onWheel : Point -> Int -> msg
   , drag : DragMode
   , offset : Point
+  , zoom : Float
   }
 
 size = 500
@@ -43,7 +47,7 @@ godOrder =
   ]
 
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
-boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, drag, offset} =
+boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, onWheel, drag, offset, zoom} =
   [ circle 0.45
       |> outlined (solid 0.01 (uniform Color.white))
   , gods traits
@@ -59,11 +63,12 @@ boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, drag, offset}
     |> scale size
     |> debug
     |> shift (flip offset)
+    |> scale zoom
     |> when (drag == Released) (Events.onMouseDown onMouseDown)
     |> when (drag /= Released) (Events.onMouseUp onMouseUp)
     |> when (drag /= Released) (Events.onMouseLeave onMouseUp)
     |> when (drag /= Released) (Events.onMouseMove onMouseMove)
-    |> Collage.Render.svgExplicit attributes
+    |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder onWheel) ) :: attributes)
 
 when : Bool -> (Collage msg -> Collage msg) -> Collage msg -> Collage msg
 when test f collage =
@@ -96,3 +101,17 @@ god data =
     |> Text.size 100
     |> rendered
     |> scale 0.0002
+
+wheelDecoder : (Point -> Int -> msg) -> Decode.Decoder ( msg, Bool )
+wheelDecoder tagger =
+  Decode.map (\v -> (v, True))
+    (Decode.map2 tagger
+      clientDecoder
+      (Decode.field "deltaY" Decode.int)
+    )
+
+clientDecoder : Decode.Decoder Point
+clientDecoder =
+  Decode.map2 Tuple.pair
+    (Decode.field "clientX" Decode.float)
+    (Decode.field "clientY" Decode.float)

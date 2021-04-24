@@ -17,6 +17,7 @@ type Msg
   = OnMouseMove Point
   | OnMouseDown Point
   | OnMouseUp Point
+  | OnWheel Point Int
 
 document tagger model =
   { title = "Hades Boons"
@@ -38,8 +39,10 @@ view model =
       , onMouseMove = OnMouseMove
       , onMouseDown = OnMouseDown
       , onMouseUp = OnMouseUp
+      , onWheel = OnWheel
       , drag = model.drag
       , offset = model.offset
+      , zoom = model.zoom
       } |> html
     ]
 

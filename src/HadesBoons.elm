@@ -31,6 +31,7 @@ type alias Model =
   , traits : Traits
   , drag : DragMode
   , offset : Point
+  , zoom : Float
   }
 
 main = Browser.application
@@ -52,6 +53,7 @@ init flags location key =
     , traits = []
     , drag = Released
     , offset = (0,0)
+    , zoom = 1
     }
   , fetchTraits
     --, Dom.getViewport
@@ -80,19 +82,30 @@ update msg model =
     --TextSize {text, width} ->
       --( {model | labelWidths = Dict.insert text (width/100) model.labelWidths}, Cmd.none)
     UI (View.OnMouseMove point) ->
-      --let _ = Debug.log "move" point in
       ( { model
-        | offset = dragTo model.drag point
+        | offset = dragTo model.drag point model.offset
         }
       , Cmd.none
       )
     UI (View.OnMouseDown point) ->
-      let _ = Debug.log "down" point in
       ( { model | drag = Dragging model.offset point }, Cmd.none)
     UI (View.OnMouseUp point) ->
-      let _ = Debug.log "up" point in
       ( { model
-        | drag = Released
+        | offset = dragTo model.drag point model.offset
+        , drag = Released
+        }
+      , Cmd.none
+      )
+    UI (View.OnWheel point scroll) ->
+      let
+        tweak = if scroll > 0 then 0.8 else 1.2
+        diff = point |> sub model.offset
+      in
+      ( { model
+        | zoom = model.zoom * tweak
+        , offset = diff
+          |> sub model.offset
+          |> add (scale tweak diff)
         }
       , Cmd.none
       )
@@ -105,16 +118,14 @@ add : Point -> Point -> Point
 add (ax, ay) (bx, by) =
   (ax + bx, ay + by)
 
-fromStart : DragMode -> Point -> Point
-fromStart drag point =
-  case drag of
-    Released -> (0,0)
-    Dragging _ start -> start |> sub point
+scale : Float -> Point -> Point
+scale s (x, y) =
+  (x * s, y * s)
 
-dragTo : DragMode -> Point -> Point
-dragTo drag point =
+dragTo : DragMode -> Point -> Point -> Point
+dragTo drag point oldOffset =
   case drag of
-    Released -> (0,0)
+    Released -> oldOffset
     Dragging offset start ->
       start
         |> sub point

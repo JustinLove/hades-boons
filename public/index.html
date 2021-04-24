@@ -6,7 +6,6 @@
   <title>Hades Boons</title>
   <link href="style.css" rel="stylesheet" />
   <script type="text/javascript" src="hades-boons.js"></script>
-  <script type="text/javascript" src="svg-pan-zoom.min.js"></script>
 </head>
 
 <body>
@@ -59,19 +58,6 @@
   if (app.ports.logCommand) {
     app.ports.logCommand.subscribe(logCommand)
   }
-
-  var panZoom = function() {
-    var element = document.querySelector('svg')
-    svgPanZoom(element, {
-      zoomEnabled: true,
-      controlIconsEnabled: true,
-      fit: true,
-      center: true,
-      maxZoom: 100.0,
-      minZoom: 0.5
-    })
-  }
-  //panZoom()
 
 </script>
 <script defer src="svgxuse.js"></script>
