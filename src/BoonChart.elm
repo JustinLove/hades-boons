@@ -94,11 +94,11 @@ gods traits =
       )
       |> stack
 
-god : God -> Collage msg
+god : GodData -> Collage msg
 god data =
-  Text.fromString data.name
+  Text.fromString (Traits.godName data.god)
     |> Text.color data.lootColor
-    |> Text.size 100
+    |> Text.size 200
     |> rendered
     |> scale 0.0002
 

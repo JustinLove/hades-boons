@@ -6,18 +6,35 @@ import Color exposing (Color)
 import Json.Decode exposing (..)
 import Set exposing (Set)
 
-traits : Decoder (List God)
+traits : Decoder (List GodData)
 traits =
-  list god
+  list godData
 
-god : Decoder God
-god =
-  map5 God
-    (field "Name" string)
+godData : Decoder GodData
+godData =
+  map5 GodData
+    (field "Name" god)
     (field "LootColor" color)
     (field "Color" color)
     (field "Traits" (list trait))
     (field "LinkedUpgrades" (list trait))
+
+god : Decoder God
+god =
+  string
+    |> andThen (\upgrade ->
+      case upgrade of
+        "HermesUpgrade" -> succeed Hermes
+        "AphroditeUpgrade" -> succeed Aphrodite
+        "AresUpgrade" -> succeed Ares
+        "DemeterUpgrade" -> succeed Demeter
+        "DionysusUpgrade" -> succeed Dionysus
+        "PoseidonUpgrade" -> succeed Poseidon
+        "AthenaUpgrade" -> succeed Athena
+        "ArtemisUpgrade" -> succeed Artemis
+        "ZeusUpgrade" -> succeed Zeus
+        _ -> fail ("Unknown god " ++ upgrade)
+      )
 
 trait : Decoder Trait
 trait =
