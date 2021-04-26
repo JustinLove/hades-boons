@@ -79,14 +79,12 @@ displayGods traits =
     main = List.drop 1 traits
     count = List.length main
     factor = tau / (toFloat count)
-    radius = 0.35
+    radius = 0.25
     adjacentDistance = 2 * radius * (sin (factor / 2))
   in
     main
       |> List.indexedMap (\i data ->
         displayGod data
-          --|> scale ((perimeter 0.7) / ((toFloat count)*2))
-          --|> scale 0.2
           |> scale adjacentDistance
           |> shiftY radius
           |> List.singleton
@@ -133,16 +131,24 @@ displayAdjacent centers a b =
 
 displaySkipOne : Array Point -> God -> God -> Collage msg
 displaySkipOne centers a b =
-  segment
-    (godCenter centers a)
-    (godCenter centers b)
+  let
+    centerA = (godCenter centers a)
+    centerB = (godCenter centers b)
+    mid = midpoint centerA centerB
+    tweak = interpolate 0.01 mid (0,0)
+  in
+  arc tweak centerA centerB
     |> traced (solid 0.01 (uniform Color.red))
 
 displaySkipTwo : Array Point -> God -> God -> Collage msg
 displaySkipTwo centers a b =
-  segment
-    (godCenter centers a)
-    (godCenter centers b)
+  let
+    centerA = (godCenter centers a)
+    centerB = (godCenter centers b)
+    mid = midpoint centerA centerB
+    tweak = interpolate 0.01 mid (0,0)
+  in
+  arc tweak centerA centerB
     |> traced (solid 0.01 (uniform Color.blue))
 
 displayOpposite : Array Point -> God -> God -> Collage msg
@@ -151,6 +157,25 @@ displayOpposite centers a b =
     (godCenter centers a)
     (godCenter centers b)
     |> traced (solid 0.01 (uniform Color.white))
+
+arc : Point -> Point -> Point -> Path
+arc (xc,yc) (x1,y1) (x4,y4) =
+  let
+    -- https://stackoverflow.com/a/44829356/30203
+    ax = x1 - xc
+    ay = y1 - yc
+    bx = x4 - xc
+    by = y4 - yc
+    q1 = ax * ax + ay * ay
+    q2 = q1 + ax * bx + ay * by
+    k2 = (4/3) * ((sqrt (2 * q1 * q2)) - q2) / (ax * by - ay * bx)
+
+    x2 = xc + ax - k2 * ay
+    y2 = yc + ay + k2 * ax
+    x3 = xc + bx + k2 * by
+    y3 = yc + by - k2 * bx
+  in
+  cubicCurve [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
 godCenter : Array Point -> God -> Point
 godCenter centers who =
@@ -203,5 +228,10 @@ clientDecoder =
     (Decode.field "clientX" Decode.float)
     (Decode.field "clientY" Decode.float)
 
-perimeter : Float -> Float
-perimeter r = tau * r
+midpoint : Point -> Point -> Point
+midpoint (xa,ya) (xb,yb) =
+  (xa + (xb - xa)/2, ya + ((yb - ya)/2))
+
+interpolate : Float -> Point -> Point -> Point
+interpolate factor (xa,ya) (xb,yb) =
+  (xa + (xb - xa)*factor, ya + ((yb - ya)*factor))
