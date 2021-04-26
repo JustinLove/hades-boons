@@ -7,6 +7,7 @@ module Traits exposing
   , Trait
   , Requirements(..)
   , godName
+  , duoBoons
   , identifyBoons
   )
 
@@ -66,6 +67,23 @@ godName god =
     Athena -> "Athena"
     Artemis -> "Artemis"
     Zeus -> "Zeus"
+
+duoBoons : Traits -> List Trait
+duoBoons traits =
+  traits
+    |> List.concatMap duoGodBoons
+
+duoGodBoons : GodData -> List Trait
+duoGodBoons data =
+  data.linkedUpgrades
+    |> List.filter isDuoBoon
+
+isDuoBoon : Trait -> Bool
+isDuoBoon {boonType} =
+  case boonType of
+    UnknownBoon -> False
+    BasicBoon _ -> False
+    DuoBoon _ _ -> True
 
 identifyBoons : Traits -> Traits
 identifyBoons traits =
