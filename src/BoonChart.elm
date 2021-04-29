@@ -31,22 +31,31 @@ type alias BoonChart msg =
   , zoom : Float
   }
 
+type alias Metrics =
+  { centers : Array Point
+  , angle : Float
+  , adjacentDistance : Float
+  }
+
 size = 500
 width = size
 height = size
+
+mainRingRadius = 0.3
 
 tau = pi*2
 
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, onWheel, drag, offset, zoom} =
   let
-    gods = displayGods traits
-    centers = List.map base gods |> Array.fromList
+    metrics1 = initialMetrics traits
+    gods = displayGods metrics1 traits
+    metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
   in
-  [ circle 0.45
-      |> outlined (solid 0.01 (uniform Color.white))
-  , gods |> stack
-  , displayDuos centers (Traits.duoBoons traits)
+  --[ circle 0.45
+      --|> outlined (solid 0.01 (uniform Color.white))
+  [ gods |> stack
+  , displayDuos metrics2 (Traits.duoBoons traits)
   , rectangle 1 1
       --|> filled (uniform Color.black)
       |> styled (uniform Color.black, dot 0.001 (uniform Color.white))
@@ -74,24 +83,31 @@ when test f collage =
 flip : Point -> Point
 flip (x, y) = (x, -y)
 
-displayGods : Traits -> List (Collage msg)
-displayGods traits =
+initialMetrics : Traits -> Metrics
+initialMetrics traits =
   let
     main = List.drop 1 traits
     count = List.length main
-    factor = tau / (toFloat count)
-    radius = 0.25
-    adjacentDistance = 2 * radius * (sin (factor / 2))
+    angle = tau / (toFloat count)
+    adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
   in
-    main
-      |> List.indexedMap (\i data ->
-        displayGod data
-          |> scale adjacentDistance
-          |> shiftY radius
-          |> List.singleton
-          |> group
-          |> rotate ((toFloat i) * -factor)
-      )
+    { centers = Array.empty
+    , angle = angle
+    , adjacentDistance = adjacentDistance
+    }
+
+displayGods : Metrics -> Traits -> List (Collage msg)
+displayGods metrics traits =
+  traits
+    |> List.drop 1
+    |> List.indexedMap (\i data ->
+      displayGod data
+        |> scale metrics.adjacentDistance
+        |> shiftY mainRingRadius
+        |> List.singleton
+        |> group
+        |> rotate (((toFloat i) * -metrics.angle) + -metrics.angle/2)
+    )
 
 displayGod : GodData -> Collage msg
 displayGod data =
@@ -105,71 +121,76 @@ displayGod data =
   ]
     |> stack
 
-displayDuos : Array Point -> List Trait -> Collage msg
-displayDuos centers traits =
+displayDuos : Metrics -> List Trait -> Collage msg
+displayDuos metrics traits =
   traits
-    --|> List.filter (isSkipOne centers)
-    --|> List.drop 8
+    --|> List.filter (isSkipOne metrics)
+    --|> List.drop 3
     --|> List.take 1
-    |> List.map (displayDuo centers)
+    |> List.map (displayDuo metrics)
     |> stack
 
-displayDuo : Array Point -> Trait -> Collage msg
-displayDuo centers trait =
+displayDuo : Metrics -> Trait -> Collage msg
+displayDuo metrics trait =
   case trait.boonType of
     UnknownBoon -> group []
     BasicBoon _ -> group []
     DuoBoon a b ->
-      case godAdjacency (Array.length centers) a b of
-        Adjacent -> displayAdjacent centers a b
-        SkipOne -> displaySkipOne centers a b
-        SkipTwo -> displaySkipTwo centers a b
-        Opposite -> displayOpposite centers a b
+      case godAdjacency (Array.length metrics.centers) a b of
+        Adjacent -> displayAdjacent metrics a b
+        SkipOne -> displaySkipOne metrics a b
+        SkipTwo -> displaySkipTwo metrics a b
+        Opposite -> displayOpposite metrics a b
 
-isSkipOne : Array Point -> Trait -> Bool
-isSkipOne centers trait =
+isSkipOne : Metrics -> Trait -> Bool
+isSkipOne metrics trait =
   case trait.boonType of
     UnknownBoon -> False
     BasicBoon _ -> False
     DuoBoon a b ->
-      case godAdjacency (Array.length centers) a b of
+      case godAdjacency (Array.length metrics.centers) a b of
         Adjacent -> False
         SkipOne -> True
         SkipTwo -> False
         Opposite -> False
 
-displayAdjacent : Array Point -> God -> God -> Collage msg
-displayAdjacent centers a b =
+displayAdjacent : Metrics -> God -> God -> Collage msg
+displayAdjacent metrics a b =
   segment
-    (godCenter centers a)
-    (godCenter centers b)
+    (godCenter metrics a)
+    (godCenter metrics b)
     |> traced (solid 0.01 (uniform Color.darkGrey))
 
-displaySkipOne : Array Point -> God -> God -> Collage msg
+displaySkipOne : Metrics -> God -> God -> Collage msg
 displaySkipOne =
-  displayArc Color.red -0.2 0.36
+  displayArc Color.red -0.2 (mainRingRadius * 1.45)
 
-displaySkipTwo : Array Point -> God -> God -> Collage msg
+displaySkipTwo : Metrics -> God -> God -> Collage msg
 displaySkipTwo =
-  displayArc Color.blue 0.2 0.41
+  displayArc Color.blue 0.2 (mainRingRadius * 1.6)
 
-displayArc : Color -> Float -> Float -> Array Point -> God -> God -> Collage msg
-displayArc color centerAdjust radius centers a b =
+displayArc : Color -> Float -> Float -> Metrics -> God -> God -> Collage msg
+displayArc color centerAdjust iconDistance metrics a b =
   let
-    endA = Geometry.interpolate -centerAdjust (godCenter centers a) (0,0)
-    endB = Geometry.interpolate -centerAdjust (godCenter centers b) (0,0)
+    centerA = godCenter metrics a
+    centerB = godCenter metrics b
+    endA = Geometry.interpolate -centerAdjust centerA (0,0)
+    endB = Geometry.interpolate -centerAdjust centerB (0,0)
     mid = Geometry.midpoint endA endB
     v = Geometry.normalize mid
-    iconPoint = Geometry.scale radius v
+    iconPoint = Geometry.scale iconDistance v
     midA = Geometry.midpoint endA iconPoint
     av = Geometry.sub endA midA |> Geometry.normalize
     perp = Geometry.perpendicular av |> Geometry.normalize |> Geometry.scale 0.1
     a2 = Geometry.add midA perp
-    center = Geometry.intersection (midA, a2) ((0,0), iconPoint)
+    center = Geometry.lineIntersection (midA, a2) ((0,0), iconPoint)
+    radius = (Geometry.sub iconPoint center) |> Geometry.length
+    termA = fartherPoint (center, radius) (centerA, metrics.adjacentDistance/2)
+    termB = fartherPoint (center, radius) (centerB, metrics.adjacentDistance/2)
   in
-    [ arc center endA iconPoint
+    [ arc center termA iconPoint
       |> traced (solid 0.01 (uniform color))
-    , arc center iconPoint endB
+    , arc center iconPoint termB
       |> traced (solid 0.01 (uniform color))
     , square 0.02
       |> filled (uniform Color.white)
@@ -177,24 +198,21 @@ displayArc color centerAdjust radius centers a b =
     ]
       |> stack
 
-{-
-displaySkipTwo : Array Point -> God -> God -> Collage msg
-displaySkipTwo centers a b =
+fartherPoint : (Point, Float) -> (Point, Float) -> Point
+fartherPoint c1 c2 =
   let
-    centerA = (godCenter centers a)
-    centerB = (godCenter centers b)
-    mid = Geometry.midpoint centerA centerB
-    tweak = Geometry.interpolate 0.01 mid (0,0)
+    (p1, p2) = Geometry.circleIntersection c1 c2
   in
-  arc tweak centerA centerB
-    |> traced (solid 0.01 (uniform Color.blue))
-    -}
+    if Geometry.length p1 > Geometry.length p2 then
+      p1
+    else
+      p2
 
-displayOpposite : Array Point -> God -> God -> Collage msg
-displayOpposite centers a b =
+displayOpposite : Metrics -> God -> God -> Collage msg
+displayOpposite metrics a b =
   segment
-    (godCenter centers a)
-    (godCenter centers b)
+    (godCenter metrics a)
+    (godCenter metrics b)
     |> traced (solid 0.01 (uniform Color.white))
 
 arc : Point -> Point -> Point -> Path
@@ -216,9 +234,9 @@ arc (xc,yc) (x1,y1) (x4,y4) =
   in
   cubicCurve [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
-godCenter : Array Point -> God -> Point
-godCenter centers who =
-  centers
+godCenter : Metrics -> God -> Point
+godCenter metrics who =
+  metrics.centers
     |> Array.get (godIndex who)
     |> Maybe.withDefault (0,0)
 

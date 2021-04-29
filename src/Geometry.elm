@@ -35,8 +35,8 @@ perpendicular : Point -> Point
 perpendicular (x,y) =
   (1, -x / y)
 
-intersection : (Point, Point) -> (Point, Point) -> Point
-intersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =
+lineIntersection : (Point, Point) -> (Point, Point) -> Point
+lineIntersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =
   let
     dx12 = x1 - x2
     dy12 = y1 - y2
@@ -49,3 +49,22 @@ intersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =
     ny = (t12 * dy34) - (dy12 * t34)
   in
     (nx / denom, ny / denom)
+
+circleIntersection : (Point, Float) -> (Point, Float) -> (Point, Point)
+circleIntersection ((x1,y1),r1) ((x2,y2),r2) =
+  let
+    dx = x2 - x1
+    dy = y2 - y1
+    d = length (dx, dy)
+    -- todo: too far? d > r1 + r2
+    -- todo: to close? d < abs (r1 - r2)
+    nx = dx / d
+    ny = dy / d
+    a = (r1^2 - r2^2 + d^2) / (2 * d)
+    px = x1 + a * nx
+    py = y1 + a * ny
+    h = sqrt (abs (r1^2 - a^2))
+  in
+    ( (px + h * ny, py - h * nx)
+    , (px - h * ny, py + h * nx)
+    )
