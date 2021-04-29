@@ -155,18 +155,21 @@ for i = 1, #order, 1 do
 
 		local links = {}
 		for toget,reqs in pairs(data.LinkedUpgrades) do
-			local extra = ''
-			if reqs.OneOf then
-				extra = String('OneOf') .. ':' .. ArrayOfStrings(reqs.OneOf)
-			end
-			if reqs.OneFromEachSet then
-				local sets = {}
-				for s,set in ipairs(reqs.OneFromEachSet) do
-					table.insert(sets, ArrayOfStrings(set))
+			if not printed[toget] then
+				local extra = ''
+				if reqs.OneOf then
+					extra = String('OneOf') .. ':' .. ArrayOfStrings(reqs.OneOf)
 				end
-				extra = String('OneFromEachSet') .. ':' .. Array(sets)
+				if reqs.OneFromEachSet then
+					local sets = {}
+					for s,set in ipairs(reqs.OneFromEachSet) do
+						table.insert(sets, ArrayOfStrings(set))
+					end
+					extra = String('OneFromEachSet') .. ':' .. Array(sets)
+				end
+				table.insert(links, GodTrait(toget, extra))
+				printed[toget] = true
 			end
-			table.insert(links, GodTrait(toget, extra))
 		end
 		god = god .. '    "LinkedUpgrades": [\n'
 		god = god .. table.concat(links, ',\n') .. '\n'

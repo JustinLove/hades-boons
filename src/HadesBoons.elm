@@ -1,6 +1,7 @@
 module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
+import Geometry exposing (Point)
 import Log
 --import MeasureText
 import Traits exposing (..)
@@ -14,8 +15,6 @@ import Browser.Navigation as Navigation
 import Http
 import Json.Decode as Decode exposing (Value)
 import Url exposing(Url)
-
-type alias Point = (Float, Float)
 
 type Msg
   = UI (View.Msg)
@@ -99,28 +98,16 @@ update msg model =
     UI (View.OnWheel point scroll) ->
       let
         tweak = if scroll > 0 then 0.8 else 1.2
-        diff = point |> sub model.offset
+        diff = point |> Geometry.sub model.offset
       in
       ( { model
         | zoom = model.zoom * tweak
         , offset = diff
-          |> sub model.offset
-          |> add (scale tweak diff)
+          |> Geometry.sub model.offset
+          |> Geometry.add (Geometry.scale tweak diff)
         }
       , Cmd.none
       )
-
-sub : Point -> Point -> Point
-sub (ax, ay) (bx, by) =
-  (ax - bx, ay - by)
-
-add : Point -> Point -> Point
-add (ax, ay) (bx, by) =
-  (ax + bx, ay + by)
-
-scale : Float -> Point -> Point
-scale s (x, y) =
-  (x * s, y * s)
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
@@ -128,8 +115,8 @@ dragTo drag point oldOffset =
     Released -> oldOffset
     Dragging offset start ->
       start
-        |> sub point
-        |> add offset
+        |> Geometry.sub point
+        |> Geometry.add offset
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

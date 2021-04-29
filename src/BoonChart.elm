@@ -1,5 +1,6 @@
 module BoonChart exposing (DragMode(..), BoonChart, boonChart)
 
+import Geometry
 import Traits exposing (..)
 
 import Array exposing (Array)
@@ -107,6 +108,9 @@ displayGod data =
 displayDuos : Array Point -> List Trait -> Collage msg
 displayDuos centers traits =
   traits
+    --|> List.filter (isSkipOne centers)
+    --|> List.drop 8
+    --|> List.take 1
     |> List.map (displayDuo centers)
     |> stack
 
@@ -122,6 +126,18 @@ displayDuo centers trait =
         SkipTwo -> displaySkipTwo centers a b
         Opposite -> displayOpposite centers a b
 
+isSkipOne : Array Point -> Trait -> Bool
+isSkipOne centers trait =
+  case trait.boonType of
+    UnknownBoon -> False
+    BasicBoon _ -> False
+    DuoBoon a b ->
+      case godAdjacency (Array.length centers) a b of
+        Adjacent -> False
+        SkipOne -> True
+        SkipTwo -> False
+        Opposite -> False
+
 displayAdjacent : Array Point -> God -> God -> Collage msg
 displayAdjacent centers a b =
   segment
@@ -130,26 +146,49 @@ displayAdjacent centers a b =
     |> traced (solid 0.01 (uniform Color.darkGrey))
 
 displaySkipOne : Array Point -> God -> God -> Collage msg
-displaySkipOne centers a b =
-  let
-    centerA = (godCenter centers a)
-    centerB = (godCenter centers b)
-    mid = midpoint centerA centerB
-    tweak = interpolate 0.01 mid (0,0)
-  in
-  arc tweak centerA centerB
-    |> traced (solid 0.01 (uniform Color.red))
+displaySkipOne =
+  displayArc Color.red -0.2 0.36
 
+displaySkipTwo : Array Point -> God -> God -> Collage msg
+displaySkipTwo =
+  displayArc Color.blue 0.2 0.41
+
+displayArc : Color -> Float -> Float -> Array Point -> God -> God -> Collage msg
+displayArc color centerAdjust radius centers a b =
+  let
+    endA = Geometry.interpolate -centerAdjust (godCenter centers a) (0,0)
+    endB = Geometry.interpolate -centerAdjust (godCenter centers b) (0,0)
+    mid = Geometry.midpoint endA endB
+    v = Geometry.normalize mid
+    iconPoint = Geometry.scale radius v
+    midA = Geometry.midpoint endA iconPoint
+    av = Geometry.sub endA midA |> Geometry.normalize
+    perp = Geometry.perpendicular av |> Geometry.normalize |> Geometry.scale 0.1
+    a2 = Geometry.add midA perp
+    center = Geometry.intersection (midA, a2) ((0,0), iconPoint)
+  in
+    [ arc center endA iconPoint
+      |> traced (solid 0.01 (uniform color))
+    , arc center iconPoint endB
+      |> traced (solid 0.01 (uniform color))
+    , square 0.02
+      |> filled (uniform Color.white)
+      |> shift iconPoint
+    ]
+      |> stack
+
+{-
 displaySkipTwo : Array Point -> God -> God -> Collage msg
 displaySkipTwo centers a b =
   let
     centerA = (godCenter centers a)
     centerB = (godCenter centers b)
-    mid = midpoint centerA centerB
-    tweak = interpolate 0.01 mid (0,0)
+    mid = Geometry.midpoint centerA centerB
+    tweak = Geometry.interpolate 0.01 mid (0,0)
   in
   arc tweak centerA centerB
     |> traced (solid 0.01 (uniform Color.blue))
+    -}
 
 displayOpposite : Array Point -> God -> God -> Collage msg
 displayOpposite centers a b =
@@ -227,11 +266,3 @@ clientDecoder =
   Decode.map2 Tuple.pair
     (Decode.field "clientX" Decode.float)
     (Decode.field "clientY" Decode.float)
-
-midpoint : Point -> Point -> Point
-midpoint (xa,ya) (xb,yb) =
-  (xa + (xb - xa)/2, ya + ((yb - ya)/2))
-
-interpolate : Float -> Point -> Point -> Point
-interpolate factor (xa,ya) (xb,yb) =
-  (xa + (xb - xa)*factor, ya + ((yb - ya)*factor))
