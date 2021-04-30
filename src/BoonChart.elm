@@ -31,10 +31,21 @@ type alias BoonChart msg =
   , zoom : Float
   }
 
-type alias Metrics =
+type alias ChartMetrics =
   { centers : Array Point
   , angle : Float
   , adjacentDistance : Float
+  }
+
+type ConnectorShape
+  = Arc Point
+  | Line
+
+type alias Connector =
+  { iconPoint : Point
+  , endA : Point
+  , endB : Point
+  , shape : ConnectorShape
   }
 
 size = 500
@@ -83,7 +94,7 @@ when test f collage =
 flip : Point -> Point
 flip (x, y) = (x, -y)
 
-initialMetrics : Traits -> Metrics
+initialMetrics : Traits -> ChartMetrics
 initialMetrics traits =
   let
     main = List.drop 1 traits
@@ -96,7 +107,7 @@ initialMetrics traits =
     , adjacentDistance = adjacentDistance
     }
 
-displayGods : Metrics -> Traits -> List (Collage msg)
+displayGods : ChartMetrics -> Traits -> List (Collage msg)
 displayGods metrics traits =
   traits
     |> List.drop 1
@@ -121,28 +132,16 @@ displayGod data =
   ]
     |> stack
 
-displayDuos : Metrics -> List Trait -> Collage msg
+displayDuos : ChartMetrics -> List Trait -> Collage msg
 displayDuos metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
     --|> List.drop 3
     --|> List.take 1
-    |> List.map (displayDuo metrics)
+    |> List.map (\trait -> displayTrait (calculateDuo metrics trait) trait)
     |> stack
 
-displayDuo : Metrics -> Trait -> Collage msg
-displayDuo metrics trait =
-  case trait.boonType of
-    UnknownBoon -> group []
-    BasicBoon _ -> group []
-    DuoBoon a b ->
-      case godAdjacency (Array.length metrics.centers) a b of
-        Adjacent -> displayAdjacent metrics a b
-        SkipOne -> displaySkipOne metrics a b
-        SkipTwo -> displaySkipTwo metrics a b
-        Opposite -> displayOpposite metrics a b
-
-isSkipOne : Metrics -> Trait -> Bool
+isSkipOne : ChartMetrics -> Trait -> Bool
 isSkipOne metrics trait =
   case trait.boonType of
     UnknownBoon -> False
@@ -154,49 +153,114 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayAdjacent : Metrics -> God -> God -> Collage msg
-displayAdjacent metrics a b =
+displayTrait : Connector -> Trait -> Collage msg
+displayTrait connector trait =
+  [ displayConnector connector
+  , square 0.02
+    |> filled (uniform Color.white)
+    |> shift connector.iconPoint
+  ]
+    |> stack
+
+displayConnector : Connector -> Collage msg
+displayConnector {iconPoint, endA, endB, shape} =
+  case shape of
+    Arc center ->
+      [ arc center endA iconPoint
+        |> traced (solid 0.01 (uniform Color.white))
+      , arc center iconPoint endB
+        |> traced (solid 0.01 (uniform Color.white))
+      ]
+        |> stack
+    Line ->
+      segment
+        endA
+        endB
+        |> traced (solid 0.01 (uniform Color.white))
+
+displayOpposite : ChartMetrics -> God -> God -> Collage msg
+displayOpposite metrics a b =
   segment
     (godCenter metrics a)
     (godCenter metrics b)
-    |> traced (solid 0.01 (uniform Color.darkGrey))
+    |> traced (solid 0.01 (uniform Color.white))
 
-displaySkipOne : Metrics -> God -> God -> Collage msg
-displaySkipOne =
-  displayArc Color.red -0.2 (mainRingRadius * 1.45)
+calculateDuos : ChartMetrics -> List Trait -> List Connector
+calculateDuos metrics traits =
+  traits
+    --|> List.filter (isSkipOne metrics)
+    --|> List.drop 3
+    --|> List.take 1
+    |> List.map (calculateDuo metrics)
 
-displaySkipTwo : Metrics -> God -> God -> Collage msg
-displaySkipTwo =
-  displayArc Color.blue 0.2 (mainRingRadius * 1.6)
+calculateDuo : ChartMetrics -> Trait -> Connector
+calculateDuo metrics trait =
+  case trait.boonType of
+    UnknownBoon -> Connector (0,0) (0,0) (0,0) Line
+    BasicBoon _ -> Connector (0,0) (0,0) (0,0) Line
+    DuoBoon a b ->
+      case godAdjacency (Array.length metrics.centers) a b of
+        Adjacent -> calculateAdjacent metrics a b
+        SkipOne -> calculateSkipOne metrics a b
+        SkipTwo -> calculateSkipTwo metrics a b
+        Opposite -> calculateOpposite metrics a b
 
-displayArc : Color -> Float -> Float -> Metrics -> God -> God -> Collage msg
-displayArc color centerAdjust iconDistance metrics a b =
+calculateAdjacent : ChartMetrics -> God -> God -> Connector
+calculateAdjacent metrics a b =
   let
+    endA = godCenter metrics a
+    endB = godCenter metrics b
+    iconPoint = Geometry.midpoint endA endB
+  in
+    Connector iconPoint endA endB Line
+
+calculateSkipOne : ChartMetrics -> God -> God -> Connector
+calculateSkipOne =
+  calculateArc -0.2 (mainRingRadius * 1.45)
+
+calculateSkipTwo : ChartMetrics -> God -> God -> Connector
+calculateSkipTwo =
+  calculateArc 0.2 (mainRingRadius * 1.6)
+
+calculateOpposite : ChartMetrics -> God -> God -> Connector
+calculateOpposite metrics a b =
+  let
+    endA = godCenter metrics a
+    endB = godCenter metrics b
+    iconPoint = Geometry.interpolate 0.25 endA endB
+  in
+    Connector iconPoint endA endB Line
+
+calculateArc : Float -> Float -> ChartMetrics -> God -> God -> Connector
+calculateArc centerAdjust iconDistance metrics a b =
+  let
+    -- where the center of the god's area is
     centerA = godCenter metrics a
     centerB = godCenter metrics b
+    -- tweak the target point to change the radius of the arc
     endA = Geometry.interpolate -centerAdjust centerA (0,0)
     endB = Geometry.interpolate -centerAdjust centerB (0,0)
+    -- we need to break up the arc because our bezier curve method doesn't work well with angles over 90deg. Conveniently, the middle is also where we want to put the boon.
     mid = Geometry.midpoint endA endB
     v = Geometry.normalize mid
     iconPoint = Geometry.scale iconDistance v
+    -- we need to calculate the radius of the arcs circle.
+    --  This can be done from the intersection of two lines drawn from the midpoints of lines connecting two points each on the circle
+    -- We already have one such line from calculating the icon point
+    -- Get one more between icon point and one of the ends
     midA = Geometry.midpoint endA iconPoint
     av = Geometry.sub endA midA |> Geometry.normalize
     perp = Geometry.perpendicular av |> Geometry.normalize |> Geometry.scale 0.1
     a2 = Geometry.add midA perp
+    -- center of the circle which our arc is part of
     center = Geometry.lineIntersection (midA, a2) ((0,0), iconPoint)
+    -- now we can figure out the radius thereof
     radius = (Geometry.sub iconPoint center) |> Geometry.length
+    -- terminal points of the arcs are at one of the intersections between the two circles
     termA = fartherPoint (center, radius) (centerA, metrics.adjacentDistance/2)
     termB = fartherPoint (center, radius) (centerB, metrics.adjacentDistance/2)
   in
-    [ arc center termA iconPoint
-      |> traced (solid 0.01 (uniform color))
-    , arc center iconPoint termB
-      |> traced (solid 0.01 (uniform color))
-    , square 0.02
-      |> filled (uniform Color.white)
-      |> shift iconPoint
-    ]
-      |> stack
+    Connector iconPoint termA termB (Arc center)
 
 fartherPoint : (Point, Float) -> (Point, Float) -> Point
 fartherPoint c1 c2 =
@@ -207,13 +271,6 @@ fartherPoint c1 c2 =
       p1
     else
       p2
-
-displayOpposite : Metrics -> God -> God -> Collage msg
-displayOpposite metrics a b =
-  segment
-    (godCenter metrics a)
-    (godCenter metrics b)
-    |> traced (solid 0.01 (uniform Color.white))
 
 arc : Point -> Point -> Point -> Path
 arc (xc,yc) (x1,y1) (x4,y4) =
@@ -234,7 +291,7 @@ arc (xc,yc) (x1,y1) (x4,y4) =
   in
   cubicCurve [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
-godCenter : Metrics -> God -> Point
+godCenter : ChartMetrics -> God -> Point
 godCenter metrics who =
   metrics.centers
     |> Array.get (godIndex who)
