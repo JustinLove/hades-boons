@@ -49,6 +49,15 @@ type alias Connector =
   , shape : ConnectorShape
   }
 
+type alias Boon =
+  { name : String
+  , icon : String
+  , iconPoint : Point
+  , endA : Point
+  , endB : Point
+  , shape : ConnectorShape
+  }
+
 size = 500
 width = size
 height = size
@@ -63,11 +72,13 @@ boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, onWheel, drag
     metrics1 = initialMetrics traits
     gods = displayGods metrics1 traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
+    boons = layoutBoons metrics2 (Traits.duoBoons traits)
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ gods |> stack
-  , displayDuos metrics2 (Traits.duoBoons traits)
+  [ boons |> List.map displayBoonTrait |> stack
+  , boons |> List.map displayBoonConnector |> stack
+  , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
       |> styled (uniform Color.black, dot 0.001 (uniform Color.white))
@@ -133,14 +144,26 @@ displayGod data =
   ]
     |> stack
 
-displayDuos : ChartMetrics -> List Trait -> Collage msg
-displayDuos metrics traits =
+layoutBoons : ChartMetrics -> List Trait -> List Boon
+layoutBoons metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
     --|> List.drop 3
     --|> List.take 1
-    |> List.map (\trait -> displayConnectedTrait (calculateDuo metrics trait) trait)
-    |> stack
+    |> List.map (layoutBoon metrics)
+
+layoutBoon : ChartMetrics -> Trait -> Boon
+layoutBoon metrics trait =
+  let
+    {iconPoint, endA, endB, shape} = calculateDuo metrics trait
+  in
+    { name = trait.name
+    , icon = trait.icon
+    , iconPoint = iconPoint
+    , endA = endA
+    , endB = endB
+    , shape = shape
+    }
 
 isSkipOne : ChartMetrics -> Trait -> Bool
 isSkipOne metrics trait =
@@ -154,31 +177,24 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayConnectedTrait : Connector -> Trait -> Collage msg
-displayConnectedTrait connector trait =
-  [ displayConnector connector
-  , displayTrait trait
-    |> scale 0.08
-    |> shift connector.iconPoint
-  ]
-    |> stack
-
-displayTrait : Trait -> Collage msg
-displayTrait trait =
-  [ Text.fromString trait.name
+displayBoonTrait : Boon -> Collage msg
+displayBoonTrait boon =
+  [ Text.fromString boon.name
       |> Text.color Color.white
       |> Text.size 200
       |> rendered
       |> scale 0.001
       |> shiftY -0.5
-  , image (0.9,0.9) trait.icon
+  , image (0.9,0.9) boon.icon
   --, circle 0.5
       --|> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
+    |> scale 0.08
+    |> shift boon.iconPoint
 
-displayConnector : Connector -> Collage msg
-displayConnector {iconPoint, endA, endB, shape} =
+displayBoonConnector : Boon -> Collage msg
+displayBoonConnector {iconPoint, endA, endB, shape} =
   let
     lineStyle = solid 0.004 (uniform Color.charcoal)
   in
