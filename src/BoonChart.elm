@@ -170,8 +170,10 @@ displayTrait trait =
       |> Text.size 200
       |> rendered
       |> scale 0.001
-  , circle 0.5
-      |> outlined (solid 0.01 (uniform Color.white))
+      |> shiftY -0.5
+  , image (0.9,0.9) trait.icon
+  --, circle 0.5
+      --|> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
 

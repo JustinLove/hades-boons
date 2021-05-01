@@ -3,3 +3,4 @@ output
 __pycache__
 elm-stuff
 public/hades-boons.js
+public/GUI
