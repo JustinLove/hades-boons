@@ -58,7 +58,7 @@ type alias Boon =
   , shape : ConnectorShape
   }
 
-size = 500
+size = 4096
 width = size
 height = size
 

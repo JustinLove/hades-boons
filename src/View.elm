@@ -29,22 +29,28 @@ view model =
     [ htmlAttribute <| Html.Attributes.class "dark"
     , htmlAttribute <| Html.Attributes.id "top"
     ] <|
-    column [ height fill, width fill, clip, inFront displayFooter]
-    [ BoonChart.boonChart
-      [ Html.Attributes.style "width" "100%"
-      , Html.Attributes.style "height" "100%"
-      , Html.Attributes.id "graph"
+    column
+      [ height fill
+        , width fill
+        , clip
+        , inFront displayFooter
+        , inFront (model.zoom |> String.fromFloat |> text)
       ]
-      { traits = model.traits
-      , onMouseMove = OnMouseMove
-      , onMouseDown = OnMouseDown
-      , onMouseUp = OnMouseUp
-      , onWheel = OnWheel
-      , drag = model.drag
-      , offset = model.offset
-      , zoom = model.zoom
-      } |> html
-    ]
+      [ BoonChart.boonChart
+        [ Html.Attributes.style "width" "100%"
+        , Html.Attributes.style "height" "100%"
+        , Html.Attributes.id "graph"
+        ]
+        { traits = model.traits
+        , onMouseMove = OnMouseMove
+        , onMouseDown = OnMouseDown
+        , onMouseUp = OnMouseUp
+        , onWheel = OnWheel
+        , drag = model.drag
+        , offset = model.offset
+        , zoom = model.zoom
+        } |> html
+      ]
 
 displayFooter : Element msg
 displayFooter =
