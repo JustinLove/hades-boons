@@ -8,6 +8,8 @@ module Traits exposing
   , Requirements(..)
   , godName
   , duoBoons
+  , basicBoonsOf
+  , basicBoons
   , identifyBoons
   )
 
@@ -68,6 +70,22 @@ godName god =
     Artemis -> "Artemis"
     Zeus -> "Zeus"
 
+basicBoonsOf : God -> Traits -> List Trait
+basicBoonsOf god traits =
+  traits
+    |> List.concatMap (\data ->
+      if data.god == god then
+        basicBoons data
+      else
+        []
+      )
+
+basicBoons : GodData -> List Trait
+basicBoons data =
+  data
+    |> godTraits
+    |> List.filter isBasicBoon
+
 duoBoons : Traits -> List Trait
 duoBoons traits =
   traits
@@ -77,6 +95,13 @@ duoGodBoons : GodData -> List Trait
 duoGodBoons data =
   data.linkedUpgrades
     |> List.filter isDuoBoon
+
+isBasicBoon : Trait -> Bool
+isBasicBoon {boonType} =
+  case boonType of
+    UnknownBoon -> False
+    BasicBoon _ -> True
+    DuoBoon _ _ -> False
 
 isDuoBoon : Trait -> Bool
 isDuoBoon {boonType} =

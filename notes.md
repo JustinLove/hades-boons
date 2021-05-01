@@ -1,9 +1,4 @@
-- boon icons
-- knowing where duo line end points are
-- line layering
 - line formatting
-- adjacent boon formatting
-- cross boon formatting
 - fix colors
 - where does hermes go?
 - god layouts?

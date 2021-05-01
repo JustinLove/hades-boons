@@ -35,6 +35,12 @@ perpendicular : Point -> Point
 perpendicular (x,y) =
   (1, -x / y)
 
+rotate : Float -> Point -> Point
+rotate angle (x, y) =
+  ( x * (cos angle) - y * (sin angle)
+  , x * (sin angle) + y * (cos angle)
+  )
+
 lineIntersection : (Point, Point) -> (Point, Point) -> Point
 lineIntersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =
   let

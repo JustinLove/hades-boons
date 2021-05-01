@@ -72,12 +72,14 @@ boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, onWheel, drag
     metrics1 = initialMetrics traits
     gods = displayGods metrics1 traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
-    boons = layoutBoons metrics2 (Traits.duoBoons traits)
+    basicBoons = layoutBasicBoons metrics2 traits
+    duoBoons = layoutDuoBoons metrics2 (Traits.duoBoons traits)
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ boons |> List.map displayBoonTrait |> stack
-  , boons |> List.map displayBoonConnector |> stack
+  [ duoBoons |> List.map (displayBoonTrait >> (scale 0.08)) |> stack
+  , basicBoons |> List.map (displayBoonTrait >> (scale 0.02)) |> stack
+  , duoBoons |> List.map displayBoonConnector |> stack
   , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -119,6 +121,22 @@ initialMetrics traits =
     , adjacentDistance = adjacentDistance
     }
 
+ringLayout : Int -> Float -> ChartMetrics
+ringLayout count radius =
+  let
+    angle = tau / (toFloat count)
+    adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
+  in
+    { centers = List.range 0 (count - 1)
+      |> List.map (\i ->
+        (0, radius)
+          |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+      )
+      |> Array.fromList
+    , angle = angle
+    , adjacentDistance = adjacentDistance
+    }
+
 displayGods : ChartMetrics -> Traits -> List (Collage msg)
 displayGods metrics traits =
   traits
@@ -144,16 +162,45 @@ displayGod data =
   ]
     |> stack
 
-layoutBoons : ChartMetrics -> List Trait -> List Boon
-layoutBoons metrics traits =
+layoutBasicBoons : ChartMetrics -> Traits -> List Boon
+layoutBasicBoons metrics traits =
+  traits
+    |> List.concatMap (layoutBasicBoonsOf metrics)
+
+layoutBasicBoonsOf : ChartMetrics -> GodData -> List Boon
+layoutBasicBoonsOf metrics data =
+  let
+    center = (godCenter metrics data.god)
+    boons = basicBoons data
+    angle = tau / (toFloat (List.length boons))
+    adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
+  in
+    boons
+      |> List.indexedMap (\i trait ->
+        let
+          p = (0, 0.05)
+            |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+            |> Geometry.add center
+        in
+          { name = trait.name
+          , icon = trait.icon
+          , iconPoint = p
+          , endA = p
+          , endB = p
+          , shape = Point
+          }
+      )
+
+layoutDuoBoons : ChartMetrics -> List Trait -> List Boon
+layoutDuoBoons metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
     --|> List.drop 3
     --|> List.take 1
-    |> List.map (layoutBoon metrics)
+    |> List.map (layoutDuoBoon metrics)
 
-layoutBoon : ChartMetrics -> Trait -> Boon
-layoutBoon metrics trait =
+layoutDuoBoon : ChartMetrics -> Trait -> Boon
+layoutDuoBoon metrics trait =
   let
     {iconPoint, endA, endB, shape} = calculateDuo metrics trait
   in
@@ -190,8 +237,8 @@ displayBoonTrait boon =
       --|> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
-    |> scale 0.08
     |> shift boon.iconPoint
+    --|> scale 0.08
 
 displayBoonConnector : Boon -> Collage msg
 displayBoonConnector {iconPoint, endA, endB, shape} =
@@ -232,8 +279,8 @@ calculateDuos metrics traits =
 calculateDuo : ChartMetrics -> Trait -> Connector
 calculateDuo metrics trait =
   case trait.boonType of
-    UnknownBoon -> Connector (0,0) (0,0) (0,0) Line
-    BasicBoon _ -> Connector (0,0) (0,0) (0,0) Line
+    UnknownBoon -> Connector (0,0) (0,0) (0,0) Point
+    BasicBoon _ -> Connector (0,0) (0,0) (0,0) Point
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.centers) a b of
         Adjacent -> calculateAdjacent metrics a b
