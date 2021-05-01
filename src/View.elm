@@ -42,6 +42,7 @@ view model =
         , Html.Attributes.id "graph"
         ]
         { traits = model.traits
+        , layout = model.layout
         , onMouseMove = OnMouseMove
         , onMouseDown = OnMouseDown
         , onMouseUp = OnMouseUp

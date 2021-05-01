@@ -2,6 +2,8 @@ module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
 import Geometry exposing (Point)
+import Layout exposing (..)
+import Layout.Decode as Decode
 import Log
 --import MeasureText
 import Traits exposing (..)
@@ -15,12 +17,14 @@ import Browser.Navigation as Navigation
 import Http
 import Json.Decode as Decode exposing (Value)
 import Url exposing(Url)
+import Xml.Decode
 
 type Msg
   = UI (View.Msg)
   | CurrentUrl Url
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
+  | GotLayout (Result Http.Error Layout)
   --| WindowSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
@@ -28,6 +32,7 @@ type alias Model =
   { location : Url
   , navigationKey : Navigation.Key
   , traits : Traits
+  , layout : Layout
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -49,12 +54,16 @@ init flags location key =
     --, windowWidth = 320
     --, windowHeight = 300
     --, labelWidths = Dict.empty
+    , layout = []
     , traits = []
     , drag = Released
     , offset = (0,0)
     , zoom = 0.15
     }
-  , fetchTraits
+  , Cmd.batch
+    [ fetchTraits
+    , fetchLayout
+    ]
     --, Dom.getViewport
       --|> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
       --|> Task.perform WindowSize
@@ -76,6 +85,10 @@ update msg model =
       ({model | traits = identifyBoons traits}, Cmd.none)
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
+    GotLayout (Ok layout) ->
+      ({model | layout = layout}, Cmd.none)
+    GotLayout (Err error) ->
+      (model, Log.httpError "fetch error: layout" error)
     --WindowSize (width, height) ->
      -- ( {model | windowWidth = width, windowHeight = height}, Cmd.none)
     --TextSize {text, width} ->
@@ -132,3 +145,19 @@ fetchTraits =
     { url = "traits.json"
     , expect = Http.expectJson GotTraits Decode.traits
     }
+
+fetchLayout : Cmd Msg
+fetchLayout =
+  Http.get
+    { url = "demeter.xml"
+    , expect = expectXml GotLayout Decode.layout
+    }
+
+expectXml : (Result Http.Error a -> msg) -> Xml.Decode.Decoder a -> Http.Expect msg
+expectXml tagger decoder =
+  Http.expectString (receiveXml decoder >> tagger)
+
+receiveXml : Xml.Decode.Decoder a -> Result Http.Error String -> Result Http.Error a
+receiveXml decoder result =
+  result
+    |> Result.andThen (Xml.Decode.run decoder >> Result.mapError Http.BadBody)

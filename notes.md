@@ -2,3 +2,4 @@
 - fix colors
 - where does hermes go?
 - god layouts?
+  - diagrams.net, use lots of waypoints to create connted lines

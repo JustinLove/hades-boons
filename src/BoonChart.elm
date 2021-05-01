@@ -2,6 +2,7 @@ module BoonChart exposing (DragMode(..), BoonChart, boonChart)
 
 import Geometry
 import Traits exposing (..)
+import Layout exposing (..)
 
 import Array exposing (Array)
 import Collage exposing (..)
@@ -22,6 +23,7 @@ type DragMode
 
 type alias BoonChart msg =
   { traits : Traits
+  , layout : Layout
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
@@ -52,6 +54,7 @@ type alias Connector =
 type alias Boon =
   { name : String
   , icon : String
+  , id : String
   , iconPoint : Point
   , endA : Point
   , endB : Point
@@ -67,12 +70,12 @@ mainRingRadius = 0.28
 tau = pi*2
 
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
-boonChart attributes {traits, onMouseDown, onMouseUp, onMouseMove, onWheel, drag, offset, zoom} =
+boonChart attributes {traits, layout, onMouseDown, onMouseUp, onMouseMove, onWheel, drag, offset, zoom} =
   let
     metrics1 = initialMetrics traits
     gods = displayGods metrics1 traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
-    basicBoons = layoutBasicBoons metrics2 traits
+    basicBoons = layoutBasicBoons metrics2 layout traits
     duoBoons = layoutDuoBoons metrics2 (Traits.duoBoons traits)
   in
   --[ circle 0.45
@@ -162,13 +165,13 @@ displayGod data =
   ]
     |> stack
 
-layoutBasicBoons : ChartMetrics -> Traits -> List Boon
-layoutBasicBoons metrics traits =
+layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
+layoutBasicBoons metrics layout traits =
   traits
-    |> List.concatMap (layoutBasicBoonsOf metrics)
+    |> List.concatMap (layoutBasicBoonsOf metrics layout)
 
-layoutBasicBoonsOf : ChartMetrics -> GodData -> List Boon
-layoutBasicBoonsOf metrics data =
+layoutBasicBoonsOf : ChartMetrics -> Layout -> GodData -> List Boon
+layoutBasicBoonsOf metrics layout data =
   let
     center = (godCenter metrics data.god)
     boons = basicBoons data
@@ -178,12 +181,16 @@ layoutBasicBoonsOf metrics data =
     boons
       |> List.indexedMap (\i trait ->
         let
-          p = (0, 0.05)
-            |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+          p = (case getPlacement layout trait.trait of
+            Just (x,y) -> (x / 5000 - 0.05, y / -5000 + 0.05)
+            Nothing -> (0, 0.05)
+              |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+            )
             |> Geometry.add center
         in
           { name = trait.name
           , icon = trait.icon
+          , id = trait.trait
           , iconPoint = p
           , endA = p
           , endB = p
@@ -206,6 +213,7 @@ layoutDuoBoon metrics trait =
   in
     { name = trait.name
     , icon = trait.icon
+    , id = trait.trait
     , iconPoint = iconPoint
     , endA = endA
     , endB = endB
@@ -232,6 +240,12 @@ displayBoonTrait boon =
       |> rendered
       |> scale 0.001
       |> shiftY -0.5
+  , Text.fromString boon.id
+      |> Text.color Color.white
+      |> Text.size 100
+      |> rendered
+      |> scale 0.001
+      |> shiftY -0.65
   , image (0.9,0.9) boon.icon
   --, circle 0.5
       --|> outlined (solid 0.01 (uniform Color.white))
