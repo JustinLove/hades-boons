@@ -40,6 +40,7 @@ type alias ChartMetrics =
 type ConnectorShape
   = Arc Point
   | Line
+  | Point
 
 type alias Connector =
   { iconPoint : Point
@@ -52,7 +53,7 @@ size = 500
 width = size
 height = size
 
-mainRingRadius = 0.3
+mainRingRadius = 0.28
 
 tau = pi*2
 
@@ -138,7 +139,7 @@ displayDuos metrics traits =
     --|> List.filter (isSkipOne metrics)
     --|> List.drop 3
     --|> List.take 1
-    |> List.map (\trait -> displayTrait (calculateDuo metrics trait) trait)
+    |> List.map (\trait -> displayConnectedTrait (calculateDuo metrics trait) trait)
     |> stack
 
 isSkipOne : ChartMetrics -> Trait -> Bool
@@ -153,30 +154,47 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayTrait : Connector -> Trait -> Collage msg
-displayTrait connector trait =
+displayConnectedTrait : Connector -> Trait -> Collage msg
+displayConnectedTrait connector trait =
   [ displayConnector connector
-  , square 0.02
-    |> filled (uniform Color.white)
+  , displayTrait trait
+    |> scale 0.08
     |> shift connector.iconPoint
+  ]
+    |> stack
+
+displayTrait : Trait -> Collage msg
+displayTrait trait =
+  [ Text.fromString trait.name
+      |> Text.color Color.white
+      |> Text.size 200
+      |> rendered
+      |> scale 0.001
+  , circle 0.5
+      |> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
 
 displayConnector : Connector -> Collage msg
 displayConnector {iconPoint, endA, endB, shape} =
+  let
+    lineStyle = solid 0.004 (uniform Color.charcoal)
+  in
   case shape of
     Arc center ->
       [ arc center endA iconPoint
-        |> traced (solid 0.01 (uniform Color.white))
+        |> traced lineStyle
       , arc center iconPoint endB
-        |> traced (solid 0.01 (uniform Color.white))
+        |> traced lineStyle
       ]
         |> stack
     Line ->
       segment
         endA
         endB
-        |> traced (solid 0.01 (uniform Color.white))
+        |> traced lineStyle
+    Point ->
+      group []
 
 displayOpposite : ChartMetrics -> God -> God -> Collage msg
 displayOpposite metrics a b =
@@ -212,7 +230,7 @@ calculateAdjacent metrics a b =
     endB = godCenter metrics b
     iconPoint = Geometry.midpoint endA endB
   in
-    Connector iconPoint endA endB Line
+    Connector iconPoint iconPoint iconPoint Point
 
 calculateSkipOne : ChartMetrics -> God -> God -> Connector
 calculateSkipOne =
@@ -225,9 +243,18 @@ calculateSkipTwo =
 calculateOpposite : ChartMetrics -> God -> God -> Connector
 calculateOpposite metrics a b =
   let
+    length = mainRingRadius - metrics.adjacentDistance/2
     endA = godCenter metrics a
+      |> Geometry.normalize
+      |> Geometry.scale length
     endB = godCenter metrics b
-    iconPoint = Geometry.interpolate 0.25 endA endB
+      |> Geometry.normalize
+      |> Geometry.scale length
+    iconPoint =
+      if (pointY endA) < (pointY endB) then
+        Geometry.interpolate 0.2 endB endA
+      else
+        Geometry.interpolate 0.2 endA endB
   in
     Connector iconPoint endA endB Line
 
@@ -341,3 +368,9 @@ clientDecoder =
   Decode.map2 Tuple.pair
     (Decode.field "clientX" Decode.float)
     (Decode.field "clientY" Decode.float)
+
+pointX : Point -> Float
+pointX (x,_) = x
+
+pointY : Point -> Float
+pointY (_,y) = y
