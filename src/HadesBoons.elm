@@ -1,6 +1,7 @@
 module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
+import Dxf.Parser as Parser
 import Geometry exposing (Point)
 import Layout exposing (..)
 import Layout.Decode as Decode
@@ -16,6 +17,7 @@ import Browser
 import Browser.Navigation as Navigation
 import Http
 import Json.Decode as Decode exposing (Value)
+import Parser.Advanced
 import Url exposing(Url)
 import Xml.Decode
 
@@ -25,6 +27,7 @@ type Msg
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
   | GotLayout (Result Http.Error Layout)
+  | GotDxf (Result Http.Error Parser.Dxf)
   --| WindowSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
@@ -63,6 +66,7 @@ init flags location key =
   , Cmd.batch
     [ fetchTraits
     , fetchLayout
+    , fetchDxf
     ]
     --, Dom.getViewport
       --|> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
@@ -89,6 +93,28 @@ update msg model =
       ({model | layout = layout}, Cmd.none)
     GotLayout (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
+    GotDxf (Ok dxf) ->
+      let
+        _ = Debug.log "dxf" dxf
+        _ = dxf
+          |> List.map (\s -> case s of
+            Parser.Section name values ->
+              let
+                _ = Debug.log "sec" name
+                _ = values
+                  |> List.map (\v -> case v of
+                    Parser.UnknownCode code value ->
+                      let _ = Debug.log value code in v
+                    Parser.EntityType (Parser.UnknownType t) ->
+                      let _ = Debug.log "unknown type" t in v
+                    _ -> v
+                    )
+              in name
+            )
+      in
+      (model, Cmd.none)
+    GotDxf (Err error) ->
+      (model, Log.httpError "fetch error: dxf" error)
     --WindowSize (width, height) ->
      -- ( {model | windowWidth = width, windowHeight = height}, Cmd.none)
     --TextSize {text, width} ->
@@ -161,3 +187,19 @@ receiveXml : Xml.Decode.Decoder a -> Result Http.Error String -> Result Http.Err
 receiveXml decoder result =
   result
     |> Result.andThen (Xml.Decode.run decoder >> Result.mapError Http.BadBody)
+
+fetchDxf : Cmd Msg
+fetchDxf =
+  Http.get
+    { url = "qcad.dxf"
+    , expect = expectDxf GotDxf Parser.dxf
+    }
+
+expectDxf : (Result Http.Error a -> msg) -> Parser.DxfParser a -> Http.Expect msg
+expectDxf tagger parser =
+  Http.expectString (receiveDxf parser >> tagger)
+
+receiveDxf : Parser.DxfParser a -> Result Http.Error String -> Result Http.Error a
+receiveDxf parser result =
+  result
+    |> Result.andThen (Parser.Advanced.run parser >> Result.mapError (Parser.deadEndsToString >> Http.BadBody))
