@@ -7,13 +7,14 @@ type alias Problem = String
 type alias DxfParser a = Parser Context Problem a
 
 type alias GroupCode = Int
+type alias CodePair = (GroupCode, Value)
 
 type Value
   = UnknownCode GroupCode String
   | EntityType EntityType -- 0
   | PrimaryText String -- 1
   | Name String -- 2
-  | Text String -- 3,4
+  | Text String -- 3,4, 1000
   | EntityHandle String -- 5
   | LineType String -- 6
   | TextStyle String -- 7
@@ -212,6 +213,15 @@ value =
   groupCode
     |> andThen valueForCode
 
+codePair : DxfParser CodePair
+codePair =
+  groupCode
+    |> andThen codeWithValue
+
+codeWithValue : Int -> DxfParser CodePair
+codeWithValue code =
+  map (\val -> (code, val)) (valueForCode code)
+
 valueForCode : GroupCode -> DxfParser Value
 valueForCode code =
   if code == 0 then
@@ -317,26 +327,26 @@ valueForCode code =
   else
     map (UnknownCode code) stringValue
 
-valuesUntil : Value -> DxfParser (List Value)
+valuesUntil : Value -> DxfParser (List CodePair)
 valuesUntil terminator =
   loop [] (valuesUntilItem terminator)
     |> inContext "taking a value list"
 
-valuesUntilItem : Value -> List Value -> DxfParser (Step (List Value) (List Value))
+valuesUntilItem : Value -> List CodePair -> DxfParser (Step (List CodePair) (List CodePair))
 valuesUntilItem terminator reversedValues =
   oneOf
-    [ succeed (\v ->
+    [ succeed (\((_, v) as cp) ->
         if v == terminator then
           Done (List.reverse reversedValues)
         else
-          Loop (v :: reversedValues)
+          Loop (cp :: reversedValues)
         )
-      |= value
+      |= codePair
     , succeed ()
       |> map (\_ -> Done (List.reverse reversedValues))
     ]
 
-type Section = Section String (List Value)
+type Section = Section String (List CodePair)
 
 entity : String -> DxfParser ()
 entity kind =

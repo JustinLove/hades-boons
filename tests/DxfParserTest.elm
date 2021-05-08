@@ -112,7 +112,7 @@ suite =
           |> Expect.equal (Ok [])
       , test "single item" <| \_ ->
         run (valuesUntil (EntityType SectionEnd)) "  0\nSECTION\n"
-          |> Expect.equal (Ok [EntityType SectionStart])
+          |> Expect.equal (Ok [(0, EntityType SectionStart)])
       , test "small header" <| \_ ->
         run (valuesUntil (EntityType SectionEnd)) smallHeader
           |> Expect.equal (Ok smallHeaderValues)
@@ -130,12 +130,12 @@ suite =
           |> Expect.equal (Ok (Section "HEADER" []))
       , test "small section" <| \_ ->
         run section smallHeader
-          |> Expect.equal (Ok (Section "HEADER" [Variable "$ACADVER", PrimaryText "AC1027"]))
+          |> Expect.equal (Ok smallSection)
       , test "small file" <| \_ ->
         run dxf (sectionText ++ smallHeader ++ sectionText ++ smallHeader ++ "  0\nEOF\n")
           |> Expect.equal (Ok
-            [ Section "HEADER" [Variable "$ACADVER", PrimaryText "AC1027"]
-            , Section "HEADER" [Variable "$ACADVER", PrimaryText "AC1027"]
+            [ smallSection
+            , smallSection
             ])
       ]
     ]
@@ -159,7 +159,10 @@ ENDSEC
 """
 
 smallHeaderValues =
-  [ Name "HEADER"
-  , Variable "$ACADVER"
-  , PrimaryText "AC1027"
+  [ (2, Name "HEADER")
+  , (9, Variable "$ACADVER")
+  , (1, PrimaryText "AC1027")
   ]
+
+smallSection =
+  (Section "HEADER" [(9, Variable "$ACADVER"), (1, PrimaryText "AC1027")])

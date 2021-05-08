@@ -102,7 +102,7 @@ update msg model =
               let
                 _ = Debug.log "sec" name
                 _ = values
-                  |> List.map (\v -> case v of
+                  |> List.map (\(c,v) -> case v of
                     Parser.UnknownCode code value ->
                       let _ = Debug.log value code in v
                     Parser.EntityType (Parser.UnknownType t) ->
