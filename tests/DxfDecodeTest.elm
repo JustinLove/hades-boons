@@ -1,6 +1,6 @@
 module DxfDecodeTest exposing (..)
 
-import Dxf.Parser as Parser exposing (Value(..))
+import Dxf.Parser as Parser exposing (Value(..), EntityType(..))
 import Dxf.Decode exposing (..)
 
 import Expect exposing (Expectation)
@@ -40,6 +40,44 @@ suite =
         id [(1000, Text "boon:TestBoon")]
           |> Expect.equal (Ok "TestBoon")
       ]
+    , describe "decoding entities"
+      [ test "entity" <| \_ ->
+        entity Point point [(0, EntityType Point), (10, X 0), (20, Y 0)]
+          |> Expect.equal (Ok (0,0))
+      , test "single entities" <| \_ ->
+        entitiesStep Point point [] [(0, EntityType Point), (10, X 0), (20, Y 0)]
+          |> Expect.equal (Ok [(0,0)])
+      , test "consecutive entities" <| \_ ->
+        entitiesStep Point point []
+          [ (0, EntityType Point), (10, X 0), (20, Y 0)
+          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          ]
+          |> Expect.equal (Ok [(0,0), (1,1)])
+      , test "mixed entities" <| \_ ->
+        entitiesStep Point point []
+          [ (0, EntityType Point), (10, X 0), (20, Y 0)
+          , (0, EntityType Line), (10, X 2), (20, Y 2)
+          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          ]
+          |> Expect.equal (Ok [(0,0), (1,1)])
+      , test "advance" <| \_ ->
+        entities Point point
+          [ (0, EntityType SectionStart), (2, Name "HEADER")
+          , (0, EntityType Point), (10, X 3), (20, Y 3)
+          , (0, EntityType SectionStart), (2, Name "ENTITIES")
+          , (0, EntityType Point), (10, X 0), (20, Y 0)
+          , (0, EntityType Line), (10, X 2), (20, Y 2)
+          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          , (0, EntityType SectionEnd)
+          , (0, EntityType Point), (10, X 4), (20, Y 4)
+          ]
+          |> Expect.equal (Ok [(0,0), (1,1)])
+      ]
+    , describe "from string"
+      [ test "decodeString" <| \_ ->
+        decodeString boons entitySection
+          |> Expect.equal (Ok [Boon "TestBoon" (20,20)])
+      ]
     ]
 
 type alias Boon =
@@ -47,23 +85,27 @@ type alias Boon =
   , point : (Float, Float)
   }
 
-boon : List Parser.CodePair -> Result Error Boon
+boons : Decoder (List Boon)
+boons =
+  entities Point boon
+
+boon : Decoder Boon
 boon =
   succeed Boon
     |> with id
     |> with point
 
-point : List Parser.CodePair -> Result Error (Float, Float)
+point : Decoder (Float, Float)
 point =
   succeed Tuple.pair
     |> with (tag 10 x)
     |> with (tag 20 y)
 
-id : List Parser.CodePair -> Result Error String
+id : Decoder String
 id =
   andThen extractId (tag 1000 text)
 
-extractId : String -> (List Parser.CodePair -> Result Error String)
+extractId : String -> Decoder String
 extractId =
   String.split(":")
     >> List.drop 1

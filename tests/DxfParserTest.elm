@@ -108,6 +108,21 @@ suite =
       ]
     , describe "stream"
       [ test "empty string" <| \_ ->
+        run (stream accumList []) "" 
+          |> Expect.equal (Ok [])
+      , test "single item" <| \_ ->
+        run (stream accumList []) "  0\nSECTION\n"
+          |> Expect.equal (Ok [(0, EntityType SectionStart)])
+      , test "small header" <| \_ ->
+        run (stream accumList []) smallHeader
+          |> Result.map List.reverse
+          |> Expect.equal (Ok (List.append smallHeaderValues [(0, EntityType SectionEnd)]))
+      , test "toList" <| \_ ->
+        run toList smallHeader
+          |> Expect.equal (Ok (List.append smallHeaderValues [(0, EntityType SectionEnd)]))
+      ]
+    , describe "valuesUntil"
+      [ test "empty string" <| \_ ->
         run (valuesUntil (EntityType SectionEnd)) "" 
           |> Expect.equal (Ok [])
       , test "single item" <| \_ ->
@@ -139,6 +154,9 @@ suite =
             ])
       ]
     ]
+
+accumList : GroupCode -> Value -> List CodePair -> List CodePair
+accumList c v l = (c,v) :: l
 
 parses : DxfParser a -> String -> a -> Test
 parses parser input output =

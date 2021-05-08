@@ -346,6 +346,33 @@ valuesUntilItem terminator reversedValues =
       |> map (\_ -> Done (List.reverse reversedValues))
     ]
 
+stream : (GroupCode -> Value -> model -> model) -> model -> DxfParser model
+stream update model =
+  loop model (streamItem update)
+    |> inContext "steaming a value list"
+
+streamItem : (GroupCode -> Value -> model -> model) -> model -> DxfParser (Step model model)
+streamItem update model =
+  oneOf
+    [ succeed (\((c, v) as cp) ->
+        if v == EntityType EOF then
+          Done model
+        else
+          Loop (update c v model)
+        )
+      |= codePair
+    , succeed ()
+      |> map (\_ -> Done model)
+    ]
+
+toList : DxfParser (List CodePair)
+toList =
+  stream listAccmulator []
+    |> map List.reverse
+
+listAccmulator : GroupCode -> Value -> List CodePair -> List CodePair
+listAccmulator c v l = (c,v) :: l
+
 type Section = Section String (List CodePair)
 
 entity : String -> DxfParser ()
