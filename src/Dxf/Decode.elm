@@ -1,11 +1,7 @@
 module Dxf.Decode exposing (..)
 
-import Dxf.Parser as Parser exposing
-  ( Value(..)
-  , EntityType(..)
-  , GroupCode
-  , CodePair
-  )
+import Dxf exposing (..)
+import Dxf.Parser as Parser exposing (CodePair)
 
 import Parser.Advanced
 
@@ -16,6 +12,16 @@ type Error
   | WrongEntityType EntityType EntityType
   | NotAnEntity
   | ParseError (List (Parser.Advanced.DeadEnd Parser.Context Parser.Problem))
+
+errorToString : Error -> String
+errorToString err =
+  case err of
+    MismatchedType t -> "Mismatched type " ++ t
+    CodeNotFound c -> "Code " ++ (String.fromInt c) ++ " not found"
+    Failure reason -> reason
+    WrongEntityType actual expected -> "Wrong entity type encountered"
+    NotAnEntity -> "Was expecting an entity value and got something else"
+    ParseError parseError -> Parser.deadEndsToString parseError
 
 type alias Decoder a = List CodePair -> Result Error a
 

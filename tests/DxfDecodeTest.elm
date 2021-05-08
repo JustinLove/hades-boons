@@ -1,6 +1,6 @@
 module DxfDecodeTest exposing (..)
 
-import Dxf.Parser as Parser exposing (Value(..), EntityType(..))
+import Dxf exposing (..)
 import Dxf.Decode exposing (..)
 
 import Expect exposing (Expectation)

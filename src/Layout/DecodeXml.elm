@@ -1,4 +1,4 @@
-module Layout.Decode exposing
+module Layout.DecodeXml exposing
   ( layout
   , placement
   , point

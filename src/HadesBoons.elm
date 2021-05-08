@@ -1,10 +1,11 @@
 module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
-import Dxf.Parser as Parser
+import Dxf.Decode
 import Geometry exposing (Point)
 import Layout exposing (..)
-import Layout.Decode as Decode
+import Layout.DecodeDxf as DecodeDxf
+import Layout.DecodeXml as DecodeXml
 import Log
 --import MeasureText
 import Traits exposing (..)
@@ -27,7 +28,7 @@ type Msg
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
   | GotLayout (Result Http.Error Layout)
-  | GotDxf (Result Http.Error Parser.Dxf)
+  | GotDxf (Result Http.Error Layout)
   --| WindowSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
@@ -96,21 +97,6 @@ update msg model =
     GotDxf (Ok dxf) ->
       let
         _ = Debug.log "dxf" dxf
-        _ = dxf
-          |> List.map (\s -> case s of
-            Parser.Section name values ->
-              let
-                _ = Debug.log "sec" name
-                _ = values
-                  |> List.map (\(c,v) -> case v of
-                    Parser.UnknownCode code value ->
-                      let _ = Debug.log value code in v
-                    Parser.EntityType (Parser.UnknownType t) ->
-                      let _ = Debug.log "unknown type" t in v
-                    _ -> v
-                    )
-              in name
-            )
       in
       (model, Cmd.none)
     GotDxf (Err error) ->
@@ -176,7 +162,7 @@ fetchLayout : Cmd Msg
 fetchLayout =
   Http.get
     { url = "demeter.xml"
-    , expect = expectXml GotLayout Decode.layout
+    , expect = expectXml GotLayout DecodeXml.layout
     }
 
 expectXml : (Result Http.Error a -> msg) -> Xml.Decode.Decoder a -> Http.Expect msg
@@ -192,14 +178,14 @@ fetchDxf : Cmd Msg
 fetchDxf =
   Http.get
     { url = "qcad.dxf"
-    , expect = expectDxf GotDxf Parser.dxf
+    , expect = expectDxf GotDxf DecodeDxf.layout
     }
 
-expectDxf : (Result Http.Error a -> msg) -> Parser.DxfParser a -> Http.Expect msg
-expectDxf tagger parser =
-  Http.expectString (receiveDxf parser >> tagger)
+expectDxf : (Result Http.Error a -> msg) -> Dxf.Decode.Decoder a -> Http.Expect msg
+expectDxf tagger decoder =
+  Http.expectString (receiveDxf decoder >> tagger)
 
-receiveDxf : Parser.DxfParser a -> Result Http.Error String -> Result Http.Error a
-receiveDxf parser result =
+receiveDxf : Dxf.Decode.Decoder a -> Result Http.Error String -> Result Http.Error a
+receiveDxf decoder result =
   result
-    |> Result.andThen (Parser.Advanced.run parser >> Result.mapError (Parser.deadEndsToString >> Http.BadBody))
+    |> Result.andThen (Dxf.Decode.decodeString decoder >> Result.mapError (Dxf.Decode.errorToString >> Http.BadBody))

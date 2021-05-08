@@ -1,7 +1,7 @@
 module LayoutDecodeTest exposing (..)
 
 import Layout exposing (..)
-import Layout.Decode exposing (..)
+import Layout.DecodeXml exposing (..)
 
 import Xml.Decode exposing (run)
 import XmlParser exposing (Node(..))

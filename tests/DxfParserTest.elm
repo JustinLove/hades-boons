@@ -1,5 +1,6 @@
 module DxfParserTest exposing (..)
 
+import Dxf exposing (..)
 import Dxf.Parser exposing (..)
 
 import Parser.Advanced exposing (run)
