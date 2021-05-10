@@ -43,6 +43,18 @@ text v =
     Text t -> Ok t
     _ -> Err (MismatchedType "text")
 
+primaryText : Value -> Result Error String
+primaryText v =
+  case v of
+    PrimaryText t -> Ok t
+    _ -> Err (MismatchedType "primary text")
+
+layer : Value -> Result Error String
+layer v =
+  case v of
+    Layer l -> Ok l
+    _ -> Err (MismatchedType "layer")
+
 tag : GroupCode -> (Value -> Result Error a) -> Decoder a
 tag c decoder list =
   case list of
@@ -78,6 +90,12 @@ andThen f decoder list =
   case decoder list of
     Ok v -> (f v) list
     Err e -> Err e
+
+maybe : Decoder a -> Decoder (Maybe a)
+maybe decoder list =
+  case decoder list of
+    Ok v -> Ok (Just v)
+    Err e -> Ok Nothing
 
 with : Decoder a -> Decoder (a -> b)-> Decoder b
 with = map2 (|>)

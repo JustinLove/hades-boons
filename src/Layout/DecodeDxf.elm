@@ -1,7 +1,7 @@
 module Layout.DecodeDxf exposing
   ( layout
   , placement
-  , point
+  , pointBase
   )
 
 import Layout exposing (..)
@@ -10,16 +10,34 @@ import Dxf.Decode exposing (..)
 
 layout : Decoder Layout
 layout =
-  entities Point placement
+  succeed Layout
+    |> with (entities TextEntity placement)
+    |> with (entities Line connection |> map removeGuidelines)
 
 placement : Decoder Placement
 placement =
   succeed Placement
-    |> with id
-    |> with point
+    |> with idFromText
+    |> with (pointBase 11)
 
-id : Decoder String
-id =
+connection : Decoder Connection
+connection =
+  succeed Connection
+    |> with inLayer
+    |> with (maybe idFromTag)
+    |> with (pointBase 10)
+    |> with (pointBase 11)
+
+inLayer : Decoder String
+inLayer =
+  tag 8 layer
+
+idFromText : Decoder String
+idFromText =
+  tag 1 primaryText
+
+idFromTag : Decoder String
+idFromTag =
   andThen extractId (tag 1000 text)
 
 extractId : String -> Decoder String
@@ -30,9 +48,12 @@ extractId =
     >> Maybe.map succeed
     >> Maybe.withDefault (fail "point not tagged")
 
-
-point : Decoder (Float, Float)
-point =
+pointBase : Int -> Decoder (Float, Float)
+pointBase base =
   succeed Tuple.pair
-    |> with (tag 10 x)
-    |> with (tag 20 y)
+    |> with (tag base x)
+    |> with (tag (base+10) y)
+
+removeGuidelines : List Connection -> List Connection
+removeGuidelines list =
+  List.filter (\{group} -> group /= "Guidelines") list

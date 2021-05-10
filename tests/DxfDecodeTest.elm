@@ -39,6 +39,12 @@ suite =
       , test "id" <| \_ ->
         id [(1000, Text "boon:TestBoon")]
           |> Expect.equal (Ok "TestBoon")
+      , test "maybe true" <| \_ ->
+        (maybe id) [(1000, Text "boon:TestBoon")]
+          |> Expect.equal (Ok (Just "TestBoon"))
+      , test "maybe false" <| \_ ->
+        (maybe id) [(2000, Text "boon:TestBoon")]
+          |> Expect.equal (Ok Nothing)
       ]
     , describe "decoding entities"
       [ test "entity" <| \_ ->

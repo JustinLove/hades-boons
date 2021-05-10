@@ -58,7 +58,7 @@ init flags location key =
     --, windowWidth = 320
     --, windowHeight = 300
     --, labelWidths = Dict.empty
-    , layout = []
+    , layout = Layout [] []
     , traits = []
     , drag = Released
     , offset = (0,0)
@@ -66,7 +66,7 @@ init flags location key =
     }
   , Cmd.batch
     [ fetchTraits
-    , fetchLayout
+    --, fetchLayout
     , fetchDxf
     ]
     --, Dom.getViewport
@@ -94,11 +94,11 @@ update msg model =
       ({model | layout = layout}, Cmd.none)
     GotLayout (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
-    GotDxf (Ok dxf) ->
+    GotDxf (Ok layout) ->
       let
-        _ = Debug.log "dxf" dxf
+        _ = Debug.log "dxf" layout
       in
-      (model, Cmd.none)
+      ({model | layout = layout}, Cmd.none)
     GotDxf (Err error) ->
       (model, Log.httpError "fetch error: dxf" error)
     --WindowSize (width, height) ->
@@ -177,7 +177,7 @@ receiveXml decoder result =
 fetchDxf : Cmd Msg
 fetchDxf =
   Http.get
-    { url = "qcad.dxf"
+    { url = "demeter.dxf"
     , expect = expectDxf GotDxf DecodeDxf.layout
     }
 

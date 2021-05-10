@@ -95,7 +95,7 @@ suite =
       , parses value "  0\nDICTIONARY\n" (EntityType Dictionary)
       , parses value "  0\nACDBDICTIONARYWDFLT\n" (EntityType DictionaryWithDefault)
       , parses value "  0\nXRECORD\n" (EntityType XRecord)
-      , parses value "  0\nLAYOUT\n" (EntityType Layout)
+      , parses value "  0\nLAYOUT\n" (EntityType LayoutEntity)
       , parses value "  0\nMATERIAL\n" (EntityType Material)
       , parses value "  0\nMLEADERSTYLE\n" (EntityType MLeaderStyle)
       , parses value "  0\nMLINESTYLE\n" (EntityType MLineStyle)

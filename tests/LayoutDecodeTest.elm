@@ -43,7 +43,7 @@ suite =
   </diagram>
 </mxfile>
 """
-        |> Expect.equal (Ok [{id = "ShieldLoadAmmo_DemeterRangedTrait", point = (40, 530)}])
+        |> Expect.equal (Ok {placements = [{id = "ShieldLoadAmmo_DemeterRangedTrait", point = (40, 530)}], connections = []})
         {-
     , test "hacks" <| \_ ->
 

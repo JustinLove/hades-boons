@@ -80,9 +80,10 @@ boonChart attributes {traits, layout, onMouseDown, onMouseUp, onMouseMove, onWhe
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ duoBoons |> List.map (displayBoonTrait >> (scale 0.08)) |> stack
-  , basicBoons |> List.map (displayBoonTrait >> (scale 0.02)) |> stack
+  [ duoBoons |> List.map (displayBoonTrait >> (scale (0.02 / zoom |> clamp 0.02 0.08))) |> stack
+  , basicBoons |> List.map (displayBoonTrait >> (scale (0.02 / zoom |> clamp 0.01 0.02))) |> stack
   , duoBoons |> List.map displayBoonConnector |> stack
+  , layoutBasicConnectors metrics2 layout |> List.map displayBoonConnector |> stack
   , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -165,6 +166,23 @@ displayGod data =
   ]
     |> stack
 
+layoutBasicConnectors : ChartMetrics -> Layout -> List Boon
+layoutBasicConnectors metrics layout =
+  let
+    center = (godCenter metrics Demeter)
+  in
+    layout.connections
+      |> List.map (\{a, b} ->
+        { name = ""
+        , icon = ""
+        , id = ""
+        , iconPoint = a
+        , endA = a |> Geometry.scale (1/1800) |> Geometry.add center
+        , endB = b |> Geometry.scale (1/1800) |> Geometry.add center
+        , shape = Line
+        }
+      )
+
 layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
 layoutBasicBoons metrics layout traits =
   traits
@@ -182,7 +200,7 @@ layoutBasicBoonsOf metrics layout data =
       |> List.indexedMap (\i trait ->
         let
           p = (case getPlacement layout trait.trait of
-            Just (x,y) -> (x / 5000 - 0.05, y / -5000 + 0.05)
+            Just (x,y) -> (x / 1800, y / 1800)
             Nothing -> (0, 0.05)
               |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
             )
@@ -453,3 +471,15 @@ pointX (x,_) = x
 
 pointY : Point -> Float
 pointY (_,y) = y
+
+atLeast : Float -> Float -> Float
+atLeast = max
+
+atMost : Float -> Float -> Float
+atMost = min
+
+clamp : Float -> Float -> Float -> Float
+clamp lower upper x =
+  x
+    |> atLeast lower
+    |> atMost upper

@@ -57,7 +57,7 @@ type EntityType
   | MLeaderStyle
   | MLineStyle
   | LayerTable
-  | Layout
+  | LayoutEntity
   | Line
   | Linetype
   | Placeholder
@@ -71,6 +71,7 @@ type EntityType
   | TableStart
   | TableEnd
   | TableStyle
+  | TextEntity
   | Viewport
   | ViewportTable
   | VisualStyle

@@ -1,5 +1,11 @@
+- god layouts?
+  - import arcs from dxf
+  - figure out duo boon connctions
+  - associate dxf groups with prereqs
+  - associate lines with boons
+  - x diagrams.net, use lots of waypoints to create connted lines
 - line formatting
+  - zoom relative size?
+- text display when small
 - fix colors
 - where does hermes go?
-- god layouts?
-  - diagrams.net, use lots of waypoints to create connted lines

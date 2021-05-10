@@ -9,7 +9,9 @@ import Xml.Decode exposing (..)
 
 layout : Decoder Layout
 layout =
-  path ["diagram", "mxGraphModel", "root", "mxCell"] (leakyList placement)
+  succeed Layout
+    |> map2 (|>) (path ["diagram", "mxGraphModel", "root", "mxCell"] (leakyList placement))
+    |> map2 (|>) (succeed [])
 
 placement : Decoder Placement
 placement =

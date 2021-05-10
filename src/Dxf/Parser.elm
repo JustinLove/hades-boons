@@ -112,7 +112,7 @@ entityMap s =
     "MLEADERSTYLE" -> MLeaderStyle
     "MLINESTYLE" -> MLineStyle
     "LAYER" -> LayerTable
-    "LAYOUT" -> Layout
+    "LAYOUT" -> LayoutEntity
     "LINE" -> Line
     "LTYPE" -> Linetype
     "ACDBPLACEHOLDER" -> Placeholder
@@ -126,6 +126,7 @@ entityMap s =
     "TABLE" -> TableStart
     "ENDTAB" -> TableEnd
     "TABLESTYLE" -> TableStyle
+    "TEXT" -> TextEntity
     "VIEWPORT" -> Viewport
     "VPORT" -> ViewportTable
     "VISUALSTYLE" -> VisualStyle
