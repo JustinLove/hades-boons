@@ -14,6 +14,7 @@ import Color exposing (Color)
 import Html exposing (Html)
 import Html.Events
 import Json.Decode as Decode
+import Set exposing (Set)
 import Svg
 import Svg.Attributes
 
@@ -24,10 +25,12 @@ type DragMode
 type alias BoonChart msg =
   { traits : Traits
   , layout : Layout
+  , activeTraits : Set TraitId
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
   , onWheel : Point -> Int -> msg
+  , selectedBoon : TraitId -> msg
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -71,20 +74,20 @@ mainRingRadius = 0.28
 tau = pi*2
 
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
-boonChart attributes {traits, layout, onMouseDown, onMouseUp, onMouseMove, onWheel, drag, offset, zoom} =
+boonChart attributes model =
   let
-    metrics1 = initialMetrics traits
-    gods = displayGods metrics1 traits
+    metrics1 = initialMetrics model.traits
+    gods = displayGods metrics1 model.traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
-    basicBoons = layoutBasicBoons metrics2 layout traits
-    duoBoons = layoutDuoBoons metrics2 (Traits.duoBoons traits)
+    basicBoons = layoutBasicBoons metrics2 model.layout model.traits
+    duoBoons = layoutDuoBoons metrics2 (Traits.duoBoons model.traits)
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ duoBoons |> List.map (displayBoonTrait >> (scale (0.02 / zoom |> clamp 0.02 0.08))) |> stack
-  , basicBoons |> List.map (displayBoonTrait >> (scale (0.02 / zoom |> clamp 0.01 0.02))) |> stack
+  [ duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
+  , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
   , duoBoons |> List.map displayBoonConnector |> stack
-  , layoutBasicConnectors metrics2 layout |> List.map displayBoonConnector |> stack
+  , layoutBasicConnectors metrics2 model.layout |> List.map displayBoonConnector |> stack
   , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -98,13 +101,13 @@ boonChart attributes {traits, layout, onMouseDown, onMouseUp, onMouseMove, onWhe
     |> group
     |> scale size
     |> debug
-    |> shift (flip offset)
-    |> scale zoom
-    |> when (drag == Released) (Events.onMouseDown onMouseDown)
-    |> when (drag /= Released) (Events.onMouseUp onMouseUp)
-    |> when (drag /= Released) (Events.onMouseLeave onMouseUp)
-    |> when (drag /= Released) (Events.onMouseMove onMouseMove)
-    |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder onWheel) ) :: attributes)
+    |> shift (flip model.offset)
+    |> scale model.zoom
+    |> when (model.drag == Released) (Events.onMouseDown model.onMouseDown)
+    |> when (model.drag /= Released) (Events.onMouseUp model.onMouseUp)
+    |> when (model.drag /= Released) (Events.onMouseLeave model.onMouseUp)
+    |> when (model.drag /= Released) (Events.onMouseMove model.onMouseMove)
+    |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder model.onWheel) ) :: attributes)
 
 when : Bool -> (Collage msg -> Collage msg) -> Collage msg -> Collage msg
 when test f collage =
@@ -166,6 +169,7 @@ displayGod data =
       |> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
+    |> Collage.Layout.name (Traits.godName data.god)
 
 layoutBasicConnectors : ChartMetrics -> Layout -> List Boon
 layoutBasicConnectors metrics layout =
@@ -277,16 +281,25 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayBoonTrait : Boon -> Collage msg
-displayBoonTrait boon =
+displayBoonTrait : (TraitId -> msg) -> Traits ->Set TraitId -> Boon -> Collage msg
+displayBoonTrait selectedBoon traits activeTraits boon =
+  let
+    color =
+      if Set.member boon.id activeTraits then
+        Color.white
+      else if Traits.isAvailable traits activeTraits boon.id then
+        Color.darkGrey
+      else
+        Color.charcoal
+  in
   [ Text.fromString boon.name
-      |> Text.color Color.white
+      |> Text.color color
       |> Text.size 200
       |> rendered
       |> scale 0.001
       |> shiftY -0.5
   , Text.fromString boon.id
-      |> Text.color Color.white
+      |> Text.color color
       |> Text.size 100
       |> rendered
       |> scale 0.001
@@ -297,6 +310,7 @@ displayBoonTrait boon =
   ]
     |> stack
     |> shift boon.iconPoint
+    |> Events.onClick (selectedBoon boon.id)
     --|> scale 0.08
 
 displayBoonConnector : Boon -> Collage msg

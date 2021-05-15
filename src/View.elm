@@ -1,6 +1,7 @@
 module View exposing (Msg(..), document, view)
 
 import BoonChart
+import Traits exposing (TraitId)
 
 import Element exposing (..)
 import Element.Region as Region
@@ -18,6 +19,7 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
+  | SelectedBoon TraitId
 
 document tagger model =
   { title = "Hades Boons"
@@ -43,10 +45,12 @@ view model =
         ]
         { traits = model.traits
         , layout = model.layout
+        , activeTraits = model.activeTraits
         , onMouseMove = OnMouseMove
         , onMouseDown = OnMouseDown
         , onMouseUp = OnMouseUp
         , onWheel = OnWheel
+        , selectedBoon = SelectedBoon
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom

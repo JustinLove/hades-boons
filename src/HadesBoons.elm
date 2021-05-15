@@ -19,7 +19,8 @@ import Browser.Navigation as Navigation
 import Http
 import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
-import Url exposing(Url)
+import Set exposing (Set)
+import Url exposing (Url)
 import Xml.Decode
 
 type Msg
@@ -37,6 +38,7 @@ type alias Model =
   , navigationKey : Navigation.Key
   , traits : Traits
   , layout : Layout
+  , activeTraits : Set TraitId
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -60,6 +62,7 @@ init flags location key =
     --, labelWidths = Dict.empty
     , layout = Layout [] []
     , traits = []
+    , activeTraits = Set.empty
     , drag = Released
     , offset = (0,0)
     , zoom = 0.15
@@ -131,6 +134,15 @@ update msg model =
         }
       , Cmd.none
       )
+    UI (View.SelectedBoon id) ->
+      ( { model
+        | activeTraits =
+          if Set.member id model.activeTraits then
+            Set.remove id model.activeTraits
+          else
+            Set.insert id model.activeTraits
+        }
+      , Cmd.none)
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =

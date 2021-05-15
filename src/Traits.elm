@@ -11,6 +11,7 @@ module Traits exposing
   , basicBoonsOf
   , basicBoons
   , identifyBoons
+  , isAvailable
   )
 
 import Color exposing (Color)
@@ -219,3 +220,16 @@ godTraits data =
 hasId : TraitId -> Trait -> Bool
 hasId id trait =
   trait.trait == id
+
+isAvailable : Traits -> Set TraitId -> TraitId -> Bool
+isAvailable gods activeTraits id =
+  findBoon gods id
+    |> Maybe.map (\{requirements} ->
+      case requirements of
+        None -> True
+        OneOf set -> Set.intersect activeTraits set |> Set.isEmpty |> not
+        OneFromEachSet list ->
+          list
+            |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not)
+      )
+    |> Maybe.withDefault False

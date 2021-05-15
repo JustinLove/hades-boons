@@ -1,8 +1,12 @@
 - god layouts?
-  - import arcs from dxf
-  - figure out duo boon connctions
   - associate dxf groups with prereqs
   - associate lines with boons
+  - rotate gods
+  - loading multiple gods
+  - figure out scale
+  - figure out duo boon connctions
+  - import ellipse arcs from dxf
+  - probably need our own hit detection
   - x diagrams.net, use lots of waypoints to create connted lines
 - line formatting
   - zoom relative size?
