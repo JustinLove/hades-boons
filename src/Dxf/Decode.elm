@@ -37,6 +37,18 @@ y v =
     Y why -> Ok why
     _ -> Err (MismatchedType "y")
 
+floatValue : Value -> Result Error Float
+floatValue v =
+  case v of
+    FloatValue f -> Ok f
+    _ -> Err (MismatchedType "float value")
+
+angle : Value -> Result Error Float
+angle v =
+  case v of
+    Angle a -> Ok a
+    _ -> Err (MismatchedType "angle")
+
 text : Value -> Result Error String
 text v =
   case v of

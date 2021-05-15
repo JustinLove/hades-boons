@@ -76,6 +76,7 @@ suite =
       , parses value "160\n                 0\n" (Integer 0)
       , parses value "105\n2C9\n" (Handle "2C9")
       , parses value "1001\nQCAD\n" (ApplicationName "QCAD")
+      , parses value "  0\nARC\n" (EntityType Arc)
       , parses value "  0\nCLASS\n" (EntityType Class)
       , parses value "  0\nTABLE\n" (EntityType TableStart)
       , parses value "  0\nENDTAB\n" (EntityType TableEnd)

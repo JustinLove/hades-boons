@@ -40,7 +40,8 @@ type alias ChartMetrics =
   }
 
 type ConnectorShape
-  = Arc Point
+  = SplitArc Point
+  | Arc Point
   | Line
   | Point
 
@@ -169,18 +170,44 @@ displayGod data =
 layoutBasicConnectors : ChartMetrics -> Layout -> List Boon
 layoutBasicConnectors metrics layout =
   let
-    center = (godCenter metrics Demeter)
+    origin = (godCenter metrics Demeter)
+    toScale = Geometry.scale (1/1800) >> Geometry.add origin
   in
     layout.connections
-      |> List.map (\{a, b} ->
-        { name = ""
-        , icon = ""
-        , id = ""
-        , iconPoint = a
-        , endA = a |> Geometry.scale (1/1800) |> Geometry.add center
-        , endB = b |> Geometry.scale (1/1800) |> Geometry.add center
-        , shape = Line
-        }
+      |> List.map (\{shape} ->
+        case shape of
+          Layout.Line a b ->
+            { name = ""
+            , icon = ""
+            , id = ""
+            , iconPoint = a
+            , endA = a |> toScale
+            , endB = b |> toScale
+            , shape = Line
+            }
+          Layout.Arc {center, radius, fromAngle, toAngle} ->
+            let
+              oddAngle = abs (toAngle - fromAngle)
+              angle =
+                if oddAngle > 180 then
+                  360 - oddAngle
+                else
+                  oddAngle
+              workAngle = oddAngle / 2 + fromAngle
+              midAngle =
+                if workAngle > tau then
+                  workAngle - tau
+                else
+                  workAngle
+            in
+            { name = ""
+            , icon = ""
+            , id = ""
+            , iconPoint = center |> Geometry.add (Geometry.rotate midAngle (radius, 0)) |> toScale
+            , endA = center |> Geometry.add (Geometry.rotate fromAngle (radius, 0)) |> toScale
+            , endB = center |> Geometry.add (Geometry.rotate toAngle (radius, 0)) |> toScale
+            , shape = if angle > tau/4 then SplitArc (center |> toScale) else Arc (center |> toScale)
+            }
       )
 
 layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
@@ -278,13 +305,16 @@ displayBoonConnector {iconPoint, endA, endB, shape} =
     lineStyle = solid 0.004 (uniform Color.charcoal)
   in
   case shape of
-    Arc center ->
+    SplitArc center ->
       [ arc center endA iconPoint
         |> traced lineStyle
       , arc center iconPoint endB
         |> traced lineStyle
       ]
         |> stack
+    Arc center ->
+      arc center endA endB
+        |> traced lineStyle
     Line ->
       segment
         endA
@@ -384,7 +414,7 @@ calculateArc centerAdjust iconDistance metrics a b =
     termA = fartherPoint (center, radius) (centerA, metrics.adjacentDistance/2)
     termB = fartherPoint (center, radius) (centerB, metrics.adjacentDistance/2)
   in
-    Connector iconPoint termA termB (Arc center)
+    Connector iconPoint termA termB (SplitArc center)
 
 fartherPoint : (Point, Float) -> (Point, Float) -> Point
 fartherPoint c1 c2 =

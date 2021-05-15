@@ -44,6 +44,7 @@ type Value
 type EntityType
   = UnknownType String
   | ApplicationId
+  | ArcEntity
   | BlockRecord
   | BlockStart
   | BlockEnd
@@ -58,7 +59,7 @@ type EntityType
   | MLineStyle
   | LayerTable
   | LayoutEntity
-  | Line
+  | LineEntity
   | Linetype
   | Placeholder
   | Point

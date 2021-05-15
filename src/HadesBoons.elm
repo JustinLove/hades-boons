@@ -95,9 +95,7 @@ update msg model =
     GotLayout (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
     GotDxf (Ok layout) ->
-      let
-        _ = Debug.log "dxf" layout
-      in
+      --let _ = Debug.log "dxf" layout in
       ({model | layout = layout}, Cmd.none)
     GotDxf (Err error) ->
       (model, Log.httpError "fetch error: dxf" error)

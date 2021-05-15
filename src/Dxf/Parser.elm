@@ -99,6 +99,7 @@ entityMap : String -> EntityType
 entityMap s =
   case s of
     "APPID" -> ApplicationId
+    "ARC" -> ArcEntity
     "BLOCK_RECORD" -> BlockRecord
     "BLOCK" -> BlockStart
     "ENDBLK" -> BlockEnd
@@ -113,7 +114,7 @@ entityMap s =
     "MLINESTYLE" -> MLineStyle
     "LAYER" -> LayerTable
     "LAYOUT" -> LayoutEntity
-    "LINE" -> Line
+    "LINE" -> LineEntity
     "LTYPE" -> Linetype
     "ACDBPLACEHOLDER" -> Placeholder
     "POINT" -> Point
