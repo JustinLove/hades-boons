@@ -5,7 +5,6 @@ import Dxf.Decode
 import Geometry exposing (Point)
 import Layout exposing (..)
 import Layout.DecodeDxf as DecodeDxf
-import Layout.DecodeXml as DecodeXml
 import Log
 --import MeasureText
 import Traits exposing (..)
@@ -21,7 +20,6 @@ import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
 import Set exposing (Set)
 import Url exposing (Url)
-import Xml.Decode
 
 type Msg
   = UI (View.Msg)
@@ -29,7 +27,6 @@ type Msg
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
   | GotLayout (Result Http.Error Layout)
-  | GotDxf (Result Http.Error Layout)
   --| WindowSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
@@ -69,7 +66,6 @@ init flags location key =
     }
   , Cmd.batch
     [ fetchTraits
-    --, fetchLayout
     , fetchDxf
     ]
     --, Dom.getViewport
@@ -97,11 +93,6 @@ update msg model =
       ({model | layout = layout}, Cmd.none)
     GotLayout (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
-    GotDxf (Ok layout) ->
-      --let _ = Debug.log "dxf" layout in
-      ({model | layout = layout}, Cmd.none)
-    GotDxf (Err error) ->
-      (model, Log.httpError "fetch error: dxf" error)
     --WindowSize (width, height) ->
      -- ( {model | windowWidth = width, windowHeight = height}, Cmd.none)
     --TextSize {text, width} ->
@@ -168,27 +159,11 @@ fetchTraits =
     , expect = Http.expectJson GotTraits Decode.traits
     }
 
-fetchLayout : Cmd Msg
-fetchLayout =
-  Http.get
-    { url = "demeter.xml"
-    , expect = expectXml GotLayout DecodeXml.layout
-    }
-
-expectXml : (Result Http.Error a -> msg) -> Xml.Decode.Decoder a -> Http.Expect msg
-expectXml tagger decoder =
-  Http.expectString (receiveXml decoder >> tagger)
-
-receiveXml : Xml.Decode.Decoder a -> Result Http.Error String -> Result Http.Error a
-receiveXml decoder result =
-  result
-    |> Result.andThen (Xml.Decode.run decoder >> Result.mapError Http.BadBody)
-
 fetchDxf : Cmd Msg
 fetchDxf =
   Http.get
     { url = "demeter.dxf"
-    , expect = expectDxf GotDxf DecodeDxf.layout
+    , expect = expectDxf GotLayout DecodeDxf.layout
     }
 
 expectDxf : (Result Http.Error a -> msg) -> Dxf.Decode.Decoder a -> Http.Expect msg

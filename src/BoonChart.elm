@@ -284,10 +284,11 @@ isSkipOne metrics trait =
 displayBoonTrait : (TraitId -> msg) -> Traits ->Set TraitId -> Boon -> Collage msg
 displayBoonTrait selectedBoon traits activeTraits boon =
   let
+    avail = Traits.isAvailable traits activeTraits boon.id
     color =
       if Set.member boon.id activeTraits then
         Color.white
-      else if Traits.isAvailable traits activeTraits boon.id then
+      else if avail then
         Color.darkGrey
       else
         Color.charcoal
@@ -304,7 +305,7 @@ displayBoonTrait selectedBoon traits activeTraits boon =
       |> rendered
       |> scale 0.001
       |> shiftY -0.65
-  , image (0.9,0.9) boon.icon
+  , image (0.9, 0.9) boon.icon
   --, circle 0.5
       --|> outlined (solid 0.01 (uniform Color.white))
   ]
