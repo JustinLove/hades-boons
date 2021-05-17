@@ -135,10 +135,24 @@ isDuoBoon {boonType} =
 makeTraits : List GodData -> Traits
 makeTraits gods =
   gods
-    |> tagLinkedBoons -- basics
-    |> tagLinkedBoons -- level 1 requirements
-    |> tagLinkedBoons -- propigate to legenedaries
+    |> tagAllBoonsBasic -- init all to associated god
+    |> tagLinkedBoons -- propagate to duos
     |> separateDuos
+
+tagAllBoonsBasic : List GodData -> List GodData
+tagAllBoonsBasic gods =
+  gods
+    |> List.map tagAllGodBoonsBasic
+
+tagAllGodBoonsBasic : GodData -> GodData
+tagAllGodBoonsBasic (GodData data) =
+  GodData { data | traits = data.traits
+    |> List.map (tagBoonAs (BasicBoon data.god))
+  }
+
+tagBoonAs : BoonType -> Trait -> Trait
+tagBoonAs boonType trait =
+  { trait | boonType = boonType }
 
 tagLinkedBoons : List GodData -> List GodData
 tagLinkedBoons gods =
