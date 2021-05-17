@@ -27,10 +27,16 @@ import Set exposing (Set)
 
 type alias TraitId = String
 
-type Traits = Traits (List GodData)
+type Traits = Traits
+  { gods : List GodData
+  , duos : List Trait
+  }
 
-makeTraits = Traits
-empty = Traits []
+makeTraits : List GodData -> Traits
+makeTraits gods = Traits {gods = gods, duos = []}
+
+empty : Traits
+empty = Traits {gods = [], duos = []}
 
 type God
   = Hermes
@@ -55,7 +61,6 @@ type alias GodDataRecord =
   , lootColor : Color
   , color : Color
   , traits : List Trait
-  , linkedUpgrades : List Trait
   }
 
 type alias Trait =
@@ -72,11 +77,11 @@ type Requirements
   | OneFromEachSet (List (Set TraitId))
 
 linkableGods : Traits -> List GodData
-linkableGods (Traits gods) =
+linkableGods (Traits {gods}) =
   List.drop 1 gods
 
 allGods : Traits -> List GodData
-allGods (Traits gods) = gods
+allGods (Traits {gods}) = gods
 
 godData : GodDataRecord -> GodData
 godData = GodData
@@ -110,14 +115,11 @@ basicBoons data =
     |> List.filter isBasicBoon
 
 duoBoons : Traits -> List Trait
-duoBoons traits =
-  traits
-    |> allGods
-    |> List.concatMap duoGodBoons
+duoBoons (Traits {duos}) = duos
 
 duoGodBoons : GodData -> List Trait
 duoGodBoons (GodData data) =
-  data.linkedUpgrades
+  data.traits
     |> List.filter isDuoBoon
 
 isBasicBoon : Trait -> Bool
@@ -137,26 +139,10 @@ isDuoBoon {boonType} =
 identifyBoons : Traits -> Traits
 identifyBoons traits =
   traits
-    |> tagBasicBoons
-    |> tagLinkedBoons
+    |> tagLinkedBoons -- basics
+    |> tagLinkedBoons -- level 1 requirements
     |> tagLinkedBoons -- propigate to legenedaries
-
-tagBasicBoons : Traits -> Traits
-tagBasicBoons traits =
-  traits
-    |> allGods
-    |> List.map tagBasicGodBoons
-    |> makeTraits
-
-tagBasicGodBoons : GodData -> GodData
-tagBasicGodBoons (GodData data) =
-  GodData { data | traits = data.traits
-    |> List.map (tagBoonAs (BasicBoon data.god))
-  }
-
-tagBoonAs : BoonType -> Trait -> Trait
-tagBoonAs boonType trait =
-  { trait | boonType = boonType }
+    |> separateDuos
 
 tagLinkedBoons : Traits -> Traits
 tagLinkedBoons traits =
@@ -167,18 +153,19 @@ tagLinkedBoons traits =
 
 tagLinkedGodBoons : Traits -> GodData -> GodData
 tagLinkedGodBoons traits (GodData god) =
-  GodData { god | linkedUpgrades = god.linkedUpgrades
-    |> List.map (tagLinkedBoon traits)
+  GodData { god | traits =
+    god.traits
+      |> List.map (tagLinkedBoon traits god.god)
   }
 
-tagLinkedBoon : Traits -> Trait -> Trait
-tagLinkedBoon traits trait =
-  { trait | boonType = boonTypeFromRequirements traits trait.requirements }
+tagLinkedBoon : Traits -> God -> Trait -> Trait
+tagLinkedBoon traits god trait =
+  { trait | boonType = boonTypeFromRequirements traits god trait.requirements }
 
-boonTypeFromRequirements : Traits -> Requirements -> BoonType
-boonTypeFromRequirements traits requirements =
+boonTypeFromRequirements : Traits -> God -> Requirements -> BoonType
+boonTypeFromRequirements traits god requirements =
   case requirements of
-    None -> UnknownBoon
+    None -> BasicBoon god
     OneOf set -> boonTypeFromGroup (godOfSet traits set)
     OneFromEachSet list ->
       list
@@ -241,9 +228,27 @@ findBoon traits id =
     |> List.filter (hasId id)
     |> List.head
 
+separateDuos : Traits -> Traits
+separateDuos traits =
+  let
+    (gods, duos) =
+      traits
+        |> allGods
+        |> List.map extractDuos
+        |> List.unzip
+  in
+     Traits { gods = gods, duos = List.concat duos }
+
+extractDuos : GodData -> (GodData, List Trait)
+extractDuos (GodData data) =
+  let
+    (duos, basic) = List.partition isDuoBoon data.traits
+  in
+    (GodData {data | traits = basic}, duos)
+
 godTraits : GodData -> List Trait
 godTraits (GodData data) =
-  List.append data.traits data.linkedUpgrades
+  data.traits
 
 hasId : TraitId -> Trait -> Bool
 hasId id trait =

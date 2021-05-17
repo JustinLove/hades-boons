@@ -15,12 +15,17 @@ traits =
 godData : Decoder GodData
 godData =
   map Traits.godData
-    <| map5 GodDataRecord
+    <| map4 GodDataRecord
       (field "Name" god)
       (field "LootColor" color)
       (field "Color" color)
-      (field "Traits" (list trait))
-      (field "LinkedUpgrades" (list trait))
+      allTraits
+
+allTraits : Decoder (List Trait)
+allTraits =
+  map2 List.append
+    (field "Traits" (list trait))
+    (field "LinkedUpgrades" (list trait))
 
 god : Decoder God
 god =
