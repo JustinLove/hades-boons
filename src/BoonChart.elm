@@ -2,7 +2,7 @@ module BoonChart exposing (DragMode(..), BoonChart, boonChart)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..))
-import Layout exposing (..)
+import Layout exposing (Layout)
 
 import Array exposing (Array)
 import Collage exposing (..)
@@ -231,7 +231,7 @@ layoutBasicBoonsOf metrics layout data =
     boons
       |> List.indexedMap (\i trait ->
         let
-          p = (case getPlacement layout trait.trait of
+          p = (case Layout.getPlacement layout trait.trait of
             Just (x,y) -> (x / 1800, y / 1800)
             Nothing -> (0, 0.05)
               |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
@@ -273,7 +273,6 @@ layoutDuoBoon metrics trait =
 isSkipOne : ChartMetrics -> Trait -> Bool
 isSkipOne metrics trait =
   case trait.boonType of
-    UnknownBoon -> False
     BasicBoon _ -> False
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.centers) a b of
@@ -346,18 +345,9 @@ displayOpposite metrics a b =
     (godCenter metrics b)
     |> traced (solid 0.01 (uniform Color.white))
 
-calculateDuos : ChartMetrics -> List Trait -> List Connector
-calculateDuos metrics traits =
-  traits
-    --|> List.filter (isSkipOne metrics)
-    --|> List.drop 3
-    --|> List.take 1
-    |> List.map (calculateDuo metrics)
-
 calculateDuo : ChartMetrics -> Trait -> Connector
 calculateDuo metrics trait =
   case trait.boonType of
-    UnknownBoon -> Connector (0,0) (0,0) (0,0) Point
     BasicBoon _ -> Connector (0,0) (0,0) (0,0) Point
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.centers) a b of

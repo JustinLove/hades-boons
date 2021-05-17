@@ -48,8 +48,7 @@ type God
   | Zeus
 
 type BoonType
-  = UnknownBoon
-  | BasicBoon God
+  = BasicBoon God
   | DuoBoon God God
 
 type GodData = GodData GodDataRecord
@@ -123,38 +122,20 @@ duoGodBoons (GodData data) =
 isBasicBoon : Trait -> Bool
 isBasicBoon {boonType} =
   case boonType of
-    UnknownBoon -> False
     BasicBoon _ -> True
     DuoBoon _ _ -> False
 
 isDuoBoon : Trait -> Bool
 isDuoBoon {boonType} =
   case boonType of
-    UnknownBoon -> False
     BasicBoon _ -> False
     DuoBoon _ _ -> True
 
 makeTraits : List GodData -> Traits
 makeTraits gods =
   gods
-    |> tagAllBoonsBasic -- init all to associated god
     |> tagLinkedBoons -- propagate to duos
     |> separateDuos
-
-tagAllBoonsBasic : List GodData -> List GodData
-tagAllBoonsBasic gods =
-  gods
-    |> List.map tagAllGodBoonsBasic
-
-tagAllGodBoonsBasic : GodData -> GodData
-tagAllGodBoonsBasic (GodData data) =
-  GodData { data | traits = data.traits
-    |> List.map (tagBoonAs (BasicBoon data.god))
-  }
-
-tagBoonAs : BoonType -> Trait -> Trait
-tagBoonAs boonType trait =
-  { trait | boonType = boonType }
 
 tagLinkedBoons : List GodData -> List GodData
 tagLinkedBoons gods =
@@ -176,30 +157,29 @@ boonTypeFromRequirements : List GodData -> God -> Requirements -> BoonType
 boonTypeFromRequirements gods god requirements =
   case requirements of
     None -> BasicBoon god
-    OneOf set -> boonTypeFromGroup (godOfSet gods set)
+    OneOf set -> boonTypeFromGroup god (godOfSet gods set)
     OneFromEachSet list ->
       list
         |> List.map (godOfSet gods)
-        |> List.foldr oneFromEachSetAccumulator UnknownBoon
+        |> List.foldr oneFromEachSetAccumulator (BasicBoon god)
 
 type GodsInGroup
   = Empty
   | One God
   | Many
 
-boonTypeFromGroup : GodsInGroup -> BoonType
-boonTypeFromGroup group =
+boonTypeFromGroup : God -> GodsInGroup -> BoonType
+boonTypeFromGroup default group =
   case group of
-    Empty -> UnknownBoon
+    Empty -> BasicBoon default
     One god -> BasicBoon god
-    Many -> UnknownBoon
+    Many -> BasicBoon default
 
 oneFromEachSetAccumulator : GodsInGroup -> BoonType -> BoonType
 oneFromEachSetAccumulator group boonType =
   case (boonType, group) of
     (_, Many) -> boonType
     (_, Empty) -> boonType
-    (UnknownBoon, One g) -> BasicBoon g
     (BasicBoon a, One g) ->
       if a == g then
         BasicBoon a
@@ -209,7 +189,8 @@ oneFromEachSetAccumulator group boonType =
       if a == g || b == g then
         DuoBoon a b
       else
-        UnknownBoon
+        -- no way to punt
+        boonType
 
 godOfSet : List GodData -> Set TraitId -> GodsInGroup
 godOfSet gods set =
@@ -219,16 +200,15 @@ godAccumulator : List GodData -> TraitId -> GodsInGroup -> GodsInGroup
 godAccumulator gods id group =
   case (findBoonType gods id, group) of
     (_, Many) -> Many
-    (UnknownBoon, b) -> b
-    (BasicBoon a, Empty) -> One a
-    (BasicBoon a, One b) -> if a == b then One a else Many
-    (DuoBoon _ _, _) -> Many
+    (Nothing, _) -> group
+    (Just (BasicBoon a), Empty) -> One a
+    (Just (BasicBoon a), One b) -> if a == b then One a else Many
+    (Just (DuoBoon _ _), _) -> Many
 
-findBoonType : List GodData -> TraitId -> BoonType
+findBoonType : List GodData -> TraitId -> Maybe BoonType
 findBoonType gods id =
-  case findGodBoon gods id of
-    Just {boonType} -> boonType
-    Nothing -> UnknownBoon
+  findGodBoon gods id
+    |> Maybe.map .boonType
 
 findGodBoon : List GodData -> TraitId -> Maybe Trait
 findGodBoon gods id =

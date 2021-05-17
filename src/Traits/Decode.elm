@@ -13,18 +13,24 @@ traits =
 
 godData : Decoder GodData
 godData =
-  map Traits.godData
-    <| map4 GodDataRecord
-      (field "Name" god)
-      (field "LootColor" color)
-      (field "Color" color)
-      allTraits
+  map Traits.godData godDataRecord
 
-allTraits : Decoder (List Trait)
-allTraits =
+godDataRecord : Decoder GodDataRecord
+godDataRecord =
+  (field "Name" god)
+    |> andThen (\godTag ->
+      map4 GodDataRecord
+        (succeed godTag)
+        (field "LootColor" color)
+        (field "Color" color)
+        (allTraits godTag)
+      )
+
+allTraits : God -> Decoder (List Trait)
+allTraits godTag =
   map2 List.append
-    (field "Traits" (list trait))
-    (field "LinkedUpgrades" (list trait))
+    (field "Traits" (list (trait godTag)))
+    (field "LinkedUpgrades" (list (trait godTag)))
 
 god : Decoder God
 god =
@@ -43,14 +49,14 @@ god =
         _ -> fail ("Unknown god " ++ upgrade)
       )
 
-trait : Decoder Trait
-trait =
+trait : God -> Decoder Trait
+trait godTag =
   map5 Trait
     (field "icon" string)
     (field "trait" string)
     (field "name" string)
     requirements
-    (succeed UnknownBoon)
+    (succeed (BasicBoon godTag))
 
 requirements : Decoder Requirements
 requirements =
