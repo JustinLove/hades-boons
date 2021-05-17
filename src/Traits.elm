@@ -22,6 +22,7 @@ module Traits exposing
   )
 
 import Color exposing (Color)
+import Dict exposing (Dict)
 import Set exposing (Set)
 
 type alias TraitId = String
@@ -29,10 +30,11 @@ type alias TraitId = String
 type Traits = Traits
   { gods : List GodData
   , duos : List Trait
+  , requirementsCache : Dict TraitId Requirements
   }
 
 empty : Traits
-empty = Traits {gods = [], duos = []}
+empty = Traits {gods = [], duos = [], requirementsCache = Dict.empty}
 
 type God
   = Hermes
@@ -238,12 +240,22 @@ findGodBoon gods id =
 separateDuos : List GodData -> Traits
 separateDuos gods =
   let
-    (basicGods, duos) =
+    (basicGods, listOfDuos) =
       gods
         |> List.map extractDuos
         |> List.unzip
+    duos = List.concat listOfDuos
   in
-    Traits { gods = basicGods, duos = List.concat duos }
+    Traits
+      { gods = basicGods
+      , duos = duos
+      , requirementsCache =
+        basicGods
+          |> List.concatMap godTraits
+          |> List.append duos
+          |> List.map (\{trait, requirements} -> (trait, requirements))
+          |> Dict.fromList
+      }
 
 extractDuos : GodData -> (GodData, List Trait)
 extractDuos (GodData data) =
@@ -260,19 +272,24 @@ hasId : TraitId -> Trait -> Bool
 hasId id trait =
   trait.trait == id
 
-findBoon : Traits -> TraitId -> Maybe Trait
-findBoon traits id =
+allTraits : Traits -> List Trait
+allTraits traits =
   traits
     |> allGods
     |> List.concatMap godTraits
     |> List.append (duoBoons traits)
+
+findBoon : Traits -> TraitId -> Maybe Trait
+findBoon traits id =
+  traits
+    |> allTraits
     |> List.filter (hasId id)
     |> List.head
 
 isAvailable : Traits -> Set TraitId -> TraitId -> Bool
-isAvailable gods activeTraits id =
-  findBoon gods id
-    |> Maybe.map (\{requirements} ->
+isAvailable (Traits {requirementsCache}) activeTraits id =
+  Dict.get id requirementsCache
+    |> Maybe.map (\requirements ->
       case requirements of
         None -> True
         OneOf set -> Set.intersect activeTraits set |> Set.isEmpty |> not
