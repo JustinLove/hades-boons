@@ -10,7 +10,6 @@ traits : Decoder Traits
 traits =
   list godData
     |> map makeTraits
-    |> map identifyBoons
 
 godData : Decoder GodData
 godData =

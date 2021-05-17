@@ -18,7 +18,6 @@ module Traits exposing
   , godName
   , duoBoons
   , basicBoons
-  , identifyBoons
   , isAvailable
   )
 
@@ -31,9 +30,6 @@ type Traits = Traits
   { gods : List GodData
   , duos : List Trait
   }
-
-makeTraits : List GodData -> Traits
-makeTraits gods = Traits {gods = gods, duos = []}
 
 empty : Traits
 empty = Traits {gods = [], duos = []}
@@ -136,40 +132,38 @@ isDuoBoon {boonType} =
     BasicBoon _ -> False
     DuoBoon _ _ -> True
 
-identifyBoons : Traits -> Traits
-identifyBoons traits =
-  traits
+makeTraits : List GodData -> Traits
+makeTraits gods =
+  gods
     |> tagLinkedBoons -- basics
     |> tagLinkedBoons -- level 1 requirements
     |> tagLinkedBoons -- propigate to legenedaries
     |> separateDuos
 
-tagLinkedBoons : Traits -> Traits
-tagLinkedBoons traits =
-  traits
-    |> allGods
-    |> List.map (tagLinkedGodBoons traits)
-    |> makeTraits
+tagLinkedBoons : List GodData -> List GodData
+tagLinkedBoons gods =
+  gods
+    |> List.map (tagLinkedGodBoons gods)
 
-tagLinkedGodBoons : Traits -> GodData -> GodData
-tagLinkedGodBoons traits (GodData god) =
+tagLinkedGodBoons : List GodData -> GodData -> GodData
+tagLinkedGodBoons gods (GodData god) =
   GodData { god | traits =
     god.traits
-      |> List.map (tagLinkedBoon traits god.god)
+      |> List.map (tagLinkedBoon gods god.god)
   }
 
-tagLinkedBoon : Traits -> God -> Trait -> Trait
-tagLinkedBoon traits god trait =
-  { trait | boonType = boonTypeFromRequirements traits god trait.requirements }
+tagLinkedBoon : List GodData -> God -> Trait -> Trait
+tagLinkedBoon gods god trait =
+  { trait | boonType = boonTypeFromRequirements gods god trait.requirements }
 
-boonTypeFromRequirements : Traits -> God -> Requirements -> BoonType
-boonTypeFromRequirements traits god requirements =
+boonTypeFromRequirements : List GodData -> God -> Requirements -> BoonType
+boonTypeFromRequirements gods god requirements =
   case requirements of
     None -> BasicBoon god
-    OneOf set -> boonTypeFromGroup (godOfSet traits set)
+    OneOf set -> boonTypeFromGroup (godOfSet gods set)
     OneFromEachSet list ->
       list
-        |> List.map (godOfSet traits)
+        |> List.map (godOfSet gods)
         |> List.foldr oneFromEachSetAccumulator UnknownBoon
 
 type GodsInGroup
@@ -201,43 +195,41 @@ oneFromEachSetAccumulator group boonType =
       else
         UnknownBoon
 
-godOfSet : Traits -> Set TraitId -> GodsInGroup
-godOfSet traits set =
-  set |> Set.foldr (godAccumulator traits) Empty
+godOfSet : List GodData -> Set TraitId -> GodsInGroup
+godOfSet gods set =
+  set |> Set.foldr (godAccumulator gods) Empty
 
-godAccumulator : Traits -> TraitId -> GodsInGroup -> GodsInGroup
-godAccumulator traits id group =
-  case (findBoonType traits id, group) of
+godAccumulator : List GodData -> TraitId -> GodsInGroup -> GodsInGroup
+godAccumulator gods id group =
+  case (findBoonType gods id, group) of
     (_, Many) -> Many
     (UnknownBoon, b) -> b
     (BasicBoon a, Empty) -> One a
     (BasicBoon a, One b) -> if a == b then One a else Many
     (DuoBoon _ _, _) -> Many
 
-findBoonType : Traits -> TraitId -> BoonType
-findBoonType traits id =
-  case findBoon traits id of
+findBoonType : List GodData -> TraitId -> BoonType
+findBoonType gods id =
+  case findGodBoon gods id of
     Just {boonType} -> boonType
     Nothing -> UnknownBoon
 
-findBoon : Traits -> TraitId -> Maybe Trait
-findBoon traits id =
-  traits
-    |> allGods
+findGodBoon : List GodData -> TraitId -> Maybe Trait
+findGodBoon gods id =
+  gods
     |> List.concatMap godTraits
     |> List.filter (hasId id)
     |> List.head
 
-separateDuos : Traits -> Traits
-separateDuos traits =
+separateDuos : List GodData -> Traits
+separateDuos gods =
   let
-    (gods, duos) =
-      traits
-        |> allGods
+    (basicGods, duos) =
+      gods
         |> List.map extractDuos
         |> List.unzip
   in
-     Traits { gods = gods, duos = List.concat duos }
+    Traits { gods = basicGods, duos = List.concat duos }
 
 extractDuos : GodData -> (GodData, List Trait)
 extractDuos (GodData data) =
@@ -253,6 +245,15 @@ godTraits (GodData data) =
 hasId : TraitId -> Trait -> Bool
 hasId id trait =
   trait.trait == id
+
+findBoon : Traits -> TraitId -> Maybe Trait
+findBoon traits id =
+  traits
+    |> allGods
+    |> List.concatMap godTraits
+    |> List.append (duoBoons traits)
+    |> List.filter (hasId id)
+    |> List.head
 
 isAvailable : Traits -> Set TraitId -> TraitId -> Bool
 isAvailable gods activeTraits id =
