@@ -6,18 +6,21 @@ import Color exposing (Color)
 import Json.Decode exposing (..)
 import Set exposing (Set)
 
-traits : Decoder (List GodData)
+traits : Decoder Traits
 traits =
   list godData
+    |> map makeTraits
+    |> map identifyBoons
 
 godData : Decoder GodData
 godData =
-  map5 GodData
-    (field "Name" god)
-    (field "LootColor" color)
-    (field "Color" color)
-    (field "Traits" (list trait))
-    (field "LinkedUpgrades" (list trait))
+  map Traits.godData
+    <| map5 GodDataRecord
+      (field "Name" god)
+      (field "LootColor" color)
+      (field "Color" color)
+      (field "Traits" (list trait))
+      (field "LinkedUpgrades" (list trait))
 
 god : Decoder God
 god =

@@ -1,7 +1,7 @@
 module BoonChart exposing (DragMode(..), BoonChart, boonChart)
 
 import Geometry
-import Traits exposing (..)
+import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..))
 import Layout exposing (..)
 
 import Array exposing (Array)
@@ -119,7 +119,7 @@ flip (x, y) = (x, -y)
 initialMetrics : Traits -> ChartMetrics
 initialMetrics traits =
   let
-    main = List.drop 1 traits
+    main = Traits.linkableGods traits
     count = List.length main
     angle = tau / (toFloat count)
     adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
@@ -148,7 +148,7 @@ ringLayout count radius =
 displayGods : ChartMetrics -> Traits -> List (Collage msg)
 displayGods metrics traits =
   traits
-    |> List.drop 1
+    |> Traits.linkableGods
     |> List.indexedMap (\i data ->
       displayGod data
         |> scale metrics.adjacentDistance
@@ -160,8 +160,8 @@ displayGods metrics traits =
 
 displayGod : GodData -> Collage msg
 displayGod data =
-  [ Text.fromString (Traits.godName data.god)
-      |> Text.color data.lootColor
+  [ Text.fromString (Traits.dataName data)
+      |> Text.color (Traits.dataLootColor data)
       |> Text.size 200
       |> rendered
       |> scale 0.001
@@ -169,7 +169,7 @@ displayGod data =
       |> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
-    |> Collage.Layout.name (Traits.godName data.god)
+    |> Collage.Layout.name (Traits.dataName data)
 
 layoutBasicConnectors : ChartMetrics -> Layout -> List Boon
 layoutBasicConnectors metrics layout =
@@ -217,13 +217,14 @@ layoutBasicConnectors metrics layout =
 layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
 layoutBasicBoons metrics layout traits =
   traits
+    |> Traits.allGods
     |> List.concatMap (layoutBasicBoonsOf metrics layout)
 
 layoutBasicBoonsOf : ChartMetrics -> Layout -> GodData -> List Boon
 layoutBasicBoonsOf metrics layout data =
   let
-    center = (godCenter metrics data.god)
-    boons = basicBoons data
+    center = (godCenter metrics (Traits.dataGod data))
+    boons = Traits.basicBoons data
     angle = tau / (toFloat (List.length boons))
     adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
   in

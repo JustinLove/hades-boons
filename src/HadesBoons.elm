@@ -7,7 +7,7 @@ import Layout exposing (..)
 import Layout.DecodeDxf as DecodeDxf
 import Log
 --import MeasureText
-import Traits exposing (..)
+import Traits exposing (TraitId, Traits)
 import Traits.Decode as Decode
 import View
 
@@ -58,7 +58,7 @@ init flags location key =
     --, windowHeight = 300
     --, labelWidths = Dict.empty
     , layout = Layout [] []
-    , traits = []
+    , traits = Traits.empty
     , activeTraits = Set.empty
     , drag = Released
     , offset = (0,0)
@@ -86,7 +86,7 @@ update msg model =
     Navigate (Browser.External url) ->
       (model, Navigation.load url)
     GotTraits (Ok traits) ->
-      ({model | traits = identifyBoons traits}, Cmd.none)
+      ({model | traits = traits}, Cmd.none)
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
     GotLayout (Ok layout) ->

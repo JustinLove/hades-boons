@@ -1,14 +1,22 @@
 module Traits exposing
   ( TraitId
   , Traits
+  , makeTraits
+  , empty
   , God(..)
   , BoonType(..)
   , GodData
+  , GodDataRecord
+  , godData
   , Trait
   , Requirements(..)
+  , linkableGods
+  , allGods
+  , dataGod
+  , dataName
+  , dataLootColor
   , godName
   , duoBoons
-  , basicBoonsOf
   , basicBoons
   , identifyBoons
   , isAvailable
@@ -19,7 +27,10 @@ import Set exposing (Set)
 
 type alias TraitId = String
 
-type alias Traits = List GodData
+type Traits = Traits (List GodData)
+
+makeTraits = Traits
+empty = Traits []
 
 type God
   = Hermes
@@ -37,7 +48,9 @@ type BoonType
   | BasicBoon God
   | DuoBoon God God
 
-type alias GodData =
+type GodData = GodData GodDataRecord
+
+type alias GodDataRecord =
   { god : God
   , lootColor : Color
   , color : Color
@@ -58,6 +71,25 @@ type Requirements
   | OneOf (Set TraitId)
   | OneFromEachSet (List (Set TraitId))
 
+linkableGods : Traits -> List GodData
+linkableGods (Traits gods) =
+  List.drop 1 gods
+
+allGods : Traits -> List GodData
+allGods (Traits gods) = gods
+
+godData : GodDataRecord -> GodData
+godData = GodData
+
+dataGod : GodData -> God
+dataGod (GodData data) = data.god
+
+dataName : GodData -> String
+dataName (GodData data) = godName data.god
+
+dataLootColor : GodData -> Color
+dataLootColor (GodData data) = data.lootColor
+
 godName : God -> String
 godName god =
   case god of
@@ -71,16 +103,6 @@ godName god =
     Artemis -> "Artemis"
     Zeus -> "Zeus"
 
-basicBoonsOf : God -> Traits -> List Trait
-basicBoonsOf god traits =
-  traits
-    |> List.concatMap (\data ->
-      if data.god == god then
-        basicBoons data
-      else
-        []
-      )
-
 basicBoons : GodData -> List Trait
 basicBoons data =
   data
@@ -90,10 +112,11 @@ basicBoons data =
 duoBoons : Traits -> List Trait
 duoBoons traits =
   traits
+    |> allGods
     |> List.concatMap duoGodBoons
 
 duoGodBoons : GodData -> List Trait
-duoGodBoons data =
+duoGodBoons (GodData data) =
   data.linkedUpgrades
     |> List.filter isDuoBoon
 
@@ -121,11 +144,13 @@ identifyBoons traits =
 tagBasicBoons : Traits -> Traits
 tagBasicBoons traits =
   traits
+    |> allGods
     |> List.map tagBasicGodBoons
+    |> makeTraits
 
 tagBasicGodBoons : GodData -> GodData
-tagBasicGodBoons data =
-  { data | traits = data.traits
+tagBasicGodBoons (GodData data) =
+  GodData { data | traits = data.traits
     |> List.map (tagBoonAs (BasicBoon data.god))
   }
 
@@ -136,11 +161,13 @@ tagBoonAs boonType trait =
 tagLinkedBoons : Traits -> Traits
 tagLinkedBoons traits =
   traits
+    |> allGods
     |> List.map (tagLinkedGodBoons traits)
+    |> makeTraits
 
 tagLinkedGodBoons : Traits -> GodData -> GodData
-tagLinkedGodBoons traits god =
-  { god | linkedUpgrades = god.linkedUpgrades
+tagLinkedGodBoons traits (GodData god) =
+  GodData { god | linkedUpgrades = god.linkedUpgrades
     |> List.map (tagLinkedBoon traits)
   }
 
@@ -207,14 +234,15 @@ findBoonType traits id =
     Nothing -> UnknownBoon
 
 findBoon : Traits -> TraitId -> Maybe Trait
-findBoon gods id =
-  gods
+findBoon traits id =
+  traits
+    |> allGods
     |> List.concatMap godTraits
     |> List.filter (hasId id)
     |> List.head
 
 godTraits : GodData -> List Trait
-godTraits data =
+godTraits (GodData data) =
   List.append data.traits data.linkedUpgrades
 
 hasId : TraitId -> Trait -> Bool
