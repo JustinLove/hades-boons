@@ -43,26 +43,30 @@ type alias ChartMetrics =
   }
 
 type ConnectorShape
-  = SplitArc Point
-  | Arc Point
-  | Line
-  | Point
+  = Invisible
+  | Arc ArcType
+  | DuoArc DuoArcType
+  | Line Point Point
 
-type alias Connector =
-  { iconPoint : Point
+type alias ArcType =
+  { center : Point
+  , radius : Float
+  , fromAngle : Float
+  , toAngle : Float
+  }
+
+type alias DuoArcType =
+  { center : Point
   , endA : Point
+  , midPoint : Point
   , endB : Point
-  , shape : ConnectorShape
   }
 
 type alias Boon =
   { name : String
   , icon : String
   , id : String
-  , iconPoint : Point
-  , endA : Point
-  , endB : Point
-  , shape : ConnectorShape
+  , location : Point
   }
 
 size = 4096
@@ -80,13 +84,13 @@ boonChart attributes model =
     gods = displayGods metrics1 model.traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
     basicBoons = layoutBasicBoons metrics2 model.layout model.traits
-    duoBoons = layoutDuoBoons metrics2 (Traits.duoBoons model.traits)
+    (duoBoons, duoConnectors) = layoutDuoBoons metrics2 (Traits.duoBoons model.traits)
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
   [ duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
-  , duoBoons |> List.map displayBoonConnector |> stack
+  , duoConnectors |> List.map displayBoonConnector |> stack
   , layoutBasicConnectors metrics2 model.layout |> List.map displayBoonConnector |> stack
   , gods |> stack
   , rectangle 1 1
@@ -171,47 +175,25 @@ displayGod data =
     |> stack
     |> Collage.Layout.name (Traits.dataName data)
 
-layoutBasicConnectors : ChartMetrics -> Layout -> List Boon
+layoutBasicConnectors : ChartMetrics -> Layout -> List ConnectorShape
 layoutBasicConnectors metrics layout =
   let
     origin = (godCenter metrics Demeter)
-    toScale = Geometry.scale (1/1800) >> Geometry.add origin
+    scaleFactor = 1/1800
+    toScale = Geometry.scale scaleFactor >> Geometry.add origin
   in
     layout.connections
       |> List.map (\{shape} ->
         case shape of
           Layout.Line a b ->
-            { name = ""
-            , icon = ""
-            , id = ""
-            , iconPoint = a
-            , endA = a |> toScale
-            , endB = b |> toScale
-            , shape = Line
-            }
+            Line (a |> toScale) (b |> toScale)
           Layout.Arc {center, radius, fromAngle, toAngle} ->
-            let
-              oddAngle = abs (toAngle - fromAngle)
-              angle =
-                if oddAngle > 180 then
-                  360 - oddAngle
-                else
-                  oddAngle
-              workAngle = oddAngle / 2 + fromAngle
-              midAngle =
-                if workAngle > tau then
-                  workAngle - tau
-                else
-                  workAngle
-            in
-            { name = ""
-            , icon = ""
-            , id = ""
-            , iconPoint = center |> Geometry.add (Geometry.rotate midAngle (radius, 0)) |> toScale
-            , endA = center |> Geometry.add (Geometry.rotate fromAngle (radius, 0)) |> toScale
-            , endB = center |> Geometry.add (Geometry.rotate toAngle (radius, 0)) |> toScale
-            , shape = if angle > tau/4 then SplitArc (center |> toScale) else Arc (center |> toScale)
-            }
+            Arc
+              { center = center |> toScale
+              , radius = radius * scaleFactor
+              , fromAngle = fromAngle
+              , toAngle = toAngle
+              }
       )
 
 layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
@@ -241,34 +223,31 @@ layoutBasicBoonsOf metrics layout data =
           { name = trait.name
           , icon = trait.icon
           , id = trait.trait
-          , iconPoint = p
-          , endA = p
-          , endB = p
-          , shape = Point
+          , location = p
           }
       )
 
-layoutDuoBoons : ChartMetrics -> List Trait -> List Boon
+layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List ConnectorShape)
 layoutDuoBoons metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
     --|> List.drop 3
     --|> List.take 1
     |> List.map (layoutDuoBoon metrics)
+    |> List.unzip
 
-layoutDuoBoon : ChartMetrics -> Trait -> Boon
+layoutDuoBoon : ChartMetrics -> Trait -> (Boon, ConnectorShape)
 layoutDuoBoon metrics trait =
   let
-    {iconPoint, endA, endB, shape} = calculateDuo metrics trait
+    (iconPoint, shape) = calculateDuo metrics trait
   in
-    { name = trait.name
-    , icon = trait.icon
-    , id = trait.trait
-    , iconPoint = iconPoint
-    , endA = endA
-    , endB = endB
-    , shape = shape
-    }
+    ( { name = trait.name
+      , icon = trait.icon
+      , id = trait.trait
+      , location = iconPoint
+      }
+    , shape
+    )
 
 isSkipOne : ChartMetrics -> Trait -> Bool
 isSkipOne metrics trait =
@@ -310,45 +289,36 @@ displayBoonTrait selectedBoon traits activeTraits boon =
       --|> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
-    |> shift boon.iconPoint
+    |> shift boon.location
     |> Events.onClick (selectedBoon boon.id)
     --|> scale 0.08
 
-displayBoonConnector : Boon -> Collage msg
-displayBoonConnector {iconPoint, endA, endB, shape} =
+displayBoonConnector : ConnectorShape -> Collage msg
+displayBoonConnector shape =
   let
     lineStyle = solid 0.004 (uniform Color.charcoal)
   in
   case shape of
-    SplitArc center ->
-      [ arc center endA iconPoint
+    Invisible ->
+      group []
+    Arc arcInfo ->
+      arcFromAngles arcInfo
         |> traced lineStyle
-      , arc center iconPoint endB
+    DuoArc arc ->
+      [ arcFromPoints arc.center arc.endA arc.midPoint
+        |> traced lineStyle
+      , arcFromPoints arc.center arc.midPoint arc.endB
         |> traced lineStyle
       ]
         |> stack
-    Arc center ->
-      arc center endA endB
+    Line a b->
+      segment a b
         |> traced lineStyle
-    Line ->
-      segment
-        endA
-        endB
-        |> traced lineStyle
-    Point ->
-      group []
 
-displayOpposite : ChartMetrics -> God -> God -> Collage msg
-displayOpposite metrics a b =
-  segment
-    (godCenter metrics a)
-    (godCenter metrics b)
-    |> traced (solid 0.01 (uniform Color.white))
-
-calculateDuo : ChartMetrics -> Trait -> Connector
+calculateDuo : ChartMetrics -> Trait -> (Point, ConnectorShape)
 calculateDuo metrics trait =
   case trait.boonType of
-    BasicBoon _ -> Connector (0,0) (0,0) (0,0) Point
+    BasicBoon _ -> ((0,0), Invisible)
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.centers) a b of
         Adjacent -> calculateAdjacent metrics a b
@@ -356,24 +326,24 @@ calculateDuo metrics trait =
         SkipTwo -> calculateSkipTwo metrics a b
         Opposite -> calculateOpposite metrics a b
 
-calculateAdjacent : ChartMetrics -> God -> God -> Connector
+calculateAdjacent : ChartMetrics -> God -> God -> (Point, ConnectorShape)
 calculateAdjacent metrics a b =
   let
     endA = godCenter metrics a
     endB = godCenter metrics b
     iconPoint = Geometry.midpoint endA endB
   in
-    Connector iconPoint iconPoint iconPoint Point
+    (iconPoint, Invisible)
 
-calculateSkipOne : ChartMetrics -> God -> God -> Connector
+calculateSkipOne : ChartMetrics -> God -> God -> (Point, ConnectorShape)
 calculateSkipOne =
   calculateArc -0.2 (mainRingRadius * 1.45)
 
-calculateSkipTwo : ChartMetrics -> God -> God -> Connector
+calculateSkipTwo : ChartMetrics -> God -> God -> (Point, ConnectorShape)
 calculateSkipTwo =
   calculateArc 0.2 (mainRingRadius * 1.6)
 
-calculateOpposite : ChartMetrics -> God -> God -> Connector
+calculateOpposite : ChartMetrics -> God -> God -> (Point, ConnectorShape)
 calculateOpposite metrics a b =
   let
     length = mainRingRadius - metrics.adjacentDistance/2
@@ -389,9 +359,9 @@ calculateOpposite metrics a b =
       else
         Geometry.interpolate 0.2 endA endB
   in
-    Connector iconPoint endA endB Line
+    (iconPoint, (Line endA endB))
 
-calculateArc : Float -> Float -> ChartMetrics -> God -> God -> Connector
+calculateArc : Float -> Float -> ChartMetrics -> God -> God -> (Point, ConnectorShape)
 calculateArc centerAdjust iconDistance metrics a b =
   let
     -- where the center of the god's area is
@@ -420,7 +390,14 @@ calculateArc centerAdjust iconDistance metrics a b =
     termA = fartherPoint (center, radius) (centerA, metrics.adjacentDistance/2)
     termB = fartherPoint (center, radius) (centerB, metrics.adjacentDistance/2)
   in
-    Connector iconPoint termA termB (SplitArc center)
+    ( iconPoint
+    , DuoArc
+        { center = center
+        , endA = termA
+        , midPoint = iconPoint
+        , endB = termB
+        }
+    )
 
 fartherPoint : (Point, Float) -> (Point, Float) -> Point
 fartherPoint c1 c2 =
@@ -432,8 +409,8 @@ fartherPoint c1 c2 =
     else
       p2
 
-arc : Point -> Point -> Point -> Path
-arc (xc,yc) (x1,y1) (x4,y4) =
+arcPoints : Point -> Point -> Point -> List Point
+arcPoints (xc,yc) (x1,y1) (x4,y4) =
   let
     -- https://stackoverflow.com/a/44829356/30203
     ax = x1 - xc
@@ -449,7 +426,39 @@ arc (xc,yc) (x1,y1) (x4,y4) =
     x3 = xc + bx + k2 * by
     y3 = yc + by - k2 * bx
   in
-  cubicCurve [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+  [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+
+arcFromPoints : Point -> Point -> Point -> Path
+arcFromPoints c p1 p2 =
+  cubicCurve (arcPoints c p1 p2)
+
+arcFromAngles : ArcType -> Path
+arcFromAngles {center, radius, fromAngle, toAngle} =
+  let
+    oddAngle = abs (toAngle - fromAngle)
+    angle =
+      if oddAngle > pi then
+        tau - oddAngle
+      else
+        oddAngle
+    workAngle = oddAngle / 2 + fromAngle
+    midAngle =
+      if workAngle > tau then
+        workAngle - tau
+      else
+        workAngle
+    midPoint = center |> Geometry.add (Geometry.rotate midAngle (radius, 0))
+    endA = center |> Geometry.add (Geometry.rotate fromAngle (radius, 0))
+    endB = center |> Geometry.add (Geometry.rotate toAngle (radius, 0))
+  in
+    if angle > tau/4 then
+      List.append
+        (arcPoints center endA midPoint)
+        (List.drop 1 (arcPoints center midPoint endB))
+        |> cubicCurve
+    else
+      (arcPoints center endA endB)
+        |> cubicCurve
 
 godCenter : ChartMetrics -> God -> Point
 godCenter metrics who =
