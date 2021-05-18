@@ -271,6 +271,13 @@ displayBoonTrait selectedBoon traits activeTraits boon =
         Color.darkGrey
       else
         Color.charcoal
+    brightness =
+      if Set.member boon.id activeTraits then
+        1.0
+      else if avail then
+        0.5
+      else
+        0.1
   in
   [ Text.fromString boon.name
       |> Text.color color
@@ -284,14 +291,15 @@ displayBoonTrait selectedBoon traits activeTraits boon =
       |> rendered
       |> scale 0.001
       |> shiftY -0.65
+  , square (0.47 * (sqrt 2))
+    |> filled (uniform Color.black)
+    |> opacity (1.0 - brightness)
+    |> rotate (tau/8)
   , image (0.9, 0.9) boon.icon
-  --, circle 0.5
-      --|> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
     |> shift boon.location
     |> Events.onClick (selectedBoon boon.id)
-    --|> scale 0.08
 
 displayBoonConnector : ConnectorShape -> Collage msg
 displayBoonConnector shape =
