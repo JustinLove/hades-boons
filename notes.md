@@ -1,19 +1,27 @@
 - god layouts?
-  - typos in dionysus
-  - typos in artemis?
-  - bad line in ares
-  - missing lines in aphrodite
-  - missing lines in zeus
+  - athena deflect line not lighting
+  - Name collsions in group names
+  - dionysus incomplete
   - rotate gods
   - figure out scale
   - figure out duo boon connctions
+  - import full circle
+  - import polylines
   - import areas
   - import ellipse arcs from dxf
-  - probably need our own hit detection
   - x diagrams.net, use lots of waypoints to create connted lines
+- design issues
+  - dionsys implicit lines
+  - artemis flare
+  - ares flare preq for own traits, not for duo?
+- trinket nodes
+- any aid
+- any/some casts
+- probably need our own hit detection
 - slot exclusives
 - line formatting
   - zoom relative size?
 - text display when small
 - fix colors
 - where does hermes go?
+  - duo lines passing behind
