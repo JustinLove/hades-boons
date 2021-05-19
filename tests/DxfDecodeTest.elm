@@ -62,7 +62,7 @@ suite =
       , test "mixed entities" <| \_ ->
         entitiesStep Point point []
           [ (0, EntityType Point), (10, X 0), (20, Y 0)
-          , (0, EntityType Line), (10, X 2), (20, Y 2)
+          , (0, EntityType LineEntity), (10, X 2), (20, Y 2)
           , (0, EntityType Point), (10, X 1), (20, Y 1)
           ]
           |> Expect.equal (Ok [(0,0), (1,1)])
@@ -72,7 +72,7 @@ suite =
           , (0, EntityType Point), (10, X 3), (20, Y 3)
           , (0, EntityType SectionStart), (2, Name "ENTITIES")
           , (0, EntityType Point), (10, X 0), (20, Y 0)
-          , (0, EntityType Line), (10, X 2), (20, Y 2)
+          , (0, EntityType LineEntity), (10, X 2), (20, Y 2)
           , (0, EntityType Point), (10, X 1), (20, Y 1)
           , (0, EntityType SectionEnd)
           , (0, EntityType Point), (10, X 4), (20, Y 4)
