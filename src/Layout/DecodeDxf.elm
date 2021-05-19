@@ -62,12 +62,10 @@ idFromTag =
   andThen extractId (tag 1000 text)
 
 extractId : String -> Decoder String
-extractId =
-  String.split(":")
-    >> List.drop 1
-    >> List.head
-    >> Maybe.map succeed
-    >> Maybe.withDefault (fail "point not tagged")
+extractId s =
+  case String.split(":") s of
+    "link" :: link :: [] -> succeed link
+    _ -> fail "link not tagged"
 
 pointBase : Int -> Decoder (Float, Float)
 pointBase base =

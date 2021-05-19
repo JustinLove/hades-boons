@@ -1,7 +1,5 @@
 - god layouts?
-  - athena deflect line not lighting
   - Name collsions in group names
-  - dionysus incomplete
   - rotate gods
   - figure out scale
   - figure out duo boon connctions
@@ -11,9 +9,9 @@
   - import ellipse arcs from dxf
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
-  - dionsys implicit lines
   - artemis flare
   - ares flare preq for own traits, not for duo?
+  - demeter legendary offset
 - trinket nodes
 - any aid
 - any/some casts
