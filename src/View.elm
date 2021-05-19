@@ -44,7 +44,6 @@ view model =
         , Html.Attributes.id "graph"
         ]
         { traits = model.traits
-        , layout = model.layout
         , activeTraits = model.activeTraits
         , activeGroups = model.activeGroups
         , onMouseMove = OnMouseMove

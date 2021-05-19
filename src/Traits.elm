@@ -15,11 +15,16 @@ module Traits exposing
   , dataGod
   , dataName
   , dataLootColor
+  , dataLayout
   , godName
   , duoBoons
   , basicBoons
   , isAvailable
+  , addLayout
+  , calculateActiveGroups
   )
+
+import Layout exposing (Layout)
 
 import Color exposing (Color)
 import Dict exposing (Dict)
@@ -58,6 +63,7 @@ type alias GodDataRecord =
   , lootColor : Color
   , color : Color
   , traits : List Trait
+  , layout : Layout
   }
 
 type alias Trait =
@@ -91,6 +97,9 @@ dataName (GodData data) = godName data.god
 
 dataLootColor : GodData -> Color
 dataLootColor (GodData data) = data.lootColor
+
+dataLayout : GodData -> Layout
+dataLayout (GodData data) = data.layout
 
 godName : God -> String
 godName god =
@@ -278,3 +287,23 @@ isAvailable (Traits {requirementsCache}) activeTraits id =
             |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not)
       )
     |> Maybe.withDefault False
+
+addLayout : God -> Layout -> Traits -> Traits
+addLayout god layout (Traits traits) =
+  Traits { traits
+  | gods = List.map (\goddata ->
+      case goddata of
+        GodData data ->
+          if data.god == god then
+            GodData { data | layout = layout }
+          else
+            goddata
+    ) traits.gods
+  }
+
+calculateActiveGroups : Set TraitId -> Traits -> Set Layout.GroupId
+calculateActiveGroups activeTraits (Traits {gods}) =
+  gods
+    |> List.foldl
+      (\(GodData {layout}) active -> Layout.calculateActiveGroups activeTraits layout |> Set.union active)
+      Set.empty

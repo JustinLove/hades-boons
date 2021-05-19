@@ -1,8 +1,13 @@
 - god layouts?
+  - typos in dionysus
+  - typos in artemis?
+  - bad line in ares
+  - missing lines in aphrodite
+  - missing lines in zeus
   - rotate gods
-  - loading multiple gods
   - figure out scale
   - figure out duo boon connctions
+  - import areas
   - import ellipse arcs from dxf
   - probably need our own hit detection
   - x diagrams.net, use lots of waypoints to create connted lines

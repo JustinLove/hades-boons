@@ -3,11 +3,11 @@ module HadesBoons exposing (..)
 import BoonChart exposing (DragMode(..))
 import Dxf.Decode
 import Geometry exposing (Point)
-import Layout exposing (..)
+import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Log
 --import MeasureText
-import Traits exposing (TraitId, Traits)
+import Traits exposing (TraitId, Traits, God(..))
 import Traits.Decode as Decode
 import View
 
@@ -26,7 +26,7 @@ type Msg
   | CurrentUrl Url
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
-  | GotLayout (Result Http.Error Layout)
+  | GotLayout God (Result Http.Error Layout)
   --| WindowSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
@@ -34,7 +34,6 @@ type alias Model =
   { location : Url
   , navigationKey : Navigation.Key
   , traits : Traits
-  , layout : Layout
   , activeTraits : Set TraitId
   , activeGroups : Set GroupId
   , drag : DragMode
@@ -58,7 +57,6 @@ init flags location key =
     --, windowWidth = 320
     --, windowHeight = 300
     --, labelWidths = Dict.empty
-    , layout = Layout [] []
     , traits = Traits.empty
     , activeTraits = Set.empty
     , activeGroups = Set.empty
@@ -68,7 +66,6 @@ init flags location key =
     }
   , Cmd.batch
     [ fetchTraits
-    , fetchDxf
     ]
     --, Dom.getViewport
       --|> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
@@ -88,12 +85,22 @@ update msg model =
     Navigate (Browser.External url) ->
       (model, Navigation.load url)
     GotTraits (Ok traits) ->
-      ({model | traits = traits}, Cmd.none)
+      ( {model | traits = traits}
+      , traits
+        |> Traits.allGods
+        |> List.map Traits.dataGod
+        |> List.map fetchDxf
+        |> Cmd.batch
+      )
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
-    GotLayout (Ok layout) ->
-      ({model | layout = layout}, Cmd.none)
-    GotLayout (Err error) ->
+    GotLayout god (Ok layout) ->
+      ( { model
+        | traits = Traits.addLayout god layout model.traits
+        }
+      , Cmd.none
+      )
+    GotLayout god (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
     --WindowSize (width, height) ->
      -- ( {model | windowWidth = width, windowHeight = height}, Cmd.none)
@@ -141,7 +148,9 @@ update msg model =
 
 updateActiveGroups : Model -> Model
 updateActiveGroups model =
-  { model | activeGroups = calculateActiveGroups model.layout model.activeTraits }
+  { model
+  | activeGroups = Traits.calculateActiveGroups model.activeTraits model.traits
+  }
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
@@ -167,11 +176,11 @@ fetchTraits =
     , expect = Http.expectJson GotTraits Decode.traits
     }
 
-fetchDxf : Cmd Msg
-fetchDxf =
+fetchDxf : God -> Cmd Msg
+fetchDxf god =
   Http.get
-    { url = "demeter.dxf"
-    , expect = expectDxf GotLayout DecodeDxf.layout
+    { url = (god |> Traits.godName |> String.toLower) ++ ".dxf"
+    , expect = expectDxf (GotLayout god) DecodeDxf.layout
     }
 
 expectDxf : (Result Http.Error a -> msg) -> Dxf.Decode.Decoder a -> Http.Expect msg

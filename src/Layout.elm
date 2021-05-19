@@ -5,14 +5,14 @@ module Layout exposing
   , Connection
   , ArcType
   , ConnectionType(..)
+  , empty
   , getPlacement
   , calculateActiveGroups
   )
 
-import Traits exposing (TraitId)
-
 import Set exposing (Set)
 
+type alias TraitId = String
 type alias GroupId = String
 
 type alias Point = (Float, Float)
@@ -38,13 +38,16 @@ type ConnectionType
   = Line Point Point
   | Arc ArcType
 
-foo : ConnectionType
-foo = Arc (ArcType (0,0) 0 0 0)
-
 type alias Connection =
   { group : GroupId
   , link : Maybe TraitId
   , shape : ConnectionType
+  }
+
+empty : Layout
+empty = 
+  { placements = []
+  , connections = []
   }
 
 getPlacement : Layout -> TraitId -> Maybe (Float, Float)
@@ -54,8 +57,8 @@ getPlacement layout trait =
     |> List.head
     |> Maybe.map .point
 
-calculateActiveGroups : Layout -> Set TraitId -> Set GroupId
-calculateActiveGroups layout activeTraits =
+calculateActiveGroups : Set TraitId -> Layout -> Set GroupId
+calculateActiveGroups activeTraits layout =
   let
     fromTraits = 
       layout.connections
@@ -85,5 +88,4 @@ calculateActiveGroups layout activeTraits =
               active
         )
         fromTraits
-    |> Debug.log "active groups"
 

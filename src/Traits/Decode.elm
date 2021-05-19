@@ -1,5 +1,6 @@
 module Traits.Decode exposing (traits)
 
+import Layout
 import Traits exposing (..)
 
 import Color exposing (Color)
@@ -19,11 +20,12 @@ godDataRecord : Decoder GodDataRecord
 godDataRecord =
   (field "Name" god)
     |> andThen (\godTag ->
-      map4 GodDataRecord
+      map5 GodDataRecord
         (succeed godTag)
         (field "LootColor" color)
         (field "Color" color)
         (allTraits godTag)
+        (succeed Layout.empty)
       )
 
 allTraits : God -> Decoder (List Trait)

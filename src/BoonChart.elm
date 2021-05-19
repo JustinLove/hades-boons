@@ -24,7 +24,6 @@ type DragMode
 
 type alias BoonChart msg =
   { traits : Traits
-  , layout : Layout
   , activeTraits : Set TraitId
   , activeGroups : Set GroupId
   , onMouseMove : Point -> msg
@@ -90,7 +89,8 @@ boonChart attributes model =
     metrics1 = initialMetrics model.traits
     gods = displayGods metrics1 model.traits
     metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
-    basicBoons = layoutBasicBoons metrics2 model.layout model.traits
+    basicBoons = layoutBasicBoons metrics2 model.traits
+    basicConnectors = layoutBasicConnectors metrics2 model.traits
     (duoBoons, duoConnectors) = layoutDuoBoons metrics2 (Traits.duoBoons model.traits)
   in
   --[ circle 0.45
@@ -98,7 +98,7 @@ boonChart attributes model =
   [ duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
   , duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
-  , layoutBasicConnectors metrics2 model.layout |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
+  , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -182,14 +182,22 @@ displayGod data =
     |> stack
     |> Collage.Layout.name (Traits.dataName data)
 
-layoutBasicConnectors : ChartMetrics -> Layout -> List Connector
-layoutBasicConnectors metrics layout =
+layoutBasicConnectors : ChartMetrics -> Traits -> List Connector
+layoutBasicConnectors metrics traits =
+  traits
+    |> Traits.allGods
+    |> List.concatMap (layoutBasicConnectorsOf metrics)
+
+layoutBasicConnectorsOf : ChartMetrics -> GodData -> List Connector
+layoutBasicConnectorsOf metrics data =
   let
-    origin = (godCenter metrics Demeter)
+    origin = (godCenter metrics (Traits.dataGod data))
     scaleFactor = 1/1800
     toScale = Geometry.scale scaleFactor >> Geometry.add origin
   in
-    layout.connections
+    data
+      |> Traits.dataLayout
+      |> .connections
       |> List.map (\{group, link, shape} ->
         case shape of
           Layout.Line a b ->
@@ -209,15 +217,16 @@ layoutBasicConnectors metrics layout =
             }
       )
 
-layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
-layoutBasicBoons metrics layout traits =
+layoutBasicBoons : ChartMetrics -> Traits -> List Boon
+layoutBasicBoons metrics traits =
   traits
     |> Traits.allGods
-    |> List.concatMap (layoutBasicBoonsOf metrics layout)
+    |> List.concatMap (layoutBasicBoonsOf metrics)
 
-layoutBasicBoonsOf : ChartMetrics -> Layout -> GodData -> List Boon
-layoutBasicBoonsOf metrics layout data =
+layoutBasicBoonsOf : ChartMetrics -> GodData -> List Boon
+layoutBasicBoonsOf metrics data =
   let
+    layout = Traits.dataLayout data
     center = (godCenter metrics (Traits.dataGod data))
     boons = Traits.basicBoons data
     angle = tau / (toFloat (List.length boons))
