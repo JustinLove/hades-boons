@@ -36,6 +36,7 @@ type alias Model =
   , traits : Traits
   , layout : Layout
   , activeTraits : Set TraitId
+  , activeGroups : Set GroupId
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -60,6 +61,7 @@ init flags location key =
     , layout = Layout [] []
     , traits = Traits.empty
     , activeTraits = Set.empty
+    , activeGroups = Set.empty
     , drag = Released
     , offset = (0,0)
     , zoom = 0.15
@@ -133,7 +135,13 @@ update msg model =
           else
             Set.insert id model.activeTraits
         }
-      , Cmd.none)
+          |> updateActiveGroups
+      , Cmd.none
+      )
+
+updateActiveGroups : Model -> Model
+updateActiveGroups model =
+  { model | activeGroups = calculateActiveGroups model.layout model.activeTraits }
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =

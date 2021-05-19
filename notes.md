@@ -1,6 +1,4 @@
 - god layouts?
-  - associate dxf groups with prereqs
-  - associate lines with boons
   - rotate gods
   - loading multiple gods
   - figure out scale
@@ -8,6 +6,7 @@
   - import ellipse arcs from dxf
   - probably need our own hit detection
   - x diagrams.net, use lots of waypoints to create connted lines
+- slot exclusives
 - line formatting
   - zoom relative size?
 - text display when small

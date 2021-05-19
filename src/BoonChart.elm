@@ -2,7 +2,7 @@ module BoonChart exposing (DragMode(..), BoonChart, boonChart)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..))
-import Layout exposing (Layout)
+import Layout exposing (Layout, GroupId)
 
 import Array exposing (Array)
 import Collage exposing (..)
@@ -26,6 +26,7 @@ type alias BoonChart msg =
   { traits : Traits
   , layout : Layout
   , activeTraits : Set TraitId
+  , activeGroups : Set GroupId
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
@@ -40,6 +41,12 @@ type alias ChartMetrics =
   { centers : Array Point
   , angle : Float
   , adjacentDistance : Float
+  }
+
+type alias Connector =
+  { shape : ConnectorShape
+  , link : Maybe TraitId
+  , group : String
   }
 
 type ConnectorShape
@@ -90,8 +97,8 @@ boonChart attributes model =
       --|> outlined (solid 0.01 (uniform Color.white))
   [ duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
-  , duoConnectors |> List.map displayBoonConnector |> stack
-  , layoutBasicConnectors metrics2 model.layout |> List.map displayBoonConnector |> stack
+  , duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
+  , layoutBasicConnectors metrics2 model.layout |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , gods |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -175,7 +182,7 @@ displayGod data =
     |> stack
     |> Collage.Layout.name (Traits.dataName data)
 
-layoutBasicConnectors : ChartMetrics -> Layout -> List ConnectorShape
+layoutBasicConnectors : ChartMetrics -> Layout -> List Connector
 layoutBasicConnectors metrics layout =
   let
     origin = (godCenter metrics Demeter)
@@ -183,17 +190,23 @@ layoutBasicConnectors metrics layout =
     toScale = Geometry.scale scaleFactor >> Geometry.add origin
   in
     layout.connections
-      |> List.map (\{shape} ->
+      |> List.map (\{group, link, shape} ->
         case shape of
           Layout.Line a b ->
-            Line (a |> toScale) (b |> toScale)
+            { shape = Line (a |> toScale) (b |> toScale)
+            , link = link
+            , group = group
+            }
           Layout.Arc {center, radius, fromAngle, toAngle} ->
-            Arc
+            { shape = Arc
               { center = center |> toScale
               , radius = radius * scaleFactor
               , fromAngle = fromAngle
               , toAngle = toAngle
               }
+            , link = link
+            , group = group
+            }
       )
 
 layoutBasicBoons : ChartMetrics -> Layout -> Traits -> List Boon
@@ -227,7 +240,7 @@ layoutBasicBoonsOf metrics layout data =
           }
       )
 
-layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List ConnectorShape)
+layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List Connector)
 layoutDuoBoons metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
@@ -236,7 +249,7 @@ layoutDuoBoons metrics traits =
     |> List.map (layoutDuoBoon metrics)
     |> List.unzip
 
-layoutDuoBoon : ChartMetrics -> Trait -> (Boon, ConnectorShape)
+layoutDuoBoon : ChartMetrics -> Trait -> (Boon, Connector)
 layoutDuoBoon metrics trait =
   let
     (iconPoint, shape) = calculateDuo metrics trait
@@ -246,7 +259,10 @@ layoutDuoBoon metrics trait =
       , id = trait.trait
       , location = iconPoint
       }
-    , shape
+    , { shape = shape
+      , link = Nothing
+      , group = trait.trait
+      }
     )
 
 isSkipOne : ChartMetrics -> Trait -> Bool
@@ -301,14 +317,29 @@ displayBoonTrait selectedBoon traits activeTraits boon =
     |> shift boon.location
     |> Events.onClick (selectedBoon boon.id)
 
-displayBoonConnector : ConnectorShape -> Collage msg
-displayBoonConnector shape =
+displayBoonConnector : Set TraitId -> Set GroupId -> Connector -> Collage msg
+displayBoonConnector activeTraits activeGroups {shape, link, group} =
   let
-    lineStyle = solid 0.004 (uniform Color.charcoal)
+    lineStyle =
+      if Set.member group activeGroups then
+        case link of
+          Just id ->
+            if Set.member id activeTraits || Set.member id activeGroups then
+              solid 0.004 (uniform Color.white)
+            else
+              solid 0.001 (uniform Color.charcoal)
+          Nothing ->
+            solid 0.004 (uniform Color.white)
+      else
+        case link of
+          Just id ->
+            solid 0.001 (uniform Color.charcoal)
+          Nothing ->
+            solid 0.002 (uniform Color.charcoal)
   in
   case shape of
     Invisible ->
-      group []
+      Collage.group []
     Arc arcInfo ->
       arcFromAngles arcInfo
         |> traced lineStyle

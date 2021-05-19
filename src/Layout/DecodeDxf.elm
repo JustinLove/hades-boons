@@ -51,6 +51,7 @@ arc =
 inLayer : Decoder String
 inLayer =
   tag 8 layer
+    |> map (String.replace "C ... " "")
 
 idFromText : Decoder String
 idFromText =

@@ -46,6 +46,7 @@ view model =
         { traits = model.traits
         , layout = model.layout
         , activeTraits = model.activeTraits
+        , activeGroups = model.activeGroups
         , onMouseMove = OnMouseMove
         , onMouseDown = OnMouseDown
         , onMouseUp = OnMouseUp
