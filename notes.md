@@ -9,10 +9,7 @@
   - import ellipse arcs from dxf
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
-  - artemis flare
   - ares flare preq for own traits, not for duo?
-  - demeter legendary offset
-- trinket nodes
 - any aid
 - any/some casts
 - probably need our own hit detection
@@ -23,3 +20,4 @@
 - fix colors
 - where does hermes go?
   - duo lines passing behind
+- trinket display

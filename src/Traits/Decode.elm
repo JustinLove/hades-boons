@@ -30,9 +30,36 @@ godDataRecord =
 
 allTraits : God -> Decoder (List Trait)
 allTraits godTag =
+  map (List.append (trinkets godTag))
+    (dataTraits godTag)
+
+dataTraits : God -> Decoder (List Trait)
+dataTraits godTag =
   map2 List.append
     (field "Traits" (list (trait godTag)))
     (field "LinkedUpgrades" (list (trait godTag)))
+
+trinkets : God -> List Trait
+trinkets godTag =
+  case godTag of
+    Poseidon ->
+      [ { icon = "GUI/Screens/AwardMenu/conch_shell_17.png"
+        , trait = "ForcePoseidonBoonTrait"
+        , name = "Conch Shell"
+        , requirements = None
+        , boonType = BasicBoon Poseidon
+        }
+      ]
+    Hermes ->
+      [ { icon = "GUI/Screens/AwardMenu/feather.png"
+        , trait = "FastClearDodgeBonusTrait"
+        , name = "Lambent Plume"
+        , requirements = None
+        , boonType = BasicBoon Hermes
+        }
+      ]
+    _ ->
+      []
 
 god : Decoder God
 god =
