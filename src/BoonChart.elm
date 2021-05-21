@@ -141,16 +141,24 @@ initialMetrics traits =
     angle = tau / (toFloat count)
     adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
   in
-    { gods = main
+    { gods = Traits.allGods traits
       |> List.sortBy (Traits.dataGod >> godIndex)
       |> List.indexedMap (\i data ->
-        let a = (((toFloat i) * -angle) + -angle/2) in
-        { center = (0, mainRingRadius) |> Geometry.rotate a
-        , angle = a
-        , god = Traits.dataGod data
-        , name = Traits.dataName data
-        , color = Traits.dataLootColor data
-        }
+        if i == 0 then
+          { center = (0, 0)
+          , angle = 0
+          , god = Traits.dataGod data
+          , name = Traits.dataName data
+          , color = Traits.dataLootColor data
+          }
+        else
+          let a = (((toFloat (i-1)) * -angle) + -angle/2) in
+          { center = (0, mainRingRadius) |> Geometry.rotate a
+          , angle = a
+          , god = Traits.dataGod data
+          , name = Traits.dataName data
+          , color = Traits.dataLootColor data
+          }
       )
       |> Array.fromList
     , angle = angle
@@ -402,9 +410,9 @@ calculateOpposite metrics a b =
       |> Geometry.scale length
     iconPoint =
       if (pointY endA) < (pointY endB) then
-        Geometry.interpolate 0.2 endB endA
+        Geometry.interpolate 0.1 endB endA
       else
-        Geometry.interpolate 0.2 endA endB
+        Geometry.interpolate 0.1 endA endB
   in
     (iconPoint, (Line endA endB))
 
@@ -535,15 +543,15 @@ godAdjacency count a b =
 godIndex : God -> Int
 godIndex who =
   case who of
-    Hermes -> 8
-    Aphrodite -> 0
-    Ares -> 1
-    Demeter -> 2
-    Dionysus -> 3
-    Poseidon -> 4
-    Athena -> 5
-    Artemis -> 6
-    Zeus -> 7
+    Hermes -> 0
+    Aphrodite -> 1
+    Ares -> 2
+    Demeter -> 3
+    Dionysus -> 4
+    Poseidon -> 5
+    Athena -> 6
+    Artemis -> 7
+    Zeus -> 8
 
 wheelDecoder : (Point -> Int -> msg) -> Decode.Decoder ( msg, Bool )
 wheelDecoder tagger =
