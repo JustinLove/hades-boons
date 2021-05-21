@@ -37,9 +37,17 @@ type alias BoonChart msg =
   }
 
 type alias ChartMetrics =
-  { centers : Array Point
+  { gods : Array GodMetrics
   , angle : Float
   , adjacentDistance : Float
+  }
+
+type alias GodMetrics =
+  { center : Point
+  , angle : Float
+  , god : God
+  , name : String
+  , color : Color
   }
 
 type alias Connector =
@@ -86,12 +94,10 @@ tau = pi*2
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes model =
   let
-    metrics1 = initialMetrics model.traits
-    gods = displayGods metrics1 model.traits
-    metrics2 = {metrics1 | centers = List.map base gods |> Array.fromList}
-    basicBoons = layoutBasicBoons metrics2 model.traits
-    basicConnectors = layoutBasicConnectors metrics2 model.traits
-    (duoBoons, duoConnectors) = layoutDuoBoons metrics2 (Traits.duoBoons model.traits)
+    metrics = initialMetrics model.traits
+    basicBoons = layoutBasicBoons metrics model.traits
+    basicConnectors = layoutBasicConnectors metrics model.traits
+    (duoBoons, duoConnectors) = layoutDuoBoons metrics (Traits.duoBoons model.traits)
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
@@ -99,7 +105,7 @@ boonChart attributes model =
   , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
   , duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
-  , gods |> stack
+  , displayGods metrics model.traits |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
       |> styled (uniform Color.black, dot 0.001 (uniform Color.white))
@@ -135,21 +141,16 @@ initialMetrics traits =
     angle = tau / (toFloat count)
     adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
   in
-    { centers = Array.empty
-    , angle = angle
-    , adjacentDistance = adjacentDistance
-    }
-
-ringLayout : Int -> Float -> ChartMetrics
-ringLayout count radius =
-  let
-    angle = tau / (toFloat count)
-    adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
-  in
-    { centers = List.range 0 (count - 1)
-      |> List.map (\i ->
-        (0, radius)
-          |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+    { gods = main
+      |> List.sortBy (Traits.dataGod >> godIndex)
+      |> List.indexedMap (\i data ->
+        let a = (((toFloat i) * -angle) + -angle/2) in
+        { center = (0, mainRingRadius) |> Geometry.rotate a
+        , angle = a
+        , god = Traits.dataGod data
+        , name = Traits.dataName data
+        , color = Traits.dataLootColor data
+        }
       )
       |> Array.fromList
     , angle = angle
@@ -158,21 +159,19 @@ ringLayout count radius =
 
 displayGods : ChartMetrics -> Traits -> List (Collage msg)
 displayGods metrics traits =
-  traits
-    |> Traits.linkableGods
-    |> List.indexedMap (\i data ->
-      displayGod data
+  metrics.gods
+    |> Array.toList
+    |> List.map (\godMetrics ->
+      displayGod godMetrics
         |> scale metrics.adjacentDistance
-        |> shiftY mainRingRadius
-        |> List.singleton
-        |> group
-        |> rotate (((toFloat i) * -metrics.angle) + -metrics.angle/2)
+        |> rotate (godMetrics.angle)
+        |> shift (godMetrics.center)
     )
 
-displayGod : GodData -> Collage msg
-displayGod data =
-  [ Text.fromString (Traits.dataName data)
-      |> Text.color (Traits.dataLootColor data)
+displayGod : GodMetrics -> Collage msg
+displayGod godMetrics =
+  [ Text.fromString (godMetrics.name)
+      |> Text.color (godMetrics.color)
       |> Text.size 200
       |> rendered
       |> scale 0.001
@@ -180,7 +179,7 @@ displayGod data =
       |> outlined (solid 0.01 (uniform Color.white))
   ]
     |> stack
-    |> Collage.Layout.name (Traits.dataName data)
+    |> Collage.Layout.name (godMetrics.name)
 
 layoutBasicConnectors : ChartMetrics -> Traits -> List Connector
 layoutBasicConnectors metrics traits =
@@ -279,7 +278,7 @@ isSkipOne metrics trait =
   case trait.boonType of
     BasicBoon _ -> False
     DuoBoon a b ->
-      case godAdjacency (Array.length metrics.centers) a b of
+      case godAdjacency (Array.length metrics.gods) a b of
         Adjacent -> False
         SkipOne -> True
         SkipTwo -> False
@@ -368,7 +367,7 @@ calculateDuo metrics trait =
   case trait.boonType of
     BasicBoon _ -> ((0,0), Invisible)
     DuoBoon a b ->
-      case godAdjacency (Array.length metrics.centers) a b of
+      case godAdjacency (Array.length metrics.gods) a b of
         Adjacent -> calculateAdjacent metrics a b
         SkipOne -> calculateSkipOne metrics a b
         SkipTwo -> calculateSkipTwo metrics a b
@@ -510,8 +509,9 @@ arcFromAngles {center, radius, fromAngle, toAngle} =
 
 godCenter : ChartMetrics -> God -> Point
 godCenter metrics who =
-  metrics.centers
+  metrics.gods
     |> Array.get (godIndex who)
+    |> Maybe.map .center
     |> Maybe.withDefault (0,0)
 
 type Adjacency
