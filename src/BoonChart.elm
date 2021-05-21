@@ -38,6 +38,8 @@ type alias BoonChart msg =
 
 type alias ChartMetrics =
   { gods : Array GodMetrics
+  , duoBoons : List Boon
+  , duoConnectors : List Connector
   , angle : Float
   , adjacentDistance : Float
   }
@@ -48,6 +50,8 @@ type alias GodMetrics =
   , god : God
   , name : String
   , color : Color
+  , boons : List Boon
+  , connectors : List Connector
   }
 
 type alias Connector =
@@ -94,16 +98,15 @@ tau = pi*2
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes model =
   let
-    metrics = initialMetrics model.traits
-    basicBoons = layoutBasicBoons metrics model.traits
-    basicConnectors = layoutBasicConnectors metrics model.traits
-    (duoBoons, duoConnectors) = layoutDuoBoons metrics (Traits.duoBoons model.traits)
+    metrics = calculateMetrics model.traits
+    basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
+    basicConnectors = metrics.gods |> Array.toList |> List.concatMap .connectors
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
+  [ metrics.duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
-  , duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
+  , metrics.duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , displayGods metrics model.traits |> stack
   , rectangle 1 1
@@ -133,6 +136,17 @@ when test f collage =
 flip : Point -> Point
 flip (x, y) = (x, -y)
 
+calculateMetrics : Traits -> ChartMetrics
+calculateMetrics traits =
+  let
+    metrics = initialMetrics traits
+    (duoBoons, duoConnectors) = layoutDuoBoons metrics (Traits.duoBoons traits)
+  in
+    { metrics
+    | duoBoons = duoBoons
+    , duoConnectors = duoConnectors
+    }
+
 initialMetrics : Traits -> ChartMetrics
 initialMetrics traits =
   let
@@ -144,23 +158,26 @@ initialMetrics traits =
     { gods = Traits.allGods traits
       |> List.sortBy (Traits.dataGod >> godIndex)
       |> List.indexedMap (\i data ->
-        if i == 0 then
-          { center = (0, 0)
-          , angle = 0
-          , god = Traits.dataGod data
-          , name = Traits.dataName data
-          , color = Traits.dataLootColor data
-          }
-        else
-          let a = (((toFloat (i-1)) * -angle) + -angle/2) in
-          { center = (0, mainRingRadius) |> Geometry.rotate a
+        let
+          a =
+            if i == 0 then 0
+            else (((toFloat (i-1)) * -angle) + -angle/2)
+          center =
+            if i == 0 then (0,0)
+            else (0, mainRingRadius) |> Geometry.rotate a
+        in
+          { center = center
           , angle = a
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
+          , boons = layoutBasicBoonsOf center data
+          , connectors = layoutBasicConnectorsOf center data
           }
       )
       |> Array.fromList
+    , duoBoons = []
+    , duoConnectors = []
     , angle = angle
     , adjacentDistance = adjacentDistance
     }
@@ -189,16 +206,9 @@ displayGod godMetrics =
     |> stack
     |> Collage.Layout.name (godMetrics.name)
 
-layoutBasicConnectors : ChartMetrics -> Traits -> List Connector
-layoutBasicConnectors metrics traits =
-  traits
-    |> Traits.allGods
-    |> List.concatMap (layoutBasicConnectorsOf metrics)
-
-layoutBasicConnectorsOf : ChartMetrics -> GodData -> List Connector
-layoutBasicConnectorsOf metrics data =
+layoutBasicConnectorsOf : Point -> GodData -> List Connector
+layoutBasicConnectorsOf origin data =
   let
-    origin = (godCenter metrics (Traits.dataGod data))
     scaleFactor = 1/1800
     toScale = Geometry.scale scaleFactor >> Geometry.add origin
   in
@@ -224,20 +234,12 @@ layoutBasicConnectorsOf metrics data =
             }
       )
 
-layoutBasicBoons : ChartMetrics -> Traits -> List Boon
-layoutBasicBoons metrics traits =
-  traits
-    |> Traits.allGods
-    |> List.concatMap (layoutBasicBoonsOf metrics)
-
-layoutBasicBoonsOf : ChartMetrics -> GodData -> List Boon
-layoutBasicBoonsOf metrics data =
+layoutBasicBoonsOf : Point -> GodData -> List Boon
+layoutBasicBoonsOf center data =
   let
     layout = Traits.dataLayout data
-    center = (godCenter metrics (Traits.dataGod data))
     boons = Traits.basicBoons data
     angle = tau / (toFloat (List.length boons))
-    adjacentDistance = 2 * mainRingRadius * (sin (angle / 2))
   in
     boons
       |> List.indexedMap (\i trait ->
