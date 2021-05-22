@@ -21,3 +21,6 @@
 - where does hermes go?
   - duo lines passing behind
 - trinket display
+- jump to god
+- chrome graphic size
+- fill screen
