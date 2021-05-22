@@ -1,4 +1,4 @@
-module BoonChart exposing (DragMode(..), BoonChart, boonChart)
+module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..))
@@ -30,7 +30,6 @@ type alias BoonChart msg =
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
   , onWheel : Point -> Int -> msg
-  , selectedBoon : TraitId -> msg
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -104,8 +103,8 @@ boonChart attributes model =
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ metrics.duoBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.02 0.08))) |> stack
-  , basicBoons |> List.map ((displayBoonTrait model.selectedBoon model.traits model.activeTraits) >> (scale (0.02 / model.zoom |> clamp 0.01 0.02))) |> stack
+  [ metrics.duoBoons |> List.map ((displayBoonTrait model.traits model.activeTraits) >> (scale (duoBoonSize model.zoom))) |> stack
+  , basicBoons |> List.map ((displayBoonTrait model.traits model.activeTraits) >> (scale (basicBoonSize model.zoom))) |> stack
   , metrics.duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , displayGods metrics model.traits |> stack
@@ -128,6 +127,50 @@ boonChart attributes model =
     |> when (model.drag /= Released) (Events.onMouseLeave model.onMouseUp)
     |> when (model.drag /= Released) (Events.onMouseMove model.onMouseMove)
     |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder model.onWheel) ) :: attributes)
+
+hitChart : Traits -> Point -> Float -> Point -> Maybe TraitId
+hitChart traits offset zoom at =
+  let
+    metrics = calculateMetrics traits
+    point = at 
+      |> Geometry.add (Geometry.scale -1 offset)
+      |> Geometry.scale (1/size)
+      |> Geometry.scale (1/zoom)
+      |> Geometry.add (-0.5,-0.5)
+      |> flip
+    godHit = metrics.gods
+      |> Array.toList
+      |> List.filterMap (hitGod (metrics.adjacentDistance / 2) ((basicBoonSize zoom) / 2) point)
+      |> List.head
+  in
+    case godHit of
+      Just _ -> godHit
+      Nothing -> hitBoons ((duoBoonSize zoom) / 2) point metrics.duoBoons
+
+hitBoons : Float -> Point -> List Boon -> Maybe TraitId
+hitBoons radius at boons =
+  boons
+    |> List.filter (hitBoon radius at)
+    |> List.head
+    |> Maybe.map .id
+
+hitBoon : Float -> Point -> Boon -> Bool
+hitBoon radius at {location} =
+  Geometry.length (Geometry.sub at location) < radius
+
+hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
+hitGod godRadius boonRadius at godMetrics =
+  if Geometry.length (Geometry.sub at godMetrics.center) < godRadius then
+    godMetrics.boons
+      |> hitBoons boonRadius at
+  else
+    Nothing
+
+duoBoonSize : Float -> Float
+duoBoonSize zoom = (0.02 / zoom |> clamp 0.02 0.08)
+
+basicBoonSize : Float -> Float
+basicBoonSize zoom = (0.02 / zoom |> clamp 0.01 0.02)
 
 when : Bool -> (Collage msg -> Collage msg) -> Collage msg -> Collage msg
 when test f collage =
@@ -294,8 +337,8 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayBoonTrait : (TraitId -> msg) -> Traits ->Set TraitId -> Boon -> Collage msg
-displayBoonTrait selectedBoon traits activeTraits boon =
+displayBoonTrait : Traits ->Set TraitId -> Boon -> Collage msg
+displayBoonTrait traits activeTraits boon =
   let
     avail = Traits.isAvailable traits activeTraits boon.id
     color =
@@ -333,7 +376,6 @@ displayBoonTrait selectedBoon traits activeTraits boon =
   ]
     |> stack
     |> shift boon.location
-    |> Events.onClick (selectedBoon boon.id)
 
 displayBoonConnector : Set TraitId -> Set GroupId -> Connector -> Collage msg
 displayBoonConnector activeTraits activeGroups {shape, link, group} =

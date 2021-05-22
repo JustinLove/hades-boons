@@ -113,7 +113,11 @@ update msg model =
       , Cmd.none
       )
     UI (View.OnMouseDown point) ->
-      ( { model | drag = Dragging model.offset point }, Cmd.none)
+      ( case hitBoon model point of
+          Just id -> selectBoon id { model | drag = Dragging model.offset point }
+          Nothing -> { model | drag = Dragging model.offset point }
+      , Cmd.none
+      )
     UI (View.OnMouseUp point) ->
       ( { model
         | offset = dragTo model.drag point model.offset
@@ -134,17 +138,23 @@ update msg model =
         }
       , Cmd.none
       )
-    UI (View.SelectedBoon id) ->
-      ( { model
-        | activeTraits =
-          if Set.member id model.activeTraits then
-            Set.remove id model.activeTraits
-          else
-            Set.insert id model.activeTraits
-        }
-          |> updateActiveGroups
-      , Cmd.none
-      )
+
+hitBoon : Model -> Point -> Maybe TraitId
+hitBoon model point =
+  point
+    |> Geometry.add (-8, -8)
+    |> BoonChart.hitChart model.traits model.offset model.zoom
+
+selectBoon : TraitId -> Model -> Model
+selectBoon id model =
+  { model
+  | activeTraits =
+    if Set.member id model.activeTraits then
+      Set.remove id model.activeTraits
+    else
+      Set.insert id model.activeTraits
+  }
+    |> updateActiveGroups
 
 updateActiveGroups : Model -> Model
 updateActiveGroups model =

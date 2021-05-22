@@ -12,7 +12,7 @@
   - ares flare preq for own traits, not for duo?
 - any aid
 - any/some casts
-- probably need our own hit detection
+- save calculated metrics
 - slot exclusives
 - line formatting
   - zoom relative size?

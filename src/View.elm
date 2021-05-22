@@ -19,7 +19,6 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
-  | SelectedBoon TraitId
 
 document tagger model =
   { title = "Hades Boons"
@@ -36,7 +35,7 @@ view model =
         , width fill
         , clip
         , inFront displayFooter
-        , inFront (model.zoom |> String.fromFloat |> text)
+        --, inFront (model.zoom |> String.fromFloat |> text)
       ]
       [ BoonChart.boonChart
         [ Html.Attributes.style "width" "100%"
@@ -50,7 +49,6 @@ view model =
         , onMouseDown = OnMouseDown
         , onMouseUp = OnMouseUp
         , onWheel = OnWheel
-        , selectedBoon = SelectedBoon
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom
