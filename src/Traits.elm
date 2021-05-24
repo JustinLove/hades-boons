@@ -11,6 +11,7 @@ module Traits exposing
   , godData
   , Trait
   , Requirements(..)
+  , BoonStatus(..)
   , linkableGods
   , allGods
   , dataGod
@@ -22,6 +23,8 @@ module Traits exposing
   , duoBoons
   , basicBoons
   , isAvailable
+  , boonStatus
+  , traitStatus
   , addLayout
   , calculateActiveGroups
   )
@@ -81,6 +84,12 @@ type Requirements
   | OneOf (Set TraitId)
   | OneFromEachSet (List (Set TraitId))
 
+type BoonStatus
+  = Active
+  | Available
+  | Excluded
+  | Unavailable
+
 linkableGods : Traits -> List GodData
 linkableGods (Traits {gods}) =
   List.drop 1 gods
@@ -127,11 +136,6 @@ basicBoons data =
 
 duoBoons : Traits -> List Trait
 duoBoons (Traits {duos}) = duos
-
-duoGodBoons : GodData -> List Trait
-duoGodBoons (GodData data) =
-  data.traits
-    |> List.filter isDuoBoon
 
 isBasicBoon : Trait -> Bool
 isBasicBoon {boonType} =
@@ -297,6 +301,31 @@ isAvailable (Traits {requirementsCache}) activeTraits id =
             |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not)
       )
     |> Maybe.withDefault False
+
+boonStatus : Set TraitId -> Trait -> BoonStatus
+boonStatus activeTraits trait =
+  if Set.member trait.trait activeTraits then
+    Active
+  else
+    case trait.requirements of
+      None ->
+        Available
+      OneOf set ->
+        if Set.intersect activeTraits set |> Set.isEmpty |> not then
+          Available
+        else
+          Unavailable
+      OneFromEachSet list ->
+        if list |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not) then
+          Available
+        else
+          Unavailable
+
+traitStatus : Set TraitId -> Traits -> Dict TraitId BoonStatus
+traitStatus activeTraits traits =
+  allTraits traits
+    |> List.map (\trait -> (trait.trait, boonStatus activeTraits trait))
+    |> Dict.fromList
 
 addLayout : God -> Layout -> Traits -> Traits
 addLayout god layout (Traits traits) =

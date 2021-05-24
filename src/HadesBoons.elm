@@ -7,7 +7,7 @@ import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Log
 --import MeasureText
-import Traits exposing (TraitId, Traits, God(..))
+import Traits exposing (TraitId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
 import Traits.Generated
 import View
@@ -16,6 +16,7 @@ import Browser
 --import Browser.Dom as Dom
 --import Browser.Events
 import Browser.Navigation as Navigation
+import Dict exposing (Dict)
 import Http
 import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
@@ -37,6 +38,7 @@ type alias Model =
   , traits : Traits
   , activeTraits : Set TraitId
   , activeGroups : Set GroupId
+  , boonStatus : Dict TraitId BoonStatus
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -62,6 +64,7 @@ initialModel flags location key =
   , traits = Traits.empty
   , activeTraits = Set.empty
   , activeGroups = Set.empty
+  , boonStatus = Dict.empty
   , drag = Released
   , offset = (0,0)
   , zoom = 0.15
@@ -70,7 +73,8 @@ initialModel flags location key =
 initWithGenerated : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
 initWithGenerated flags location key =
   let model = initialModel flags location key in
-  ( {model | traits = Traits.Generated.traits}
+  ( { model | traits = Traits.Generated.traits }
+      |> updateDerivedStatus
   , Cmd.batch
     [
     ]
@@ -102,7 +106,10 @@ update msg model =
     Navigate (Browser.External url) ->
       (model, Navigation.load url)
     GotTraits (Ok traits) ->
-      ( {model | traits = traits}
+      ( { model
+        | traits = traits
+        }
+          |> updateDerivedStatus
       , traits
         |> Traits.allGods
         |> List.map Traits.dataGod
@@ -171,12 +178,13 @@ selectBoon id model =
     else
       Set.insert id model.activeTraits
   }
-    |> updateActiveGroups
+    |> updateDerivedStatus
 
-updateActiveGroups : Model -> Model
-updateActiveGroups model =
+updateDerivedStatus : Model -> Model
+updateDerivedStatus model =
   { model
   | activeGroups = Traits.calculateActiveGroups model.activeTraits model.traits
+  , boonStatus = Traits.traitStatus model.activeTraits model.traits
   }
 
 dragTo : DragMode -> Point -> Point -> Point

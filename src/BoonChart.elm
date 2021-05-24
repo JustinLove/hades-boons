@@ -107,7 +107,7 @@ boonChart attributes model =
   , basicBoons |> List.map ((displayBoonTrait model.traits model.activeTraits) >> (scale (basicBoonSize model.zoom))) |> stack
   , metrics.duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
   , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
-  , displayGods metrics model.traits |> stack
+  , displayGods metrics |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
       |> styled (uniform Color.black, dot 0.001 (uniform Color.white))
@@ -225,8 +225,8 @@ initialMetrics traits =
     , adjacentDistance = adjacentDistance
     }
 
-displayGods : ChartMetrics -> Traits -> List (Collage msg)
-displayGods metrics traits =
+displayGods : ChartMetrics -> List (Collage msg)
+displayGods metrics =
   metrics.gods
     |> Array.toList
     |> List.map (\godMetrics ->
@@ -337,7 +337,7 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayBoonTrait : Traits ->Set TraitId -> Boon -> Collage msg
+displayBoonTrait : Traits -> Set TraitId -> Boon -> Collage msg
 displayBoonTrait traits activeTraits boon =
   let
     avail = Traits.isAvailable traits activeTraits boon.id
