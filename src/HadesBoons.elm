@@ -36,6 +36,7 @@ type alias Model =
   { location : Url
   , navigationKey : Navigation.Key
   , traits : Traits
+  , chartMetrics : BoonChart.ChartMetrics
   , activeTraits : Set TraitId
   , activeGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
@@ -62,6 +63,7 @@ initialModel flags location key =
   --, windowHeight = 300
   --, labelWidths = Dict.empty
   , traits = Traits.empty
+  , chartMetrics = BoonChart.calculateMetrics Traits.empty
   , activeTraits = Set.empty
   , activeGroups = Set.empty
   , boonStatus = Dict.empty
@@ -73,7 +75,10 @@ initialModel flags location key =
 initWithGenerated : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
 initWithGenerated flags location key =
   let model = initialModel flags location key in
-  ( { model | traits = Traits.Generated.traits }
+  ( { model
+    | traits = Traits.Generated.traits
+    }
+      |> updateChartMetrics
       |> updateDerivedStatus
   , Cmd.batch
     [
@@ -109,6 +114,7 @@ update msg model =
       ( { model
         | traits = traits
         }
+          |> updateChartMetrics
           |> updateDerivedStatus
       , traits
         |> Traits.allGods
@@ -122,6 +128,7 @@ update msg model =
       ( { model
         | traits = Traits.addLayout god layout model.traits
         }
+          |> updateChartMetrics
       , Cmd.none
       )
     GotLayout god (Err error) ->
@@ -167,7 +174,7 @@ hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
   point
     |> Geometry.add (-8, -8)
-    |> BoonChart.hitChart model.traits model.offset model.zoom
+    |> BoonChart.hitChart model.chartMetrics model.offset model.zoom
 
 selectBoon : TraitId -> Model -> Model
 selectBoon id model =
@@ -186,6 +193,10 @@ updateDerivedStatus model =
   | activeGroups = Traits.calculateActiveGroups model.activeTraits model.traits
   , boonStatus = Traits.traitStatus model.activeTraits model.traits
   }
+
+updateChartMetrics : Model -> Model
+updateChartMetrics model =
+  { model | chartMetrics = BoonChart.calculateMetrics model.traits }
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =

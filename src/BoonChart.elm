@@ -1,4 +1,4 @@
-module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart)
+module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMetrics, calculateMetrics)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
@@ -24,7 +24,7 @@ type DragMode
   | Dragging Point Point
 
 type alias BoonChart msg =
-  { traits : Traits
+  { metrics : ChartMetrics
   , activeGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
   , onMouseMove : Point -> msg
@@ -98,7 +98,7 @@ tau = pi*2
 boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes model =
   let
-    metrics = calculateMetrics model.traits
+    metrics = model.metrics
     basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
     basicConnectors = metrics.gods |> Array.toList |> List.concatMap .connectors
   in
@@ -129,10 +129,9 @@ boonChart attributes model =
     |> when (model.drag /= Released) (Events.onMouseMove model.onMouseMove)
     |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder model.onWheel) ) :: attributes)
 
-hitChart : Traits -> Point -> Float -> Point -> Maybe TraitId
-hitChart traits offset zoom at =
+hitChart : ChartMetrics -> Point -> Float -> Point -> Maybe TraitId
+hitChart metrics offset zoom at =
   let
-    metrics = calculateMetrics traits
     point = at 
       |> Geometry.add (Geometry.scale -1 offset)
       |> Geometry.scale (1/size)

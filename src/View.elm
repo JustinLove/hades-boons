@@ -42,7 +42,7 @@ view model =
         , Html.Attributes.style "height" "100%"
         , Html.Attributes.id "graph"
         ]
-        { traits = model.traits
+        { metrics = model.chartMetrics
         , activeGroups = model.activeGroups
         , boonStatus = model.boonStatus
         , onMouseMove = OnMouseMove
