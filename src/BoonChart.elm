@@ -1,7 +1,7 @@
 module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart)
 
 import Geometry
-import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..))
+import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
 import Layout exposing (Layout, GroupId)
 
 import Array exposing (Array)
@@ -11,6 +11,7 @@ import Collage.Render
 import Collage.Text as Text
 import Collage.Events as Events
 import Color exposing (Color)
+import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Events
 import Json.Decode as Decode
@@ -24,8 +25,8 @@ type DragMode
 
 type alias BoonChart msg =
   { traits : Traits
-  , activeTraits : Set TraitId
   , activeGroups : Set GroupId
+  , boonStatus : Dict TraitId BoonStatus
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
@@ -103,10 +104,10 @@ boonChart attributes model =
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ metrics.duoBoons |> List.map ((displayBoonTrait model.traits model.activeTraits) >> (scale (duoBoonSize model.zoom))) |> stack
-  , basicBoons |> List.map ((displayBoonTrait model.traits model.activeTraits) >> (scale (basicBoonSize model.zoom))) |> stack
-  , metrics.duoConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
-  , basicConnectors |> List.map (displayBoonConnector model.activeTraits model.activeGroups) |> stack
+  [ metrics.duoBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (duoBoonSize model.zoom))) |> stack
+  , basicBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (basicBoonSize model.zoom))) |> stack
+  , metrics.duoConnectors |> List.map (displayBoonConnector model.boonStatus model.activeGroups) |> stack
+  , basicConnectors |> List.map (displayBoonConnector model.boonStatus model.activeGroups) |> stack
   , displayGods metrics |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)
@@ -337,24 +338,20 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayBoonTrait : Traits -> Set TraitId -> Boon -> Collage msg
-displayBoonTrait traits activeTraits boon =
+displayBoonTrait : Dict TraitId BoonStatus -> Boon -> Collage msg
+displayBoonTrait boonStatus boon =
   let
-    avail = Traits.isAvailable traits activeTraits boon.id
+    status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
-      if Set.member boon.id activeTraits then
-        Color.white
-      else if avail then
-        Color.darkGrey
-      else
-        Color.charcoal
+      case status of
+        Active -> Color.white
+        Available -> Color.darkGrey
+        Unavailable -> Color.charcoal
     brightness =
-      if Set.member boon.id activeTraits then
-        1.0
-      else if avail then
-        0.5
-      else
-        0.1
+      case status of
+        Active -> 1.0
+        Available -> 0.5
+        Unavailable -> 0.1
   in
   [ Text.fromString boon.name
       |> Text.color color
@@ -377,14 +374,14 @@ displayBoonTrait traits activeTraits boon =
     |> stack
     |> shift boon.location
 
-displayBoonConnector : Set TraitId -> Set GroupId -> Connector -> Collage msg
-displayBoonConnector activeTraits activeGroups {shape, link, group} =
+displayBoonConnector : Dict TraitId BoonStatus -> Set GroupId -> Connector -> Collage msg
+displayBoonConnector boonStatus activeGroups {shape, link, group} =
   let
     lineStyle =
       if Set.member group activeGroups then
         case link of
           Just id ->
-            if Set.member id activeTraits || Set.member id activeGroups then
+            if Dict.get id boonStatus == Just Active || Set.member id activeGroups then
               solid 0.004 (uniform Color.white)
             else
               solid 0.001 (uniform Color.charcoal)

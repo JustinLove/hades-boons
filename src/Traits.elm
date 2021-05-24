@@ -87,7 +87,7 @@ type Requirements
 type BoonStatus
   = Active
   | Available
-  | Excluded
+  --| Excluded
   | Unavailable
 
 linkableGods : Traits -> List GodData
