@@ -104,6 +104,7 @@ entityMap s =
     "BLOCK" -> BlockStart
     "ENDBLK" -> BlockEnd
     "CELLSTYLEMAP" -> CellStyleMap
+    "CIRCLE" -> CircleEntity
     "CLASS" -> Class
     "DICTIONARY" -> Dictionary
     "ACDBDICTIONARYWDFLT" -> DictionaryWithDefault

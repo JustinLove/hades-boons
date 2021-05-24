@@ -1,7 +1,7 @@
 - god layouts?
-  - Name collsions in group names
-  - figure out scale
   - figure out duo boon connctions
+  - figure out scale
+  - Name collsions in group names
   - import full circle
   - import polylines
   - import areas

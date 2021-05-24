@@ -21,6 +21,7 @@ type alias Point = (Float, Float)
 type alias Layout =
   { placements : List Placement
   , connections : List Connection
+  , radius : Float
   }
 
 type alias Placement =
@@ -49,6 +50,7 @@ empty : Layout
 empty = 
   { placements = []
   , connections = []
+  , radius = 140
   }
 
 isEmpty : Layout -> Bool

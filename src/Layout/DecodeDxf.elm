@@ -13,6 +13,7 @@ layout =
   succeed Layout
     |> with (entities TextEntity placement)
     |> with connections
+    |> with layoutRadius
 
 placement : Decoder Placement
 placement =
@@ -81,3 +82,23 @@ radians v =
 removeGuidelines : List Connection -> List Connection
 removeGuidelines list =
   List.filter (\{group} -> group /= "Guidelines") list
+
+layoutRadius : Decoder Float
+layoutRadius =
+  entities CircleEntity outerCircle
+    |> andThen (\candidates ->
+      case List.filterMap identity candidates of
+        first :: _ -> succeed first
+        _ -> fail "no radius found"
+    )
+
+outerCircle : Decoder (Maybe Float)
+outerCircle list =
+  (inLayer
+    |> andThen (\group ->
+      if group == "LayoutRadius" then
+        (tag 40 floatValue) |> map Just
+      else
+        succeed Nothing
+    )
+  ) list

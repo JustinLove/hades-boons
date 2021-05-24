@@ -214,8 +214,8 @@ initialMetrics traits =
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
-          , boons = layoutBasicBoonsOf center a data
-          , connectors = layoutBasicConnectorsOf center a data
+          , boons = layoutBasicBoonsOf (adjacentDistance/2) center a data
+          , connectors = layoutBasicConnectorsOf (adjacentDistance/2) center a data
           }
       )
       |> Array.fromList
@@ -249,10 +249,11 @@ displayGod godMetrics =
     |> stack
     |> Collage.Layout.name (godMetrics.name)
 
-layoutBasicConnectorsOf : Point -> Float -> GodData -> List Connector
-layoutBasicConnectorsOf origin godAngle data =
+layoutBasicConnectorsOf : Float -> Point -> Float -> GodData -> List Connector
+layoutBasicConnectorsOf godRadius origin godAngle data =
   let
-    scaleFactor = 1/1800
+    layout = Traits.dataLayout data
+    scaleFactor = godRadius/layout.radius
     toScale = Geometry.scale scaleFactor >> Geometry.rotate godAngle >> Geometry.add origin
   in
     data
@@ -277,10 +278,11 @@ layoutBasicConnectorsOf origin godAngle data =
             }
       )
 
-layoutBasicBoonsOf : Point -> Float -> GodData -> List Boon
-layoutBasicBoonsOf center godAngle data =
+layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
+layoutBasicBoonsOf godRadius center godAngle data =
   let
     layout = Traits.dataLayout data
+    scaleFactor = godRadius/layout.radius
     boons = Traits.basicBoons data
     angle = tau / (toFloat (List.length boons))
   in
@@ -288,7 +290,7 @@ layoutBasicBoonsOf center godAngle data =
       |> List.indexedMap (\i trait ->
         let
           p = (case Layout.getPlacement layout trait.trait of
-            Just (x,y) -> (x / 1800, y / 1800)
+            Just b -> Geometry.scale scaleFactor b
             Nothing -> (0, 0.05)
               |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
             )

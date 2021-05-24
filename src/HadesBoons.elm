@@ -9,7 +9,8 @@ import Log
 --import MeasureText
 import Traits exposing (TraitId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
-import Traits.Generated
+import Traits.Generated as Generated
+--import Traits.Stub as Generated
 import View
 
 import Browser
@@ -46,8 +47,7 @@ type alias Model =
   }
 
 main = Browser.application
-  { init = initWithGenerated
-  --{ init = initAndLoad
+  { init = init
   , view = View.document UI
   , update = update
   , subscriptions = subscriptions
@@ -72,11 +72,18 @@ initialModel flags location key =
   , zoom = 0.15
   }
 
-initWithGenerated : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
-initWithGenerated flags location key =
+init : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
+init flags location key =
   let model = initialModel flags location key in
+  if Generated.traits == Traits.empty then
+    initAndLoad model
+  else
+    initWithGenerated model
+
+initWithGenerated : Model -> (Model, Cmd Msg)
+initWithGenerated model =
   ( { model
-    | traits = Traits.Generated.traits
+    | traits = Generated.traits
     }
       |> updateChartMetrics
       |> updateDerivedStatus
@@ -85,9 +92,8 @@ initWithGenerated flags location key =
     ]
   )
 
-initAndLoad : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
-initAndLoad flags location key =
-  let model = initialModel flags location key in
+initAndLoad : Model -> (Model, Cmd Msg)
+initAndLoad model =
   ( model
   , Cmd.batch
     [ fetchTraits

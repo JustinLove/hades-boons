@@ -11,6 +11,7 @@ layout l =
   record
     [ ("placements", list (List.map placement l.placements))
     , ("connections", list (List.map connection l.connections))
+    , ("radius", l.radius |> float)
     ]
 
 placement : Placement -> Expression

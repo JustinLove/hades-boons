@@ -90,7 +90,7 @@ checkDone model =
       |> List.all (Traits.dataLayout >> Layout.isEmpty >> not)
   in
     if allLayouts then
-      let contents = Debug.log "output" (generateFile model.traits) in
+      let contents = (generateFile model.traits) in
       ( model
       , Cmd.batch
         [ Console.write "load complete"

@@ -49,6 +49,7 @@ type EntityType
   | BlockStart
   | BlockEnd
   | CellStyleMap
+  | CircleEntity
   | Class
   | Dictionary
   | DictionaryWithDefault
