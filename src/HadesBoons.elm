@@ -9,6 +9,7 @@ import Log
 --import MeasureText
 import Traits exposing (TraitId, Traits, God(..))
 import Traits.Decode as Decode
+import Traits.Generated
 import View
 
 import Browser
@@ -42,7 +43,8 @@ type alias Model =
   }
 
 main = Browser.application
-  { init = init
+  { init = initWithGenerated
+  --{ init = initAndLoad
   , view = View.document UI
   , update = update
   , subscriptions = subscriptions
@@ -50,29 +52,44 @@ main = Browser.application
   , onUrlChange = CurrentUrl
   }
 
-init : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
-init flags location key =
-  ( { location = location
-    , navigationKey = key
-    --, windowWidth = 320
-    --, windowHeight = 300
-    --, labelWidths = Dict.empty
-    , traits = Traits.empty
-    , activeTraits = Set.empty
-    , activeGroups = Set.empty
-    , drag = Released
-    , offset = (0,0)
-    , zoom = 0.15
-    }
+initialModel : () -> Url -> Navigation.Key -> Model
+initialModel flags location key =
+  { location = location
+  , navigationKey = key
+  --, windowWidth = 320
+  --, windowHeight = 300
+  --, labelWidths = Dict.empty
+  , traits = Traits.empty
+  , activeTraits = Set.empty
+  , activeGroups = Set.empty
+  , drag = Released
+  , offset = (0,0)
+  , zoom = 0.15
+  }
+
+initWithGenerated : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
+initWithGenerated flags location key =
+  let model = initialModel flags location key in
+  ( {model | traits = Traits.Generated.traits}
+  , Cmd.batch
+    [
+    ]
+  )
+
+initAndLoad : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
+initAndLoad flags location key =
+  let model = initialModel flags location key in
+  ( model
   , Cmd.batch
     [ fetchTraits
     ]
+  )
+
     --, Dom.getViewport
       --|> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
       --|> Task.perform WindowSize
 
       --|> List.map (\name -> MeasureText.getTextWidth {font = "100px sans-serif", text = name})
-  )
 
 update msg model =
   case msg of

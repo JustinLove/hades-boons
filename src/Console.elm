@@ -1,4 +1,15 @@
-port module Console exposing (write, error, log, readFile, exit, Signal(..), signal, Event(..), event)
+port module Console exposing
+  ( write
+  , error
+  , log
+  , readFile
+  , writeFile
+  , exit
+  , Signal(..)
+  , signal
+  , Event(..)
+  , event
+  )
 
 import Json.Decode as Decode exposing (Value)
 import Json.Encode as Encode
@@ -36,6 +47,15 @@ readFile filename =
     ]
     |> consoleCommand
 
+writeFile : String -> String -> Cmd msg
+writeFile filename text =
+  Encode.object
+    [ ("kind", Encode.string "writeFile")
+    , ("filename", Encode.string filename)
+    , ("text", Encode.string text)
+    ]
+    |> consoleCommand
+
 exit : Cmd msg
 exit =
   Encode.object
@@ -53,6 +73,7 @@ signal sig msg =
 
 type Event
   = ReadFile String (Result String String)
+  | WriteFile String (Result String Bool)
 
 event : (Result Decode.Error Event -> msg) -> Sub msg
 event tagger =
@@ -70,15 +91,19 @@ eventDecoder =
         "readfile" ->
           Decode.map2 ReadFile
             (Decode.field "filename" Decode.string)
-            (Decode.field "result" decodeResult)
+            (Decode.field "result" (decodeResult Decode.string))
+        "writefile" ->
+          Decode.map2 WriteFile
+            (Decode.field "filename" Decode.string)
+            (Decode.field "result" (decodeResult Decode.bool))
         _ ->
           Decode.fail kind
       )
 
-decodeResult : Decode.Decoder (Result String String)
-decodeResult =
+decodeResult : Decode.Decoder a -> Decode.Decoder (Result String a)
+decodeResult decoder=
   Decode.oneOf
-    [ Decode.field "ok" Decode.string |> Decode.map Ok
+    [ Decode.field "ok" decoder |> Decode.map Ok
     , Decode.field "err" Decode.string |> Decode.map Err
     ]
 

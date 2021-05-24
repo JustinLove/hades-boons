@@ -2,6 +2,7 @@ module Traits exposing
   ( TraitId
   , Traits
   , makeTraits
+  , loadPreprocessedGodsAndDuoBoons
   , empty
   , God(..)
   , BoonType(..)
@@ -15,6 +16,7 @@ module Traits exposing
   , dataGod
   , dataName
   , dataLootColor
+  , dataColor
   , dataLayout
   , godName
   , duoBoons
@@ -98,6 +100,9 @@ dataName (GodData data) = godName data.god
 dataLootColor : GodData -> Color
 dataLootColor (GodData data) = data.lootColor
 
+dataColor : GodData -> Color
+dataColor (GodData data) = data.color
+
 dataLayout : GodData -> Layout
 dataLayout (GodData data) = data.layout
 
@@ -145,6 +150,19 @@ makeTraits gods =
   gods
     |> tagLinkedBoons -- propagate to duos
     |> separateDuos
+
+loadPreprocessedGodsAndDuoBoons : List GodData -> List Trait -> Traits
+loadPreprocessedGodsAndDuoBoons basicGods duos =
+  Traits
+    { gods = basicGods
+    , duos = duos
+    , requirementsCache =
+      basicGods
+        |> List.concatMap godTraits
+        |> List.append duos
+        |> List.map (\{trait, requirements} -> (trait, requirements))
+        |> Dict.fromList
+    }
 
 tagLinkedBoons : List GodData -> List GodData
 tagLinkedBoons gods =
@@ -198,8 +216,9 @@ oneFromEachSetAccumulator group boonType =
       if a == g || b == g then
         DuoBoon a b
       else
+        Debug.todo "too many gods"
         -- no way to punt
-        boonType
+        --boonType
 
 godOfSet : List GodData -> Set TraitId -> GodsInGroup
 godOfSet gods set =
@@ -235,16 +254,7 @@ separateDuos gods =
         |> List.unzip
     duos = List.concat listOfDuos
   in
-    Traits
-      { gods = basicGods
-      , duos = duos
-      , requirementsCache =
-        basicGods
-          |> List.concatMap godTraits
-          |> List.append duos
-          |> List.map (\{trait, requirements} -> (trait, requirements))
-          |> Dict.fromList
-      }
+    loadPreprocessedGodsAndDuoBoons basicGods duos
 
 extractDuos : GodData -> (GodData, List Trait)
 extractDuos (GodData data) =

@@ -1,8 +1,9 @@
 "use strict";
 var fs = require('fs')
+var path = require('path')
 var process = require('process')
 
-fs.mkdir('src/generated', {recursive: true}, function(err) {
+fs.mkdir('generated', {recursive: true}, function(err) {
   if (err) console.log(err)
 });
 
@@ -21,7 +22,7 @@ var consoleCommand = function(message) {
       console.log("")
       break
     case 'log':
-      var filename = 'src/generated/'+(message.filename || 'log.txt')
+      var filename = 'output/'+(message.filename || 'log.txt')
       fs.appendFile(filename, message.text+"\n", function(err) {
         if (err) console.log(err)
       })
@@ -45,6 +46,40 @@ var consoleCommand = function(message) {
           })
         }
       })
+      break
+    case 'writeFile':
+      //console.log(message)
+      var filename = 'generated/'+message.filename
+      fs.mkdir(path.dirname(filename), {recursive: true}, function(err) {
+        var result
+        if (err) {
+          result = {err : err}
+          console.log(err)
+          if (app.ports.consoleEvent) {
+            app.ports.consoleEvent.send({
+              kind: 'writefile',
+              filename: message.filename,
+              result: result,
+            })
+          }
+        } else {
+          fs.writeFile(filename, message.text, function(err) {
+            if (err) {
+              result = {err : err}
+              console.log(err)
+            } else {
+              result = {ok : true}
+            }
+            if (app.ports.consoleEvent) {
+              app.ports.consoleEvent.send({
+                kind: 'writefile',
+                filename: message.filename,
+                result: result,
+              })
+            }
+          })
+        }
+      });
       break
     case 'exit':
       console.log('js exit')

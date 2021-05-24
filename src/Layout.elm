@@ -6,6 +6,7 @@ module Layout exposing
   , ArcType
   , ConnectionType(..)
   , empty
+  , isEmpty
   , getPlacement
   , calculateActiveGroups
   )
@@ -49,6 +50,10 @@ empty =
   { placements = []
   , connections = []
   }
+
+isEmpty : Layout -> Bool
+isEmpty {placements, connections} =
+  (List.isEmpty placements) && (List.isEmpty connections)
 
 getPlacement : Layout -> TraitId -> Maybe (Float, Float)
 getPlacement layout trait =

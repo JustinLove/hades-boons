@@ -6,7 +6,10 @@ import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Traits exposing (TraitId, Traits, God(..))
 import Traits.Decode as Decode
+import Traits.EncodeElm as EncodeElm
 
+import Elm.CodeGen as Elm
+import Elm.Pretty
 import Json.Decode as Decode
 
 main : Program () Model Msg
@@ -54,11 +57,10 @@ update msg model =
             |> Cmd.batch
           )
         Ok (Dxf god layout) ->
-          ( { model
-            | traits = Traits.addLayout god layout model.traits
-            }
-          , Cmd.none
-          )
+          { model
+          | traits = Traits.addLayout god layout model.traits
+          }
+            |> checkDone
         Err err ->
           ( model
           , Cmd.batch
@@ -68,8 +70,63 @@ update msg model =
           )
     ConsoleEvent (Ok (Console.ReadFile name (Err err))) ->
       (model, Console.write ("Failed to read " ++ name ++ " : " ++ err))
+    ConsoleEvent (Ok (Console.WriteFile name (Ok _))) ->
+      ( model
+      , Cmd.batch
+        [ Console.exit
+        , Console.write "done"
+        ]
+      )
+    ConsoleEvent (Ok (Console.WriteFile name (Err err))) ->
+      (model, Console.write ("Failed to write " ++ name ++ " : " ++ err))
     ConsoleEvent (Err err) ->
       (model, Console.write ("event decode failed " ++ (Decode.errorToString err)))
+
+checkDone : Model -> (Model, Cmd Msg)
+checkDone model =
+  let
+    allLayouts = model.traits
+      |> Traits.allGods
+      |> List.all (Traits.dataLayout >> Layout.isEmpty >> not)
+  in
+    if allLayouts then
+      let contents = Debug.log "output" (generateFile model.traits) in
+      ( model
+      , Cmd.batch
+        [ Console.write "load complete"
+        , Console.writeFile "Traits/Generated.elm" contents
+        ]
+      )
+    else
+      (model, Cmd.none)
+
+generateFile : Traits -> String
+generateFile traits =
+  Elm.file
+    (Elm.normalModule
+      ["Traits", "Generated"]
+      []
+    )
+    [ Elm.importStmt
+      ["Traits"]
+      Nothing
+      (Just Elm.exposeAll)
+    , Elm.importStmt
+      ["Layout"]
+      Nothing
+      (Just Elm.exposeAll)
+    , Elm.importStmt
+      ["Color"]
+      Nothing
+      Nothing
+    , Elm.importStmt
+      ["Set"]
+      Nothing
+      (Just (Elm.exposeExplicit [Elm.closedTypeExpose "Set"]))
+    ]
+    (EncodeElm.traits traits)
+    Nothing
+    |> Elm.Pretty.pretty 80
 
 fetchDxf : God -> Cmd Msg
 fetchDxf god =
