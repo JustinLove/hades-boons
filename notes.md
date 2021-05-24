@@ -1,6 +1,5 @@
 - god layouts?
   - Name collsions in group names
-  - rotate gods
   - figure out scale
   - figure out duo boon connctions
   - import full circle

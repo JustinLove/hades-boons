@@ -214,8 +214,8 @@ initialMetrics traits =
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
-          , boons = layoutBasicBoonsOf center data
-          , connectors = layoutBasicConnectorsOf center data
+          , boons = layoutBasicBoonsOf center a data
+          , connectors = layoutBasicConnectorsOf center a data
           }
       )
       |> Array.fromList
@@ -249,11 +249,11 @@ displayGod godMetrics =
     |> stack
     |> Collage.Layout.name (godMetrics.name)
 
-layoutBasicConnectorsOf : Point -> GodData -> List Connector
-layoutBasicConnectorsOf origin data =
+layoutBasicConnectorsOf : Point -> Float -> GodData -> List Connector
+layoutBasicConnectorsOf origin godAngle data =
   let
     scaleFactor = 1/1800
-    toScale = Geometry.scale scaleFactor >> Geometry.add origin
+    toScale = Geometry.scale scaleFactor >> Geometry.rotate godAngle >> Geometry.add origin
   in
     data
       |> Traits.dataLayout
@@ -269,16 +269,16 @@ layoutBasicConnectorsOf origin data =
             { shape = Arc
               { center = center |> toScale
               , radius = radius * scaleFactor
-              , fromAngle = fromAngle
-              , toAngle = toAngle
+              , fromAngle = fromAngle + godAngle
+              , toAngle = toAngle + godAngle
               }
             , link = link
             , group = group
             }
       )
 
-layoutBasicBoonsOf : Point -> GodData -> List Boon
-layoutBasicBoonsOf center data =
+layoutBasicBoonsOf : Point -> Float -> GodData -> List Boon
+layoutBasicBoonsOf center godAngle data =
   let
     layout = Traits.dataLayout data
     boons = Traits.basicBoons data
@@ -292,6 +292,7 @@ layoutBasicBoonsOf center data =
             Nothing -> (0, 0.05)
               |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
             )
+            |> Geometry.rotate godAngle
             |> Geometry.add center
         in
           { name = trait.name
