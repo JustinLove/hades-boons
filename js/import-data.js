@@ -48,7 +48,7 @@ var consoleCommand = function(message) {
       })
       break
     case 'writeFile':
-      console.log(message)
+      //console.log(message)
       var filename = 'generated/'+message.filename
       fs.mkdir(path.dirname(filename), {recursive: true}, function(err) {
         var result

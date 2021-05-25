@@ -63,6 +63,7 @@ type alias Connector =
 type ConnectorShape
   = Invisible
   | Arc ArcType
+  | Circle Point Float
   | DuoArc DuoArcType
   | Line Point Point
 
@@ -261,11 +262,6 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
       |> .connections
       |> List.map (\{group, link, shape} ->
         case shape of
-          Layout.Line a b ->
-            { shape = Line (a |> toScale) (b |> toScale)
-            , link = link
-            , group = group
-            }
           Layout.Arc {center, radius, fromAngle, toAngle} ->
             { shape = Arc
               { center = center |> toScale
@@ -273,6 +269,18 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
               , fromAngle = fromAngle + godAngle
               , toAngle = toAngle + godAngle
               }
+            , link = link
+            , group = group
+            }
+          Layout.Circle center radius ->
+            { shape = Circle
+              (center |> toScale)
+              (radius * scaleFactor)
+            , link = link
+            , group = group
+            }
+          Layout.Line a b ->
+            { shape = Line (a |> toScale) (b |> toScale)
             , link = link
             , group = group
             }
@@ -402,6 +410,10 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
     Arc arcInfo ->
       arcFromAngles arcInfo
         |> traced lineStyle
+    Circle center radius ->
+      circle radius
+        |> outlined lineStyle
+        |> shift center
     DuoArc arc ->
       [ arcFromPoints arc.center arc.endA arc.midPoint
         |> traced lineStyle

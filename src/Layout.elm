@@ -37,8 +37,9 @@ type alias ArcType =
   }
 
 type ConnectionType
-  = Line Point Point
-  | Arc ArcType
+  = Arc ArcType
+  | Circle Point Float
+  | Line Point Point
 
 type alias Connection =
   { group : GroupId

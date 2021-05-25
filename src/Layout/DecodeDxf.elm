@@ -23,9 +23,10 @@ placement =
 
 connections : Decoder (List Connection)
 connections =
-  succeed (\a b -> List.append a b |> removeGuidelines)
-    |> with (entities LineEntity (connection line))
+  succeed (\a c l -> List.concat [a, c, l] |> removeGuidelines)
     |> with (entities ArcEntity (connection arc))
+    |> with (entities CircleEntity (connection circle))
+    |> with (entities LineEntity (connection line))
 
 connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
@@ -33,12 +34,6 @@ connection decoder =
     |> with inLayer
     |> with (maybe idFromTag)
     |> with decoder
-
-line : Decoder ConnectionType
-line =
-  succeed Line
-    |> with (pointBase 10)
-    |> with (pointBase 11)
 
 arc : Decoder ConnectionType
 arc =
@@ -48,6 +43,18 @@ arc =
     |> with (tag 50 radians)
     |> with (tag 51 radians)
     |> map Arc
+
+circle : Decoder ConnectionType
+circle =
+  succeed Circle
+    |> with (pointBase 10)
+    |> with (tag 40 floatValue)
+
+line : Decoder ConnectionType
+line =
+  succeed Line
+    |> with (pointBase 10)
+    |> with (pointBase 11)
 
 inLayer : Decoder String
 inLayer =
@@ -81,7 +88,7 @@ radians v =
 
 removeGuidelines : List Connection -> List Connection
 removeGuidelines list =
-  List.filter (\{group} -> group /= "Guidelines") list
+  List.filter (\{group} -> group /= "Guidelines" && group /= "LayoutRadius") list
 
 layoutRadius : Decoder Float
 layoutRadius =

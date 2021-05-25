@@ -2,12 +2,12 @@
   - figure out duo boon connctions
   - figure out scale
   - Name collsions in group names
-  - import full circle
   - import polylines
   - import areas
   - import ellipse arcs from dxf
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
+  - athena defiance also enabled by dash
   - ares flare preq for own traits, not for duo?
 - any aid
 - any/some casts

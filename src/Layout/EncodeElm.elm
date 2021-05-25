@@ -42,8 +42,9 @@ maybe encoder m =
 connectionType : ConnectionType -> Expression
 connectionType ct =
   case ct of
-    Line a b -> construct "Line" [point a, point b]
     Arc at -> construct "Arc" [arcType at]
+    Circle c r -> construct "Circle" [point c, float r]
+    Line a b -> construct "Line" [point a, point b]
 
 arcType : ArcType -> Expression
 arcType at =
