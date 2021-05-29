@@ -320,8 +320,47 @@ addLayout god layout (Traits traits) =
   }
 
 calculateActiveGroups : Set TraitId -> Traits -> Set Layout.GroupId
-calculateActiveGroups activeTraits (Traits {gods}) =
+calculateActiveGroups activeTraits (Traits {gods, duos}) =
+  Set.union
+    (calculateActiveLayoutGroups activeTraits gods)
+    (calculateActiveDuoSets gods activeTraits duos)
+
+calculateActiveLayoutGroups : Set TraitId -> List GodData -> Set Layout.GroupId
+calculateActiveLayoutGroups activeTraits gods =
   gods
     |> List.foldl
       (\(GodData {layout}) active -> Layout.calculateActiveGroups activeTraits layout |> Set.union active)
       Set.empty
+
+calculateActiveDuoSets : List GodData -> Set TraitId -> List Trait -> Set Layout.GroupId
+calculateActiveDuoSets gods activeTraits duos =
+  duos
+    |> List.foldl
+      (\trait active -> calculateActiveSets gods activeTraits trait |> Set.union active)
+      Set.empty
+
+calculateActiveSets : List GodData -> Set TraitId -> Trait -> Set Layout.GroupId
+calculateActiveSets gods activeTraits trait =
+  case trait.requirements of
+    None ->
+      Set.empty
+    OneOf set ->
+        if Set.intersect activeTraits set |> Set.isEmpty |> not then
+          activeRequirementSet gods trait set
+            |> Maybe.map Set.singleton
+            |> Maybe.withDefault Set.empty
+        else
+          Set.empty
+    OneFromEachSet list ->
+      list
+        |> List.filter (Set.intersect activeTraits >> Set.isEmpty >> not)
+        |> List.filterMap (activeRequirementSet gods trait)
+        |> Set.fromList
+
+activeRequirementSet : List GodData -> Trait -> Set TraitId -> Maybe Layout.GroupId
+activeRequirementSet gods {trait} set =
+  case godOfSet gods set of
+    Empty -> Nothing
+    One god -> Just ((godName god) ++ trait)
+    Many -> Nothing
+

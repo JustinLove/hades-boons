@@ -39,7 +39,7 @@ type alias BoonChart msg =
 type alias ChartMetrics =
   { gods : Array GodMetrics
   , duoBoons : List Boon
-  , duoConnectors : List Connector
+  , duoConnectors : List DuoConnector
   , angle : Float
   , adjacentDistance : Float
   }
@@ -61,10 +61,8 @@ type alias Connector =
   }
 
 type ConnectorShape
-  = Invisible
-  | Arc ArcType
+  = Arc ArcType
   | Circle Point Float
-  | DuoArc DuoArcType
   | Line Point Point
 
 type alias ArcType =
@@ -73,6 +71,19 @@ type alias ArcType =
   , fromAngle : Float
   , toAngle : Float
   }
+
+type alias DuoConnector =
+  { shape : DuoConnectorShape
+  , groupA : GroupId
+  , colorA : Color
+  , groupB : GroupId
+  , colorB : Color
+  }
+
+type DuoConnectorShape
+  = Invisible
+  | DuoArc DuoArcType
+  | DuoLine Point Point
 
 type alias DuoArcType =
   { center : Point
@@ -107,7 +118,7 @@ boonChart attributes model =
       --|> outlined (solid 0.01 (uniform Color.white))
   [ metrics.duoBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (duoBoonSize model.zoom))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (basicBoonSize model.zoom))) |> stack
-  , metrics.duoConnectors |> List.map (displayBoonConnector model.boonStatus model.activeGroups) |> stack
+  , metrics.duoConnectors |> List.map (displayDuoConnector model.activeGroups) |> stack
   , basicConnectors |> List.map (displayBoonConnector model.boonStatus model.activeGroups) |> stack
   , displayGods metrics |> stack
   , rectangle 1 1
@@ -312,7 +323,7 @@ layoutBasicBoonsOf godRadius center godAngle data =
           }
       )
 
-layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List Connector)
+layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List DuoConnector)
 layoutDuoBoons metrics traits =
   traits
     --|> List.filter (isSkipOne metrics)
@@ -321,10 +332,13 @@ layoutDuoBoons metrics traits =
     |> List.map (layoutDuoBoon metrics)
     |> List.unzip
 
-layoutDuoBoon : ChartMetrics -> Trait -> (Boon, Connector)
+layoutDuoBoon : ChartMetrics -> Trait -> (Boon, DuoConnector)
 layoutDuoBoon metrics trait =
   let
     (iconPoint, shape) = calculateDuo metrics trait
+    (godA, godB) = case trait.boonType of
+      BasicBoon g -> (g, g)
+      DuoBoon a b -> (a, b)
   in
     ( { name = trait.name
       , icon = trait.icon
@@ -332,8 +346,10 @@ layoutDuoBoon metrics trait =
       , location = iconPoint
       }
     , { shape = shape
-      , link = Nothing
-      , group = trait.trait
+      , groupA = (Traits.godName godA) ++ trait.trait
+      , colorA = colorForGod metrics godA
+      , groupB = (Traits.godName godB) ++ trait.trait
+      , colorB = colorForGod metrics godB
       }
     )
 
@@ -387,26 +403,25 @@ displayBoonTrait boonStatus boon =
 displayBoonConnector : Dict TraitId BoonStatus -> Set GroupId -> Connector -> Collage msg
 displayBoonConnector boonStatus activeGroups {shape, link, group} =
   let
-    lineStyle =
+    (thickness, color) =
       if Set.member group activeGroups then
         case link of
           Just id ->
             if Dict.get id boonStatus == Just Active || Set.member id activeGroups then
-              solid 0.004 (uniform Color.white)
+              (0.004, (uniform Color.white))
             else
-              solid 0.001 (uniform Color.charcoal)
+              (0.001, (uniform Color.charcoal))
           Nothing ->
-            solid 0.004 (uniform Color.white)
+            (0.004, (uniform Color.white))
       else
         case link of
           Just id ->
-            solid 0.001 (uniform Color.charcoal)
+            (0.001, (uniform Color.charcoal))
           Nothing ->
-            solid 0.002 (uniform Color.charcoal)
+            (0.002, (uniform Color.charcoal))
+    lineStyle = solid thickness color
   in
   case shape of
-    Invisible ->
-      Collage.group []
     Arc arcInfo ->
       arcFromAngles arcInfo
         |> traced lineStyle
@@ -414,18 +429,59 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
       circle radius
         |> outlined lineStyle
         |> shift center
-    DuoArc arc ->
-      [ arcFromPoints arc.center arc.endA arc.midPoint
-        |> traced lineStyle
-      , arcFromPoints arc.center arc.midPoint arc.endB
-        |> traced lineStyle
-      ]
-        |> stack
     Line a b->
       segment a b
         |> traced lineStyle
 
-calculateDuo : ChartMetrics -> Trait -> (Point, ConnectorShape)
+displayDuoConnector : Set GroupId -> DuoConnector -> Collage msg
+displayDuoConnector activeGroups {shape, groupA, colorA, groupB, colorB} =
+  let
+    lineStyleA = duoDash False activeGroups groupA colorA
+    lineStyleB = duoDash True activeGroups groupB colorB
+  in
+  case shape of
+    Invisible ->
+      Collage.group []
+    DuoArc arc ->
+      let
+        arcA = arcFromPoints arc.center arc.endA arc.midPoint
+        arcB = arcFromPoints arc.center arc.midPoint arc.endB
+      in
+      [ arcA
+        |> traced lineStyleA
+      , arcB
+        |> traced lineStyleA
+      , arcA
+        |> traced lineStyleB
+      , arcB
+        |> traced lineStyleB
+      ]
+        |> stack
+    DuoLine a b->
+      [ segment a b
+        |> traced lineStyleA
+      , segment a b
+        |> traced lineStyleB
+      ]
+        |> stack
+
+duoDash : Bool -> Set GroupId -> GroupId -> Color -> LineStyle
+duoDash which activeGroups group godColor =
+  let
+    pattern =
+      if which then
+        [ (0.01, 0), (0, 0.01) ]
+      else
+        [ (0, 0.01), (0.01, 0) ]
+    (thickness, color) =
+      if Set.member group activeGroups then
+        (0.004, (uniform godColor))
+      else
+        (0.002, (uniform Color.charcoal))
+  in
+    broken pattern thickness color
+
+calculateDuo : ChartMetrics -> Trait -> (Point, DuoConnectorShape)
 calculateDuo metrics trait =
   case trait.boonType of
     BasicBoon _ -> ((0,0), Invisible)
@@ -436,7 +492,7 @@ calculateDuo metrics trait =
         SkipTwo -> calculateSkipTwo metrics a b
         Opposite -> calculateOpposite metrics a b
 
-calculateAdjacent : ChartMetrics -> God -> God -> (Point, ConnectorShape)
+calculateAdjacent : ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateAdjacent metrics a b =
   let
     endA = godCenter metrics a
@@ -445,15 +501,15 @@ calculateAdjacent metrics a b =
   in
     (iconPoint, Invisible)
 
-calculateSkipOne : ChartMetrics -> God -> God -> (Point, ConnectorShape)
+calculateSkipOne : ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateSkipOne =
   calculateArc -0.2 (mainRingRadius * 1.45)
 
-calculateSkipTwo : ChartMetrics -> God -> God -> (Point, ConnectorShape)
+calculateSkipTwo : ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateSkipTwo =
   calculateArc 0.2 (mainRingRadius * 1.6)
 
-calculateOpposite : ChartMetrics -> God -> God -> (Point, ConnectorShape)
+calculateOpposite : ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateOpposite metrics a b =
   let
     length = mainRingRadius - metrics.adjacentDistance/2
@@ -469,9 +525,9 @@ calculateOpposite metrics a b =
       else
         Geometry.interpolate 0.1 endA endB
   in
-    (iconPoint, (Line endA endB))
+    (iconPoint, (DuoLine endA endB))
 
-calculateArc : Float -> Float -> ChartMetrics -> God -> God -> (Point, ConnectorShape)
+calculateArc : Float -> Float -> ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateArc centerAdjust iconDistance metrics a b =
   let
     -- where the center of the god's area is
@@ -607,6 +663,14 @@ godIndex who =
     Athena -> 6
     Artemis -> 7
     Zeus -> 8
+
+colorForGod : ChartMetrics -> God -> Color
+colorForGod {gods} who =
+  gods
+    |> Array.filter (\{god} -> god == who)
+    |> Array.get 0
+    |> Maybe.map .color
+    |> Maybe.withDefault Color.white
 
 wheelDecoder : (Point -> Int -> msg) -> Decode.Decoder ( msg, Bool )
 wheelDecoder tagger =
