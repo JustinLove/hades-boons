@@ -22,7 +22,6 @@ module Traits exposing
   , godName
   , duoBoons
   , basicBoons
-  , isAvailable
   , boonStatus
   , traitStatus
   , addLayout
@@ -40,11 +39,10 @@ type alias TraitId = String
 type Traits = Traits
   { gods : List GodData
   , duos : List Trait
-  , requirementsCache : Dict TraitId Requirements
   }
 
 empty : Traits
-empty = Traits {gods = [], duos = [], requirementsCache = Dict.empty}
+empty = Traits {gods = [], duos = []}
 
 type God
   = Hermes
@@ -160,12 +158,6 @@ loadPreprocessedGodsAndDuoBoons basicGods duos =
   Traits
     { gods = basicGods
     , duos = duos
-    , requirementsCache =
-      basicGods
-        |> List.concatMap godTraits
-        |> List.append duos
-        |> List.map (\{trait, requirements} -> (trait, requirements))
-        |> Dict.fromList
     }
 
 tagLinkedBoons : List GodData -> List GodData
@@ -288,19 +280,6 @@ findBoon traits id =
     |> allTraits
     |> List.filter (hasId id)
     |> List.head
-
-isAvailable : Traits -> Set TraitId -> TraitId -> Bool
-isAvailable (Traits {requirementsCache}) activeTraits id =
-  Dict.get id requirementsCache
-    |> Maybe.map (\requirements ->
-      case requirements of
-        None -> True
-        OneOf set -> Set.intersect activeTraits set |> Set.isEmpty |> not
-        OneFromEachSet list ->
-          list
-            |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not)
-      )
-    |> Maybe.withDefault False
 
 boonStatus : Set TraitId -> Trait -> BoonStatus
 boonStatus activeTraits trait =
