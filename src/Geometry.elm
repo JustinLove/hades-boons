@@ -41,6 +41,14 @@ rotate angle (x, y) =
   , x * (sin angle) + y * (cos angle)
   )
 
+dotProduct : Point -> Point -> Float
+dotProduct (xa, ya) (xb, yb) =
+  xa*xb + ya*yb
+
+angleBetween : Point -> Point -> Float
+angleBetween a b =
+  acos ((dotProduct a b) / ((length a) * (length b)))
+
 lineIntersection : (Point, Point) -> (Point, Point) -> Point
 lineIntersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =
   let

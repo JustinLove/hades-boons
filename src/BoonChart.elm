@@ -498,6 +498,13 @@ calculateAdjacent metrics a b =
     endA = godCenter metrics a
     endB = godCenter metrics b
     iconPoint = Geometry.midpoint endA endB
+    {-
+    angleA = Debug.log "god a angle" (angleOfGod metrics a)
+    angleB = Debug.log "god b angle" (angleOfGod metrics b)
+    angle = (Geometry.angleBetween iconPoint (0,1)) |> Debug.log "adjacent"
+    _ = Debug.log "a" ((angle + angleA - (tau/2)) * 360 / tau)
+    _ = Debug.log "b" ((angle + angleB) * 360 / tau)
+    -}
   in
     (iconPoint, Invisible)
 
@@ -555,6 +562,16 @@ calculateArc centerAdjust iconDistance metrics a b =
     -- terminal points of the arcs are at one of the intersections between the two circles
     termA = fartherPoint (center, radius) (centerA, metrics.adjacentDistance/2)
     termB = fartherPoint (center, radius) (centerB, metrics.adjacentDistance/2)
+    {-
+    relA = Geometry.sub centerA termA
+    angleOriginA = Geometry.rotate (tau/4) centerA
+    angleA = Geometry.angleBetween angleOriginA relA |> (\x -> x * 360 / tau) |> Debug.log "angle a"
+    relB = Geometry.sub centerB termB
+    angleOriginB = Geometry.rotate (tau/4) centerB
+    angleB = Geometry.angleBetween angleOriginB relB |> (\x -> x * 360 / tau) |> Debug.log "angle b"
+    iconRadius = Geometry.length iconPoint
+    _ = Debug.log "offset" ((iconRadius - mainRingRadius - metrics.adjacentDistance/2) / (metrics.adjacentDistance/2))
+    -}
   in
     ( iconPoint
     , DuoArc
@@ -632,6 +649,13 @@ godCenter metrics who =
     |> Array.get (godIndex who)
     |> Maybe.map .center
     |> Maybe.withDefault (0,0)
+
+angleOfGod : ChartMetrics -> God -> Float
+angleOfGod metrics who =
+  metrics.gods
+    |> Array.get (godIndex who)
+    |> Maybe.map .angle
+    |> Maybe.withDefault 0
 
 type Adjacency
   = Adjacent

@@ -1,5 +1,12 @@
 - god layouts?
   - figure out duo boon connctions
+    - 24.84
+    - 47.04
+    - 132.95
+    - 155.15
+    - 202.5
+    - 270
+    - 337.5
   - figure out scale
   - Name collsions in group names
   - import polylines
