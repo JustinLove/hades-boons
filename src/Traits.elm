@@ -292,10 +292,23 @@ boonStatus activeTraits activeSlots trait =
   if Set.member trait.trait activeTraits then
     Active
   else
-    if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
+    if slotFilled activeSlots trait then
+      Unavailable
+    else if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
       Available
     else
       Unavailable
+
+slotFilled : Set SlotId -> Trait -> Bool
+slotFilled activeSlots trait =
+  case trait.slot of
+    Just slot ->
+      if Set.member slot activeSlots then
+        True
+      else
+        False
+    Nothing ->
+      False
 
 boonHasRequiredSlottedTrait : Set SlotId -> Trait -> Bool
 boonHasRequiredSlottedTrait activeSlots trait =

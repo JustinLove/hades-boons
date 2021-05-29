@@ -16,10 +16,10 @@
 - design issues
   - athena defiance also enabled by dash
   - ares flare preq for own traits, not for duo?
-- any aid - see TraitData, design issues
+  - any aid
 - any/some casts - prereqs?, design issues
+- slot exclusives - need to mark, make recursive
 - save calculated metrics
-- slot exclusives - see TraitData
 - line formatting
   - zoom relative size?
 - text display when small
