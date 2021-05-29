@@ -8,10 +8,10 @@
     - 270
     - 337.5
   - figure out scale
-  - Name collsions in group names
   - import polylines
   - import areas
   - import ellipse arcs from dxf
+  - activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
   - athena defiance also enabled by dash

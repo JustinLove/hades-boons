@@ -25,7 +25,8 @@ type DragMode
 
 type alias BoonChart msg =
   { metrics : ChartMetrics
-  , activeGroups : Set GroupId
+  , activeBasicGroups : List (Set GroupId)
+  , activeDuoGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
   , onMouseMove : Point -> msg
   , onMouseDown : Point -> msg
@@ -112,14 +113,17 @@ boonChart attributes model =
   let
     metrics = model.metrics
     basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
-    basicConnectors = metrics.gods |> Array.toList |> List.concatMap .connectors
+    basicConnectors = metrics.gods |> Array.toList |> List.map .connectors
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
   [ metrics.duoBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (duoBoonSize model.zoom))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (basicBoonSize model.zoom))) |> stack
-  , metrics.duoConnectors |> List.map (displayDuoConnector model.activeGroups) |> stack
-  , basicConnectors |> List.map (displayBoonConnector model.boonStatus model.activeGroups) |> stack
+  , metrics.duoConnectors |> List.map (displayDuoConnector model.activeDuoGroups) |> stack
+  , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons |> stack)
+      model.activeBasicGroups
+      basicConnectors
+      |> stack
   , displayGods metrics |> stack
   , rectangle 1 1
       --|> filled (uniform Color.black)

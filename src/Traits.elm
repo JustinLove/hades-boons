@@ -25,7 +25,8 @@ module Traits exposing
   , boonStatus
   , traitStatus
   , addLayout
-  , calculateActiveGroups
+  , calculateActiveLayoutGroups
+  , calculateActiveDuoSets
   )
 
 import Layout exposing (Layout)
@@ -319,18 +320,11 @@ addLayout god layout (Traits traits) =
     ) traits.gods
   }
 
-calculateActiveGroups : Set TraitId -> Traits -> Set Layout.GroupId
-calculateActiveGroups activeTraits (Traits {gods, duos}) =
-  Set.union
-    (calculateActiveLayoutGroups activeTraits gods)
-    (calculateActiveDuoSets gods activeTraits duos)
-
-calculateActiveLayoutGroups : Set TraitId -> List GodData -> Set Layout.GroupId
+calculateActiveLayoutGroups : Set TraitId -> List GodData -> List (Set Layout.GroupId)
 calculateActiveLayoutGroups activeTraits gods =
   gods
-    |> List.foldl
-      (\(GodData {layout}) active -> Layout.calculateActiveGroups activeTraits layout |> Set.union active)
-      Set.empty
+    |> List.map
+      (\(GodData {layout}) -> Layout.calculateActiveGroups activeTraits layout)
 
 calculateActiveDuoSets : List GodData -> Set TraitId -> List Trait -> Set Layout.GroupId
 calculateActiveDuoSets gods activeTraits duos =

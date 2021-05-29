@@ -43,7 +43,8 @@ view model =
         , Html.Attributes.id "graph"
         ]
         { metrics = model.chartMetrics
-        , activeGroups = model.activeGroups
+        , activeBasicGroups = model.activeBasicGroups
+        , activeDuoGroups = model.activeDuoGroups
         , boonStatus = model.boonStatus
         , onMouseMove = OnMouseMove
         , onMouseDown = OnMouseDown

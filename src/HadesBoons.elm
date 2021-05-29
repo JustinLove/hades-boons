@@ -39,7 +39,8 @@ type alias Model =
   , traits : Traits
   , chartMetrics : BoonChart.ChartMetrics
   , activeTraits : Set TraitId
-  , activeGroups : Set GroupId
+  , activeBasicGroups : List (Set GroupId)
+  , activeDuoGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
   , drag : DragMode
   , offset : Point
@@ -65,7 +66,8 @@ initialModel flags location key =
   , traits = Traits.empty
   , chartMetrics = BoonChart.calculateMetrics Traits.empty
   , activeTraits = Set.empty
-  , activeGroups = Set.empty
+  , activeBasicGroups = []
+  , activeDuoGroups = Set.empty
   , boonStatus = Dict.empty
   , drag = Released
   , offset = (0,0)
@@ -195,8 +197,10 @@ selectBoon id model =
 
 updateDerivedStatus : Model -> Model
 updateDerivedStatus model =
+  let gods = Traits.allGods model.traits in
   { model
-  | activeGroups = Traits.calculateActiveGroups model.activeTraits model.traits
+  | activeBasicGroups = Traits.calculateActiveLayoutGroups model.activeTraits gods
+  , activeDuoGroups = Traits.calculateActiveDuoSets gods model.activeTraits (Traits.duoBoons model.traits)
   , boonStatus = Traits.traitStatus model.activeTraits model.traits
   }
 
