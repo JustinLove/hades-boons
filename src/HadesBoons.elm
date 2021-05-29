@@ -7,7 +7,7 @@ import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Log
 --import MeasureText
-import Traits exposing (TraitId, Traits, God(..), BoonStatus(..))
+import Traits exposing (TraitId, SlotId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
 import Traits.Generated as Generated
 --import Traits.Stub as Generated
@@ -41,6 +41,7 @@ type alias Model =
   , activeTraits : Set TraitId
   , activeBasicGroups : List (Set GroupId)
   , activeDuoGroups : Set GroupId
+  , activeSlots : Set SlotId
   , boonStatus : Dict TraitId BoonStatus
   , drag : DragMode
   , offset : Point
@@ -68,6 +69,7 @@ initialModel flags location key =
   , activeTraits = Set.empty
   , activeBasicGroups = []
   , activeDuoGroups = Set.empty
+  , activeSlots = Set.empty
   , boonStatus = Dict.empty
   , drag = Released
   , offset = (0,0)
@@ -197,10 +199,14 @@ selectBoon id model =
 
 updateDerivedStatus : Model -> Model
 updateDerivedStatus model =
-  let gods = Traits.allGods model.traits in
+  let
+    gods = Traits.allGods model.traits
+    activeSlots = Traits.calculateActiveSlots model.activeTraits model.traits
+  in
   { model
   | activeBasicGroups = Traits.calculateActiveLayoutGroups model.activeTraits gods
   , activeDuoGroups = Traits.calculateActiveDuoSets gods model.activeTraits (Traits.duoBoons model.traits)
+  , activeSlots = activeSlots
   , boonStatus = Traits.traitStatus model.activeTraits model.traits
   }
 

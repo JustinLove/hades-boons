@@ -1,5 +1,6 @@
 module Traits exposing
   ( TraitId
+  , SlotId
   , Traits
   , makeTraits
   , loadPreprocessedGodsAndDuoBoons
@@ -27,6 +28,7 @@ module Traits exposing
   , addLayout
   , calculateActiveLayoutGroups
   , calculateActiveDuoSets
+  , calculateActiveSlots
   )
 
 import Layout exposing (Layout)
@@ -285,29 +287,48 @@ findBoon traits id =
     |> List.filter (hasId id)
     |> List.head
 
-boonStatus : Set TraitId -> Trait -> BoonStatus
-boonStatus activeTraits trait =
+boonStatus : Set TraitId -> Set SlotId -> Trait -> BoonStatus
+boonStatus activeTraits activeSlots trait =
   if Set.member trait.trait activeTraits then
     Active
   else
-    case trait.requirements of
-      None ->
-        Available
-      OneOf set ->
-        if Set.intersect activeTraits set |> Set.isEmpty |> not then
-          Available
-        else
-          Unavailable
-      OneFromEachSet list ->
-        if list |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not) then
-          Available
-        else
-          Unavailable
+    if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
+      Available
+    else
+      Unavailable
+
+boonHasRequiredSlottedTrait : Set SlotId -> Trait -> Bool
+boonHasRequiredSlottedTrait activeSlots trait =
+  case trait.requiredSlottedTrait of
+    Just slot ->
+      if Set.member slot activeSlots then
+        True
+      else
+        False
+    Nothing ->
+      True
+
+boonMeetsRequirements : Set TraitId -> Trait -> Bool
+boonMeetsRequirements activeTraits trait =
+  case trait.requirements of
+    None ->
+      True
+    OneOf set ->
+      if Set.intersect activeTraits set |> Set.isEmpty |> not then
+        True
+      else
+        False
+    OneFromEachSet list ->
+      if list |> List.all (Set.intersect activeTraits >> Set.isEmpty >> not) then
+        True
+      else
+        False
 
 traitStatus : Set TraitId -> Traits -> Dict TraitId BoonStatus
 traitStatus activeTraits traits =
+  let activeSlots = calculateActiveSlots activeTraits traits in
   allTraits traits
-    |> List.map (\trait -> (trait.trait, boonStatus activeTraits trait))
+    |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots trait))
     |> Dict.fromList
 
 addLayout : God -> Layout -> Traits -> Traits
@@ -361,3 +382,10 @@ activeRequirementSet gods {trait} set =
     One god -> Just ((godName god) ++ trait)
     Many -> Nothing
 
+calculateActiveSlots : Set TraitId -> Traits -> Set SlotId
+calculateActiveSlots activeTraits (Traits {gods}) =
+  gods
+    |> List.concatMap godTraits
+    |> List.filter (\{trait} -> Set.member trait activeTraits)
+    |> List.filterMap .slot
+    |> Set.fromList
