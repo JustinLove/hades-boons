@@ -59,6 +59,8 @@ trait t =
     [ ("icon", t.icon |> string)
     , ("trait", t.trait |> string)
     , ("name", t.name |> string)
+    , ("slot", t.slot |> maybe string)
+    , ("requiredSlottedTrait", t.requiredSlottedTrait |> maybe string)
     , ("requirements", t.requirements |> requirements)
     , ("boonType", t.boonType |> boonType)
     ]
@@ -79,3 +81,10 @@ boonType bt =
   case bt of
     BasicBoon g -> construct "BasicBoon" [god g]
     DuoBoon a b -> construct "DuoBoon" [god a, god b]
+
+maybe : (a -> Expression) -> Maybe a -> Expression
+maybe encoder m =
+  case m of
+    Just x -> construct "Just" [encoder x]
+    Nothing -> val "Nothing"
+

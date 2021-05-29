@@ -87,6 +87,37 @@ local function TraitIcon(trait)
 	end
 end
 
+local function TraitSlot(trait)
+	if TraitData[trait] then
+		if TraitData[trait].Slot then
+			return TraitData[trait].Slot
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				slot = TraitSlot(parent)
+				if slot then
+					return slot
+				end
+			end
+		end
+	end
+end
+
+local function TraitRequiredSlotted(trait)
+	if TraitData[trait] then
+		if TraitData[trait].RequiredSlottedTrait then
+			return TraitData[trait].RequiredSlottedTrait
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				slot = TraitRequiredSlotted(parent)
+				if slot then
+					return slot
+				end
+			end
+		end
+	end
+end
+
+
 local function GodTrait(trait, extra)
 	local name = trait
 	local image = ""
@@ -101,6 +132,14 @@ local function GodTrait(trait, extra)
 	icon = TraitIcon(trait)
 	if icon then
 		item = item .. '        "icon": ' .. String(icon) .. ',\n'
+	end
+	slot = TraitSlot(trait)
+	if slot then
+		item = item .. '        "slot": ' .. String(slot) .. ',\n'
+	end
+	req = TraitRequiredSlotted(trait)
+	if req then
+		item = item .. '        "RequiredSlottedTrait": ' .. String(req) .. ',\n'
 	end
 	item = item .. '        "trait": ' .. String(trait) .. ',\n'
 	item = item .. '        "name": ' .. String(name) .. '\n'

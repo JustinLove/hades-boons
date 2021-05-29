@@ -36,6 +36,7 @@ import Dict exposing (Dict)
 import Set exposing (Set)
 
 type alias TraitId = String
+type alias SlotId = String
 
 type Traits = Traits
   { gods : List GodData
@@ -74,6 +75,8 @@ type alias Trait =
   { icon : String
   , trait : TraitId
   , name : String
+  , slot : Maybe SlotId
+  , requiredSlottedTrait : Maybe SlotId
   , requirements : Requirements
   , boonType : BoonType
   }
