@@ -117,6 +117,7 @@ entityMap s =
     "LAYOUT" -> LayoutEntity
     "LINE" -> LineEntity
     "LTYPE" -> Linetype
+    "LWPOLYLINE" -> LWPolyLineEntity
     "ACDBPLACEHOLDER" -> Placeholder
     "POINT" -> Point
     "SCALE" -> Scale

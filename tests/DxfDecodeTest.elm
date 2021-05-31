@@ -78,6 +78,12 @@ suite =
           , (0, EntityType Point), (10, X 4), (20, Y 4)
           ]
           |> Expect.equal (Ok [(0,0), (1,1)])
+      , test "polylines" <| \_ ->
+        every 10 point
+          [ (0, EntityType LWPolyLineEntity), (10, X 0), (20, Y 0), (10, X 10), (20, Y 20)
+          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          ]
+          |> Expect.equal (Ok [(0,0), (10,20)])
       ]
     , describe "from string"
       [ test "decodeString" <| \_ ->

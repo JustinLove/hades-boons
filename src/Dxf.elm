@@ -62,6 +62,7 @@ type EntityType
   | LayoutEntity
   | LineEntity
   | Linetype
+  | LWPolyLineEntity
   | Placeholder
   | Point
   | Scale

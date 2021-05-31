@@ -118,6 +118,35 @@ withTag c decoder pipeline list =
     (tag c decoder list)
     (pipeline list)
 
+every : GroupCode -> Decoder a -> Decoder (List a)
+every targetCode decoder list =
+  case list of
+    (0, EntityType SectionEnd) :: rest ->
+      Ok []
+    (0, EntityType _) :: rest ->
+      everyStep targetCode decoder [] rest
+    [] ->
+      Ok []
+    _ ->
+      everyStep targetCode decoder [] list
+
+everyStep : GroupCode -> Decoder a -> List a -> Decoder (List a)
+everyStep targetCode decoder reversedResults list =
+  case list of
+    (0, EntityType SectionEnd) :: rest ->
+      Ok (List.reverse reversedResults)
+    (0, EntityType _) :: rest ->
+      Ok (List.reverse reversedResults)
+    (code, _) :: rest ->
+      if code == targetCode then
+        case decoder list of
+          Ok v -> everyStep targetCode decoder (v :: reversedResults) rest
+          Err err -> Err err
+      else
+        everyStep targetCode decoder reversedResults rest
+    [] ->
+      Ok (List.reverse reversedResults)
+
 entity : EntityType -> Decoder a -> Decoder a
 entity kind decoder list =
   case list of
