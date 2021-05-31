@@ -65,6 +65,7 @@ type ConnectorShape
   = Arc ArcType
   | Circle Point Float
   | Line Point Point
+  | PolyLine (List Point)
 
 type alias ArcType =
   { center : Point
@@ -299,6 +300,11 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
             , link = link
             , group = group
             }
+          Layout.PolyLine points ->
+            { shape = PolyLine (points |> List.map toScale)
+            , link = link
+            , group = group
+            }
       )
 
 layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
@@ -439,8 +445,11 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
       circle radius
         |> outlined lineStyle
         |> shift center
-    Line a b->
+    Line a b ->
       segment a b
+        |> traced lineStyle
+    PolyLine points ->
+      path points
         |> traced lineStyle
 
 displayDuoConnector : Set GroupId -> DuoConnector -> Collage msg

@@ -40,6 +40,7 @@ type ConnectionType
   = Arc ArcType
   | Circle Point Float
   | Line Point Point
+  | PolyLine (List Point)
 
 type alias Connection =
   { group : GroupId

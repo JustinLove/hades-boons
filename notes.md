@@ -8,7 +8,6 @@
     - 270
     - 337.5
   - figure out scale
-  - import polylines
   - import areas
   - import ellipse arcs from dxf
   - activating areas/outlines

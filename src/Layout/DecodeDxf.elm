@@ -23,10 +23,11 @@ placement =
 
 connections : Decoder (List Connection)
 connections =
-  succeed (\a c l -> List.concat [a, c, l] |> removeGuidelines)
+  succeed (\a c l p -> List.concat [a, c, l, p] |> removeGuidelines)
     |> with (entities ArcEntity (connection arc))
     |> with (entities CircleEntity (connection circle))
     |> with (entities LineEntity (connection line))
+    |> with (entities LWPolyLineEntity (connection polyline))
 
 connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
@@ -55,6 +56,11 @@ line =
   succeed Line
     |> with (pointBase 10)
     |> with (pointBase 11)
+
+polyline : Decoder ConnectionType
+polyline =
+  succeed PolyLine
+    |> with (every 10 (pointBase 10))
 
 inLayer : Decoder String
 inLayer =
