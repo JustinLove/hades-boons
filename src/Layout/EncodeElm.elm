@@ -43,8 +43,10 @@ connectionType : ConnectionType -> Expression
 connectionType ct =
   case ct of
     Arc at -> construct "Arc" [arcType at]
+    Area boundaries -> construct "Area" [boundaries |> List.map boundary |> list]
     Circle c r -> construct "Circle" [point c, float r]
     Line a b -> construct "Line" [point a, point b]
+    PolyLine points -> construct "PolyLine" [points |> List.map point |> list]
 
 arcType : ArcType -> Expression
 arcType at =
@@ -53,4 +55,17 @@ arcType at =
     , ("radius", at.radius |> float)
     , ("fromAngle", at.fromAngle |> float)
     , ("toAngle", at.toAngle |> float)
+    , ("winding", at.winding |> winding)
     ]
+
+winding : Winding -> Expression
+winding w =
+  case w of
+    Clockwise -> val "Clockwise"
+    Counterclockwise -> val "Counterclockwise"
+
+boundary : Boundary -> Expression
+boundary bound =
+  case bound of
+    BoundaryArc at -> construct "BoundaryArc" [arcType at]
+    BoundaryLine a b -> construct "BoundaryLine" [point a, point b]
