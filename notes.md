@@ -17,6 +17,9 @@
   - athena defiance also enabled by dash
   - ares flare preq for own traits, not for duo?
   - any aid
+  - ares-dionysus includes vengence
+  - ares-artemis does not include load cast
+  - ares-zeus awkward - move call up?
 - any/some casts - prereqs?, design issues
 - slot exclusives - need to mark, make recursive
 - save calculated metrics
