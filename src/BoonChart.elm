@@ -2,7 +2,7 @@ module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMe
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
-import Layout exposing (Layout, GroupId)
+import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
 
 import Array exposing (Array)
 import Collage exposing (..)
@@ -63,6 +63,7 @@ type alias Connector =
 
 type ConnectorShape
   = Arc ArcType
+  | Area (List Boundary)
   | Circle Point Float
   | Line Point Point
   | PolyLine (List Point)
@@ -72,6 +73,7 @@ type alias ArcType =
   , radius : Float
   , fromAngle : Float
   , toAngle : Float
+  , winding : Winding
   }
 
 type alias DuoConnector =
@@ -272,60 +274,50 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
     layout = Traits.dataLayout data
     scaleFactor = godRadius/layout.radius
     toScale = Geometry.scale scaleFactor >> Geometry.rotate godAngle >> Geometry.add origin
+    mapShape : Layout.ConnectionType -> ConnectorShape
+    mapShape shape =
+      case shape of
+        Layout.Arc {center, radius, fromAngle, toAngle, winding} ->
+          Arc
+            { center = center |> toScale
+            , radius = radius * scaleFactor
+            , fromAngle = fromAngle + godAngle
+            , toAngle = toAngle + godAngle
+            , winding = winding
+            }
+        Layout.Circle center radius ->
+          Circle
+            (center |> toScale)
+            (radius * scaleFactor)
+        Layout.Line a b ->
+          Line (a |> toScale) (b |> toScale)
+        Layout.PolyLine points ->
+          PolyLine (points |> List.map toScale)
+        Layout.Area boundaries ->
+          Area (boundaries |> List.map mapBoundary)
+    mapBoundary shape =
+      case shape of
+        Layout.BoundaryArc {center, radius, fromAngle, toAngle, winding} ->
+          BoundaryArc
+            { center = center |> toScale
+            , radius = radius * scaleFactor
+            , fromAngle = fromAngle + godAngle
+            , toAngle = toAngle + godAngle
+            , winding = winding
+            }
+        Layout.BoundaryLine a b ->
+          BoundaryLine (a |> toScale) (b |> toScale)
   in
     data
       |> Traits.dataLayout
       |> .connections
       |> List.map (\{group, link, shape} ->
-        case shape of
-          Layout.Arc {center, radius, fromAngle, toAngle} ->
-            { shape = Arc
-              { center = center |> toScale
-              , radius = radius * scaleFactor
-              , fromAngle = fromAngle + godAngle
-              , toAngle = toAngle + godAngle
-              }
-            , link = link
-            , group = group
-            }
-          Layout.Circle center radius ->
-            { shape = Circle
-              (center |> toScale)
-              (radius * scaleFactor)
-            , link = link
-            , group = group
-            }
-          Layout.Line a b ->
-            { shape = Line (a |> toScale) (b |> toScale)
-            , link = link
-            , group = group
-            }
-          Layout.PolyLine points ->
-            { shape = PolyLine (points |> List.map toScale)
-            , link = link
-            , group = group
-            }
-          Layout.Area shapes ->
-            { shape = PolyLine (shapes |> List.map mapAreaSegments |> List.map toScale)
-            , link = link
-            , group = group
-            }
+        { shape = mapShape shape
+        , link = link
+        , group = group
+        }
       )
 
-mapAreaSegments : Layout.ConnectionType -> Point
-mapAreaSegments shape =
-  case shape of
-    Layout.Arc {center, radius, fromAngle, toAngle} ->
-      center
-    Layout.Circle center radius ->
-      center
-    Layout.Line a b ->
-      a
-    Layout.PolyLine points ->
-      List.head points
-        |> Maybe.withDefault (0,0)
-    Layout.Area shapes ->
-      (0,0)
 
 layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
 layoutBasicBoonsOf godRadius center godAngle data =
@@ -470,6 +462,20 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
         |> traced lineStyle
     PolyLine points ->
       path points
+        |> traced lineStyle
+    Area boundaries ->
+      boundaries
+        |> List.map (\bound ->
+          case bound of
+            BoundaryArc arc ->
+              curvePointsFromAngles arc
+            BoundaryLine a b ->
+              curvePointsForLine a b
+          )
+        |> List.foldr joinCurvePoints []
+        |> cubicCurve
+        --|> close
+        --|> filled color
         |> traced lineStyle
 
 displayDuoConnector : Set GroupId -> DuoConnector -> Collage msg
@@ -631,8 +637,8 @@ fartherPoint c1 c2 =
     else
       p2
 
-arcPoints : Point -> Point -> Point -> List Point
-arcPoints (xc,yc) (x1,y1) (x4,y4) =
+curvePoints : Point -> Point -> Point -> List Point
+curvePoints (xc,yc) (x1,y1) (x4,y4) =
   let
     -- https://stackoverflow.com/a/44829356/30203
     ax = x1 - xc
@@ -650,12 +656,8 @@ arcPoints (xc,yc) (x1,y1) (x4,y4) =
   in
   [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
-arcFromPoints : Point -> Point -> Point -> Path
-arcFromPoints c p1 p2 =
-  cubicCurve (arcPoints c p1 p2)
-
-arcFromAngles : ArcType -> Path
-arcFromAngles {center, radius, fromAngle, toAngle} =
+curvePointsFromAngles : ArcType -> List Point
+curvePointsFromAngles {center, radius, fromAngle, toAngle, winding} =
   let
     oddAngle = abs (toAngle - fromAngle)
     angle =
@@ -663,24 +665,43 @@ arcFromAngles {center, radius, fromAngle, toAngle} =
         tau - oddAngle
       else
         oddAngle
-    workAngle = oddAngle / 2 + fromAngle
+    (startAngle, workAngle, endAngle) =
+      case winding of
+        Counterclockwise ->
+          (fromAngle, fromAngle + oddAngle / 2, toAngle)
+        Clockwise ->
+          (tau - fromAngle, tau - (fromAngle + oddAngle / 2), tau - toAngle)
     midAngle =
       if workAngle > tau then
         workAngle - tau
       else
         workAngle
     midPoint = center |> Geometry.add (Geometry.rotate midAngle (radius, 0))
-    endA = center |> Geometry.add (Geometry.rotate fromAngle (radius, 0))
-    endB = center |> Geometry.add (Geometry.rotate toAngle (radius, 0))
+    endA = center |> Geometry.add (Geometry.rotate startAngle (radius, 0))
+    endB = center |> Geometry.add (Geometry.rotate endAngle (radius, 0))
   in
     if angle > tau/4 then
-      List.append
-        (arcPoints center endA midPoint)
-        (List.drop 1 (arcPoints center midPoint endB))
-        |> cubicCurve
+      joinCurvePoints
+        (curvePoints center endA midPoint)
+        (curvePoints center midPoint endB)
     else
-      (arcPoints center endA endB)
-        |> cubicCurve
+      (curvePoints center endA endB)
+
+curvePointsForLine : Point -> Point -> List Point
+curvePointsForLine a b =
+  [a, a, b, b]
+
+joinCurvePoints : List Point -> List Point -> List Point
+joinCurvePoints a b =
+  List.append a (List.drop 1 b)
+
+arcFromPoints : Point -> Point -> Point -> Path
+arcFromPoints c p1 p2 =
+  cubicCurve (curvePoints c p1 p2)
+
+arcFromAngles : ArcType -> Path
+arcFromAngles arcType =
+  cubicCurve (curvePointsFromAngles arcType)
 
 godCenter : ChartMetrics -> God -> Point
 godCenter metrics who =

@@ -5,6 +5,8 @@ module Layout exposing
   , Connection
   , ArcType
   , ConnectionType(..)
+  , Winding(..)
+  , Boundary(..)
   , empty
   , isEmpty
   , getPlacement
@@ -34,11 +36,20 @@ type alias ArcType =
   , radius : Float
   , fromAngle : Float
   , toAngle : Float
+  , winding : Winding
   }
+
+type Winding
+  = Clockwise
+  | Counterclockwise
+
+type Boundary
+  = BoundaryArc ArcType
+  | BoundaryLine Point Point
 
 type ConnectionType
   = Arc ArcType
-  | Area (List ConnectionType)
+  | Area (List Boundary)
   | Circle Point Float
   | Line Point Point
   | PolyLine (List Point)

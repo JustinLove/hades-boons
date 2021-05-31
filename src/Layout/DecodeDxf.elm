@@ -44,7 +44,18 @@ arc =
     |> with (tag 40 floatValue)
     |> with (tag 50 radians)
     |> with (tag 51 radians)
+    |> with (succeed Counterclockwise)
     |> map Arc
+
+boundaryArc : Decoder Boundary
+boundaryArc =
+  succeed ArcType
+    |> with (pointBase 10)
+    |> with (tag 40 floatValue)
+    |> with (tag 50 radians)
+    |> with (tag 51 radians)
+    |> with (tag 73 winding)
+    |> map BoundaryArc
 
 circle : Decoder ConnectionType
 circle =
@@ -58,6 +69,12 @@ line =
     |> with (pointBase 10)
     |> with (pointBase 11)
 
+boundaryLine : Decoder Boundary
+boundaryLine =
+  succeed BoundaryLine
+    |> with (pointBase 10)
+    |> with (pointBase 11)
+
 polyline : Decoder ConnectionType
 polyline =
   succeed PolyLine
@@ -68,13 +85,13 @@ area =
   succeed Area
     |> with (every 72 boundaryData)
 
-boundaryData : Decoder ConnectionType
+boundaryData : Decoder Boundary
 boundaryData =
   tag 72 intValue
     |> andThen (\edgeType ->
       case edgeType of
-        1 -> line
-        2 -> arc
+        1 -> boundaryLine
+        2 -> boundaryArc
         3 -> fail "elliptic arc"
         4 -> fail "spline"
         _ -> fail "invalid edge type"
@@ -109,6 +126,15 @@ radians : Value -> Result Error Float
 radians v =
   angle v
     |> Result.map (\deg -> deg / 360 * pi * 2)
+
+winding : Value -> Result Error Winding
+winding v =
+  intValue v
+    |> Result.map (\flag ->
+      case flag of
+        0 -> Clockwise
+        _ -> Counterclockwise
+      )
 
 removeGuidelines : List Connection -> List Connection
 removeGuidelines list =
