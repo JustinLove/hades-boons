@@ -289,6 +289,14 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
           Circle
             (center |> toScale)
             (radius * scaleFactor)
+        Layout.EllipticArc {center, majorAxis, fromAngle, toAngle} ->
+          Arc
+            { center = center |> toScale
+            , radius = (Geometry.length majorAxis) * scaleFactor
+            , fromAngle = fromAngle + godAngle
+            , toAngle = toAngle + godAngle
+            , winding = Counterclockwise
+            }
         Layout.Line a b ->
           Line (a |> toScale) (b |> toScale)
         Layout.PolyLine points ->
@@ -474,9 +482,8 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
           )
         |> List.foldr joinCurvePoints []
         |> cubicCurve
-        --|> close
-        --|> filled color
-        |> traced lineStyle
+        |> close
+        |> filled color
 
 displayDuoConnector : Set GroupId -> DuoConnector -> Collage msg
 displayDuoConnector activeGroups {shape, groupA, colorA, groupB, colorB} =

@@ -23,12 +23,13 @@ placement =
 
 connections : Decoder (List Connection)
 connections =
-  succeed (\a c l p h -> List.concat [a, c, l, p, h] |> removeGuidelines)
+  succeed (\a c l p h e -> List.concat [a, c, l, p, h, e] |> removeGuidelines)
     |> with (entities ArcEntity (connection arc))
     |> with (entities CircleEntity (connection circle))
     |> with (entities LineEntity (connection line))
     |> with (entities LWPolyLineEntity (connection polyline))
     |> with (entities HatchEntity (connection area))
+    |> with (entities EllipseEntity (connection ellipticArc))
 
 connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
@@ -56,6 +57,16 @@ boundaryArc =
     |> with (tag 51 radians)
     |> with (tag 73 winding)
     |> map BoundaryArc
+
+ellipticArc : Decoder ConnectionType
+ellipticArc =
+  succeed EllipticArcType
+    |> with (pointBase 10)
+    |> with (pointBase 11)
+    |> with (tag 40 floatValue)
+    |> with (tag 41 floatValue)
+    |> with (tag 42 floatValue)
+    |> map EllipticArc
 
 circle : Decoder ConnectionType
 circle =

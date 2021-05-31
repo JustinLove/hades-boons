@@ -4,6 +4,7 @@ module Layout exposing
   , Placement
   , Connection
   , ArcType
+  , EllipticArcType
   , ConnectionType(..)
   , Winding(..)
   , Boundary(..)
@@ -39,6 +40,14 @@ type alias ArcType =
   , winding : Winding
   }
 
+type alias EllipticArcType =
+  { center : Point
+  , majorAxis : Point
+  , minorRadius : Float
+  , fromAngle : Float
+  , toAngle : Float
+  }
+
 type Winding
   = Clockwise
   | Counterclockwise
@@ -51,6 +60,7 @@ type ConnectionType
   = Arc ArcType
   | Area (List Boundary)
   | Circle Point Float
+  | EllipticArc EllipticArcType
   | Line Point Point
   | PolyLine (List Point)
 
