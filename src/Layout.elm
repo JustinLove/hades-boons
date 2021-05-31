@@ -38,6 +38,7 @@ type alias ArcType =
 
 type ConnectionType
   = Arc ArcType
+  | Area (List ConnectionType)
   | Circle Point Float
   | Line Point Point
   | PolyLine (List Point)

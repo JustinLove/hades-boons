@@ -110,6 +110,7 @@ entityMap s =
     "ACDBDICTIONARYWDFLT" -> DictionaryWithDefault
     "DICTIONARYVAR" -> DictionaryVar
     "DIMSTYLE" -> DimensionStyle
+    "HATCH" -> HatchEntity
     "MATERIAL" -> Material
     "MLEADERSTYLE" -> MLeaderStyle
     "MLINESTYLE" -> MLineStyle

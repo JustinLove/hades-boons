@@ -23,11 +23,12 @@ placement =
 
 connections : Decoder (List Connection)
 connections =
-  succeed (\a c l p -> List.concat [a, c, l, p] |> removeGuidelines)
+  succeed (\a c l p h -> List.concat [a, c, l, p, h] |> removeGuidelines)
     |> with (entities ArcEntity (connection arc))
     |> with (entities CircleEntity (connection circle))
     |> with (entities LineEntity (connection line))
     |> with (entities LWPolyLineEntity (connection polyline))
+    |> with (entities HatchEntity (connection area))
 
 connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
@@ -61,6 +62,23 @@ polyline : Decoder ConnectionType
 polyline =
   succeed PolyLine
     |> with (every 10 (pointBase 10))
+
+area : Decoder ConnectionType
+area =
+  succeed Area
+    |> with (every 72 boundaryData)
+
+boundaryData : Decoder ConnectionType
+boundaryData =
+  tag 72 intValue
+    |> andThen (\edgeType ->
+      case edgeType of
+        1 -> line
+        2 -> arc
+        3 -> fail "elliptic arc"
+        4 -> fail "spline"
+        _ -> fail "invalid edge type"
+      )
 
 inLayer : Decoder String
 inLayer =

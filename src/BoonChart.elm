@@ -305,7 +305,27 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
             , link = link
             , group = group
             }
+          Layout.Area shapes ->
+            { shape = PolyLine (shapes |> List.map mapAreaSegments |> List.map toScale)
+            , link = link
+            , group = group
+            }
       )
+
+mapAreaSegments : Layout.ConnectionType -> Point
+mapAreaSegments shape =
+  case shape of
+    Layout.Arc {center, radius, fromAngle, toAngle} ->
+      center
+    Layout.Circle center radius ->
+      center
+    Layout.Line a b ->
+      a
+    Layout.PolyLine points ->
+      List.head points
+        |> Maybe.withDefault (0,0)
+    Layout.Area shapes ->
+      (0,0)
 
 layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
 layoutBasicBoonsOf godRadius center godAngle data =

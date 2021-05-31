@@ -37,6 +37,12 @@ y v =
     Y why -> Ok why
     _ -> Err (MismatchedType "y")
 
+intValue : Value -> Result Error Int
+intValue v =
+  case v of
+    Integer i -> Ok i
+    _ -> Err (MismatchedType "int value")
+
 floatValue : Value -> Result Error Float
 floatValue v =
   case v of

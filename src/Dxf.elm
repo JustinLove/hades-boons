@@ -55,6 +55,7 @@ type EntityType
   | DictionaryWithDefault
   | DictionaryVar
   | DimensionStyle
+  | HatchEntity
   | Material
   | MLeaderStyle
   | MLineStyle
