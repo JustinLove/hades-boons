@@ -376,11 +376,13 @@ displayBoonTrait boonStatus boon =
       case status of
         Active -> Color.white
         Available -> Color.darkGrey
+        Excluded -> Color.charcoal
         Unavailable -> Color.charcoal
     brightness =
       case status of
         Active -> 1.0
         Available -> 0.5
+        Excluded -> 0.1
         Unavailable -> 0.1
   in
   [ Text.fromString boon.name
@@ -395,6 +397,10 @@ displayBoonTrait boonStatus boon =
       |> rendered
       |> scale 0.001
       |> shiftY -0.65
+  , if status == Excluded then
+      image (0.9, 0.9) "GUI/LockIcon/LockIcon0001.png"
+    else
+      group []
   , square (0.47 * (sqrt 2))
     |> filled (uniform Color.black)
     |> opacity (1.0 - brightness)

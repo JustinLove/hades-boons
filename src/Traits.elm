@@ -91,7 +91,7 @@ type Requirements
 type BoonStatus
   = Active
   | Available
-  --| Excluded
+  | Excluded
   | Unavailable
 
 linkableGods : Traits -> List GodData
@@ -287,13 +287,13 @@ findBoon traits id =
     |> List.filter (hasId id)
     |> List.head
 
-boonStatus : Set TraitId -> Set SlotId -> Trait -> BoonStatus
-boonStatus activeTraits activeSlots trait =
+boonStatus : Set TraitId -> Set SlotId -> Set TraitId -> Trait -> BoonStatus
+boonStatus activeTraits activeSlots excludedTraits trait =
   if Set.member trait.trait activeTraits then
     Active
   else
-    if slotFilled activeSlots trait then
-      Unavailable
+    if Set.member trait.trait excludedTraits then
+      Excluded
     else if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
       Available
     else
@@ -337,11 +337,30 @@ boonMeetsRequirements activeTraits trait =
       else
         False
 
+boonExcludedByRequirements : Set TraitId -> Trait -> Bool
+boonExcludedByRequirements excludedTraits trait =
+  case trait.requirements of
+    None ->
+      False
+    OneOf set ->
+      if Set.diff set excludedTraits |> Set.isEmpty then
+        True
+      else
+        False
+    OneFromEachSet list ->
+      if list |> List.any (\set -> Set.diff set excludedTraits |> Set.isEmpty) then
+        True
+      else
+        False
+
 traitStatus : Set TraitId -> Traits -> Dict TraitId BoonStatus
 traitStatus activeTraits traits =
-  let activeSlots = calculateActiveSlots activeTraits traits in
+  let
+    activeSlots = calculateActiveSlots activeTraits traits
+    excludedTraits = calculateExcludedTraits activeTraits activeSlots traits
+  in
   allTraits traits
-    |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots trait))
+    |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots excludedTraits trait))
     |> Dict.fromList
 
 addLayout : God -> Layout -> Traits -> Traits
@@ -402,3 +421,28 @@ calculateActiveSlots activeTraits (Traits {gods}) =
     |> List.filter (\{trait} -> Set.member trait activeTraits)
     |> List.filterMap .slot
     |> Set.fromList
+
+calculateExcludedTraits : Set TraitId -> Set SlotId -> Traits -> Set TraitId
+calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos}) =
+  let basics = gods |> List.concatMap godTraits in
+  calculateExcludedSlotTraits activeTraits activeSlots gods
+    |> calculateExcludedDerivedTraits basics -- first requirments
+    |> calculateExcludedDerivedTraits basics -- legendary
+    |> calculateExcludedDerivedTraits duos -- duos
+
+calculateExcludedSlotTraits : Set TraitId -> Set SlotId -> List GodData -> Set TraitId
+calculateExcludedSlotTraits activeTraits activeSlots gods =
+  gods
+    |> List.concatMap godTraits
+    |> List.filter (\{trait} -> not <| Set.member trait activeTraits)
+    |> List.filter (\trait -> slotFilled activeSlots trait)
+    |> List.map .trait
+    |> Set.fromList
+
+calculateExcludedDerivedTraits : List Trait -> Set TraitId -> Set TraitId
+calculateExcludedDerivedTraits traits excludedTraits =
+  traits
+    |> List.filter (\trait -> boonExcludedByRequirements excludedTraits trait)
+    |> List.map .trait
+    |> Set.fromList
+    |> Set.union excludedTraits
