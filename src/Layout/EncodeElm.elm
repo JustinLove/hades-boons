@@ -45,6 +45,7 @@ connectionType ct =
     Arc at -> construct "Arc" [arcType at]
     Area boundaries -> construct "Area" [boundaries |> List.map boundary |> list]
     Circle c r -> construct "Circle" [point c, float r]
+    EllipticArc at -> construct "EllipticArc" [ellipticArcType at]
     Line a b -> construct "Line" [point a, point b]
     PolyLine points -> construct "PolyLine" [points |> List.map point |> list]
 
@@ -56,6 +57,16 @@ arcType at =
     , ("fromAngle", at.fromAngle |> float)
     , ("toAngle", at.toAngle |> float)
     , ("winding", at.winding |> winding)
+    ]
+
+ellipticArcType : EllipticArcType -> Expression
+ellipticArcType at =
+  record
+    [ ("center", at.center |> point)
+    , ("majorAxis", at.majorAxis |> point)
+    , ("minorRatio", at.minorRatio |> float)
+    , ("fromAngle", at.fromAngle |> float)
+    , ("toAngle", at.toAngle |> float)
     ]
 
 winding : Winding -> Expression

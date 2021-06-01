@@ -43,7 +43,7 @@ type alias ArcType =
 type alias EllipticArcType =
   { center : Point
   , majorAxis : Point
-  , minorRadius : Float
+  , minorRatio : Float
   , fromAngle : Float
   , toAngle : Float
   }

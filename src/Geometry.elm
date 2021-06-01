@@ -2,6 +2,8 @@ module Geometry exposing (..)
 
 type alias Point = (Float, Float)
 
+tau = pi*2
+
 sub : Point -> Point -> Point
 sub (ax, ay) (bx, by) =
   (ax - bx, ay - by)
@@ -48,6 +50,15 @@ dotProduct (xa, ya) (xb, yb) =
 angleBetween : Point -> Point -> Float
 angleBetween a b =
   acos ((dotProduct a b) / ((length a) * (length b)))
+
+modAngle : Float -> Float
+modAngle a =
+  if a > tau then
+    a - tau
+  else if a < 0 then
+    a + tau
+  else
+    a
 
 lineIntersection : (Point, Point) -> (Point, Point) -> Point
 lineIntersection ((x1,y1),(x2,y2)) ((x3,y3),(x4,y4)) =

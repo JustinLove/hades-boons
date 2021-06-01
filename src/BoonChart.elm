@@ -65,6 +65,7 @@ type ConnectorShape
   = Arc ArcType
   | Area (List Boundary)
   | Circle Point Float
+  | EllipticArc EllipticArcType
   | Line Point Point
   | PolyLine (List Point)
 
@@ -74,6 +75,14 @@ type alias ArcType =
   , fromAngle : Float
   , toAngle : Float
   , winding : Winding
+  }
+
+type alias EllipticArcType =
+  { center : Point
+  , majorAxis : Point
+  , minorRatio : Float
+  , fromAngle : Float
+  , toAngle : Float
   }
 
 type alias DuoConnector =
@@ -289,13 +298,15 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
           Circle
             (center |> toScale)
             (radius * scaleFactor)
-        Layout.EllipticArc {center, majorAxis, fromAngle, toAngle} ->
-          Arc
+        Layout.EllipticArc {center, majorAxis, minorRatio, fromAngle, toAngle} ->
+          EllipticArc
             { center = center |> toScale
-            , radius = (Geometry.length majorAxis) * scaleFactor
-            , fromAngle = fromAngle + godAngle
-            , toAngle = toAngle + godAngle
-            , winding = Counterclockwise
+            , majorAxis = majorAxis
+              |> Geometry.scale scaleFactor
+              |> Geometry.rotate godAngle
+            , minorRatio = minorRatio
+            , fromAngle = fromAngle
+            , toAngle = toAngle
             }
         Layout.Line a b ->
           Line (a |> toScale) (b |> toScale)
@@ -465,6 +476,9 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
       circle radius
         |> outlined lineStyle
         |> shift center
+    EllipticArc arcInfo ->
+      ellipticArcFromAngles arcInfo
+        |> traced lineStyle
     Line a b ->
       segment a b
         |> traced lineStyle
@@ -694,6 +708,44 @@ curvePointsFromAngles {center, radius, fromAngle, toAngle, winding} =
     else
       (curvePoints center endA endB)
 
+curvePointsFromEllipticAngles : EllipticArcType -> List Point
+curvePointsFromEllipticAngles {center, majorAxis, minorRatio, fromAngle, toAngle} =
+  let
+    semiMajor = Geometry.length majorAxis
+    semiMinor = semiMajor * minorRatio
+    (mx, my) = majorAxis
+    ellipseAngle = angleOf majorAxis
+    startAngle = fromAngle
+    endAngle = toAngle
+    oddAngle = abs (toAngle - fromAngle)
+    angle =
+      if oddAngle > pi then
+        tau - oddAngle
+      else
+        oddAngle
+    workAngle = fromAngle + oddAngle / 2
+    midAngle = Geometry.modAngle workAngle
+    midPoint = (semiMajor * (cos midAngle), semiMinor * (sin midAngle))
+      |> Geometry.rotate ellipseAngle
+      |> Geometry.add center
+    endA = (semiMajor * (cos startAngle), semiMinor * (sin startAngle))
+      |> Geometry.rotate ellipseAngle
+      |> Geometry.add center
+    endB = (semiMajor * (cos endAngle), semiMinor * (sin endAngle))
+      |> Geometry.rotate ellipseAngle
+      |> Geometry.add center
+  in
+    if angle > tau/4 then
+      joinCurvePoints
+        (curvePoints center endA midPoint)
+        (curvePoints center midPoint endB)
+    else
+      (curvePoints center endA endB)
+
+angleOf : Point -> Float
+angleOf (x,y) =
+  -(atan2 x y) + tau/4
+
 curvePointsForLine : Point -> Point -> List Point
 curvePointsForLine a b =
   [a, a, b, b]
@@ -709,6 +761,10 @@ arcFromPoints c p1 p2 =
 arcFromAngles : ArcType -> Path
 arcFromAngles arcType =
   cubicCurve (curvePointsFromAngles arcType)
+
+ellipticArcFromAngles : EllipticArcType -> Path
+ellipticArcFromAngles arcType =
+  cubicCurve (curvePointsFromEllipticAngles arcType)
 
 godCenter : ChartMetrics -> God -> Point
 godCenter metrics who =
