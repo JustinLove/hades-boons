@@ -8,17 +8,24 @@
     - 270
     - 337.5
   - figure out scale
-  - import areas
   - import ellipse arcs from dxf
+    - ares arc broke
+    - https://www.blog.akhil.cc/ellipse
+  - import points
   - activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
   - athena defiance also enabled by dash
+  - rotate athena?
+  - athena loadammo exclusions
   - ares flare preq for own traits, not for duo?
   - any aid
   - ares-dionysus includes vengence
   - ares-artemis does not include load cast
   - ares-zeus awkward - move call up?
+  - demeter-athena
+  - dionysus bottom
+  - artemis hunter instinct call + some others
 - any/some casts - prereqs?, design issues
 - save calculated metrics
 - line formatting
