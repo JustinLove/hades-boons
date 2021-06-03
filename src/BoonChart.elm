@@ -708,13 +708,39 @@ curvePointsFromAngles {center, radius, fromAngle, toAngle, winding} =
     else
       (curvePoints center endA endB)
 
+
+{- Adapted from https://www.blog.akhil.cc/ellipse
+However, that page appears to use a y inverse coordinate system, and the tanget formula is incorrect. It references
+  http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+Which has the correct tangent formula and appears to use same y polarity
+-}
 curvePointsFromEllipticAngles : EllipticArcType -> List Point
 curvePointsFromEllipticAngles {center, majorAxis, minorRatio, fromAngle, toAngle} =
   let
+    (cosT, sinT) = majorAxis |> Geometry.normalize
     semiMajor = Geometry.length majorAxis
     semiMinor = semiMajor * minorRatio
-    (mx, my) = majorAxis
-    ellipseAngle = angleOf majorAxis
+    ellipsePoint = \n ->
+      let
+        cosN = cos n
+        sinN = sin n
+        a = semiMajor
+        b = semiMinor
+      in
+        ( a * cosN * cosT - b * sinN * sinT
+        , a * cosN * sinT + b * sinN * cosT
+        )
+          |> Geometry.add center
+    tangent = \n ->
+      let
+        cosN = cos n
+        sinN = sin n
+        a = semiMajor
+        b = semiMinor
+      in
+        ( -a * sinN * cosT - b * cosN * sinT
+        , -a * sinN * sinT + b * cosN * cosT
+        )
     startAngle = fromAngle
     endAngle = toAngle
     oddAngle = abs (toAngle - fromAngle)
@@ -725,22 +751,29 @@ curvePointsFromEllipticAngles {center, majorAxis, minorRatio, fromAngle, toAngle
         oddAngle
     workAngle = fromAngle + oddAngle / 2
     midAngle = Geometry.modAngle workAngle
-    midPoint = (semiMajor * (cos midAngle), semiMinor * (sin midAngle))
-      |> Geometry.rotate ellipseAngle
-      |> Geometry.add center
-    endA = (semiMajor * (cos startAngle), semiMinor * (sin startAngle))
-      |> Geometry.rotate ellipseAngle
-      |> Geometry.add center
-    endB = (semiMajor * (cos endAngle), semiMinor * (sin endAngle))
-      |> Geometry.rotate ellipseAngle
-      |> Geometry.add center
+    midPoint = ellipsePoint midAngle
+    endA = ellipsePoint startAngle
+    endB = ellipsePoint endAngle
+    ellipsePoints = \from to ->
+      let
+        step = to - from
+        at = tan (step/2)
+        a = (sin step) * ((sqrt (4 + 3*at*at)-1)/3)
+        p1 = ellipsePoint from
+        e1 = tangent from
+        p2 = ellipsePoint to
+        e2 = tangent to
+        q1 = Geometry.scale a e1 |> Geometry.add p1
+        q2 = Geometry.scale -a e2 |> Geometry.add p2
+      in
+        [p1, q1, q2, p2]
   in
     if angle > tau/4 then
       joinCurvePoints
-        (curvePoints center endA midPoint)
-        (curvePoints center midPoint endB)
+        (ellipsePoints startAngle midAngle)
+        (ellipsePoints midAngle endAngle)
     else
-      (curvePoints center endA endB)
+      (ellipsePoints startAngle endAngle)
 
 angleOf : Point -> Float
 angleOf (x,y) =

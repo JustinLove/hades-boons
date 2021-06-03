@@ -8,9 +8,10 @@
     - 270
     - 337.5
   - figure out scale
-  - import ellipse arcs from dxf
-    - ares arc broke
+  - x import ellipse arcs from dxf
     - https://www.blog.akhil.cc/ellipse
+    - http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+  - ares arc broke
   - import points
   - activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
