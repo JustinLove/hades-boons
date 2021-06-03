@@ -689,9 +689,9 @@ curvePointsFromAngles {center, radius, fromAngle, toAngle, winding} =
     (startAngle, workAngle, endAngle) =
       case winding of
         Counterclockwise ->
-          (fromAngle, fromAngle + oddAngle / 2, toAngle)
+          (fromAngle, fromAngle + angle / 2, toAngle)
         Clockwise ->
-          (tau - fromAngle, tau - (fromAngle + oddAngle / 2), tau - toAngle)
+          (tau - fromAngle, tau - (fromAngle + angle / 2), tau - toAngle)
     midAngle =
       if workAngle > tau then
         workAngle - tau
