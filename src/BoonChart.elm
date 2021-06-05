@@ -272,7 +272,7 @@ displayGod godMetrics =
       |> rendered
       |> scale 0.001
   , circle 0.5
-      |> outlined (solid 0.01 (uniform Color.white))
+      |> outlined (solid 0.01 (uniform (Color.rgb 0.05 0.05 0.05)))
   ]
     |> stack
     |> Collage.Layout.name (godMetrics.name)
