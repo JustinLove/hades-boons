@@ -43,8 +43,8 @@ view model =
         , inFront (displayGodSelect model)
       ]
       [ BoonChart.boonChart
-        [ Html.Attributes.style "width" "100%"
-        , Html.Attributes.style "height" "100%"
+        [ Html.Attributes.style "width" "100vw"
+        , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
         ]
         { metrics = model.chartMetrics

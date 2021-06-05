@@ -23,7 +23,7 @@
 - basic trait quick select
 - x jump to god
 - x fill screen
-- chrome graphic size
+- x chrome graphic size
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
