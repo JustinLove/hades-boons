@@ -5,7 +5,7 @@ import Traits exposing (TraitId, God)
 
 import Element exposing (..)
 import Element.Region as Region
-import Element.Events as Events
+import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
 --import Html.Events exposing (on)
@@ -63,7 +63,7 @@ view model =
       ]
 
 displayGodSelect model =
-  row [ spacing 10 ]
+  row [ spacing 10, centerX ]
     (model.traits
       |> Traits.allGods
       |> List.map Traits.dataGod
@@ -72,8 +72,21 @@ displayGodSelect model =
 
 displayGod : God -> Element Msg
 displayGod god =
-  el [ Events.onClick (SelectGod god) ]
-    (god |> Traits.godName |> text)
+  Input.button
+    [ width (px 40)
+    ]
+    { onPress = Just (SelectGod god)
+    , label =
+      (image
+        [ centerX
+        , centerY
+        , height (px 40)
+        ]
+        { src = (god |> Traits.godIcon)
+        , description = (god |> Traits.godName)
+        }
+      )
+    }
 
 displayFooter : Element msg
 displayFooter =

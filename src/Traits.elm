@@ -21,6 +21,7 @@ module Traits exposing
   , dataColor
   , dataLayout
   , godName
+  , godIcon
   , duoBoons
   , basicBoons
   , boonStatus
@@ -131,6 +132,11 @@ godName god =
     Athena -> "Athena"
     Artemis -> "Artemis"
     Zeus -> "Zeus"
+
+
+godIcon : God -> String
+godIcon god =
+  "GUI/Screens/BoonSelectSymbols/" ++ (godName god) ++ ".png"
 
 basicBoons : GodData -> List Trait
 basicBoons data =

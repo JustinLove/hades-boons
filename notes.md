@@ -21,7 +21,7 @@
   - poseidon - area asymetry
   - ares - maybe flip pomel?
 - basic trait quick select
-- jump to god
+- x jump to god
 - x fill screen
 - chrome graphic size
 - any/some casts - prereqs?, design issues
@@ -33,3 +33,4 @@
   - duo lines passing behind
 - trinket display
 - save calculated metrics
+- rotation outside metrics?

@@ -156,7 +156,7 @@ update msg model =
     GotLayout god (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
     WindowSize (width, height) ->
-      ( {model | windowWidth = width, windowHeight = height}
+      ( {model | windowWidth = width - 16, windowHeight = height - 16}
         |> defaultView
       , Cmd.none)
     WindowReSize (width, height) ->
@@ -254,13 +254,13 @@ focusView center diameter rotation model =
   let
     size = diameter * View.chartSize
     widthScale = (toFloat model.windowWidth) / size
-    heightScale = (toFloat model.windowHeight) / size
+    heightScale = (toFloat model.windowHeight-40) / size
     zoom = min widthScale heightScale
     offset = center
       |> Geometry.add (-0.5,-0.5)
       |> Geometry.scale View.chartSize
       |> Geometry.scale zoom
-      |> Geometry.add ((toFloat model.windowWidth)/2, (toFloat model.windowHeight)/2)
+      |> Geometry.add ((toFloat model.windowWidth)/2, (toFloat model.windowHeight+40)/2)
   in
   { model
   | rotation = rotation
