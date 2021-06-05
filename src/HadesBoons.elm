@@ -14,14 +14,15 @@ import Traits.Generated as Generated
 import View
 
 import Browser
---import Browser.Dom as Dom
---import Browser.Events
+import Browser.Dom as Dom
+import Browser.Events
 import Browser.Navigation as Navigation
 import Dict exposing (Dict)
 import Http
 import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
 import Set exposing (Set)
+import Task
 import Url exposing (Url)
 
 type Msg
@@ -30,12 +31,15 @@ type Msg
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
   | GotLayout God (Result Http.Error Layout)
-  --| WindowSize (Int, Int)
+  | WindowSize (Int, Int)
+  | WindowReSize (Int, Int)
   --| TextSize MeasureText.TextSize
 
 type alias Model =
   { location : Url
   , navigationKey : Navigation.Key
+  , windowWidth : Int
+  , windowHeight : Int
   , traits : Traits
   , chartMetrics : BoonChart.ChartMetrics
   , activeTraits : Set TraitId
@@ -64,8 +68,8 @@ initialModel flags location key =
   let rotation = -tau / 16 in
   { location = location
   , navigationKey = key
-  --, windowWidth = 320
-  --, windowHeight = 300
+  , windowWidth = 320
+  , windowHeight = 300
   --, labelWidths = Dict.empty
   , traits = Traits.empty
   , chartMetrics = BoonChart.calculateMetrics Traits.empty rotation
@@ -97,7 +101,7 @@ initWithGenerated model =
       |> updateChartMetrics
       |> updateDerivedStatus
   , Cmd.batch
-    [
+    [ initialWindowSize
     ]
   )
 
@@ -106,12 +110,15 @@ initAndLoad model =
   ( model
   , Cmd.batch
     [ fetchTraits
+    , initialWindowSize
     ]
   )
 
-    --, Dom.getViewport
-      --|> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
-      --|> Task.perform WindowSize
+initialWindowSize : Cmd Msg
+initialWindowSize =
+  Dom.getViewport
+    |> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
+    |> Task.perform WindowSize
 
       --|> List.map (\name -> MeasureText.getTextWidth {font = "100px sans-serif", text = name})
 
@@ -148,8 +155,13 @@ update msg model =
       )
     GotLayout god (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
-    --WindowSize (width, height) ->
-     -- ( {model | windowWidth = width, windowHeight = height}, Cmd.none)
+    WindowSize (width, height) ->
+      ( {model | windowWidth = width, windowHeight = height}
+        |> defaultView
+      , Cmd.none)
+    WindowReSize (width, height) ->
+      ( {model | windowWidth = width, windowHeight = height}
+      , Cmd.none)
     --TextSize {text, width} ->
       --( {model | labelWidths = Dict.insert text (width/100) model.labelWidths}, Cmd.none)
     UI (View.OnMouseMove point) ->
@@ -166,7 +178,7 @@ update msg model =
       )
     UI (View.OnMouseUp point) ->
       ( { model
-        | offset = dragTo model.drag point model.offset |> Debug.log "offset"
+        | offset = dragTo model.drag point model.offset
         , drag = Released
         }
       , Cmd.none
@@ -189,7 +201,10 @@ hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
   point
     |> Geometry.add (-8, -8)
-    |> BoonChart.hitChart model.chartMetrics model.offset model.zoom
+    |> Geometry.add (Geometry.scale -1 model.offset)
+    |> Geometry.scale (1/View.chartSize)
+    |> Geometry.scale (1/model.zoom)
+    |> BoonChart.hitChart model.chartMetrics model.zoom
 
 selectBoon : TraitId -> Model -> Model
 selectBoon id model =
@@ -222,20 +237,38 @@ updateChartMetrics model =
 focusOn : God -> Model -> Model
 focusOn god model =
   let
-    zoom = 1.0
     rotation = BoonChart.focusAngleOf model.chartMetrics god
     chartMetrics = BoonChart.calculateMetrics model.traits rotation
-    offset = BoonChart.focusPositionOf chartMetrics god
-      |> Geometry.scale zoom
-      |> Geometry.add (200, 200)
+    center = BoonChart.focusPositionOf chartMetrics god
   in
   { model
   | focusGod = Just god
-  , rotation = rotation
   , chartMetrics = chartMetrics
+  }
+    |> focusView center chartMetrics.adjacentDistance rotation
+
+focusView : Point -> Float -> Float -> Model -> Model
+focusView center diameter rotation model =
+  let
+    size = diameter * View.chartSize
+    widthScale = (toFloat model.windowWidth) / size
+    heightScale = (toFloat model.windowHeight) / size
+    zoom = min widthScale heightScale
+    offset = center
+      |> Geometry.add (-0.5,-0.5)
+      |> Geometry.scale View.chartSize
+      |> Geometry.scale zoom
+      |> Geometry.add ((toFloat model.windowWidth)/2, (toFloat model.windowHeight)/2)
+  in
+  { model
+  | rotation = rotation
   , offset = offset
   , zoom = zoom
   }
+
+defaultView : Model -> Model
+defaultView =
+  focusView (0, 0) 1 0
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
@@ -249,8 +282,7 @@ dragTo drag point oldOffset =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
-    [
-    --, Browser.Events.onResize (\w h -> WindowSize (w, h))
+    [ Browser.Events.onResize (\w h -> WindowReSize (w, h))
     --, MeasureText.textSize TextSize
     ]
 

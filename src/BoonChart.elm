@@ -35,6 +35,7 @@ type alias BoonChart msg =
   , drag : DragMode
   , offset : Point
   , zoom : Float
+  , size : Float
   }
 
 type alias ChartMetrics =
@@ -114,9 +115,7 @@ type alias Boon =
   , location : Point
   }
 
-size = 4096
-width = size
-height = size
+chartSize = 4096
 
 mainRingRadius = 0.28
 
@@ -149,7 +148,7 @@ boonChart attributes model =
     |> align topLeft
     |> List.singleton
     |> group
-    |> scale size
+    |> scale model.size
     |> debug
     |> shift (flip model.offset)
     |> scale model.zoom
@@ -159,13 +158,10 @@ boonChart attributes model =
     |> when (model.drag /= Released) (Events.onMouseMove model.onMouseMove)
     |> Collage.Render.svgExplicit ((Html.Events.stopPropagationOn "wheel" (wheelDecoder model.onWheel) ) :: attributes)
 
-hitChart : ChartMetrics -> Point -> Float -> Point -> Maybe TraitId
-hitChart metrics offset zoom at =
+hitChart : ChartMetrics -> Float -> Point -> Maybe TraitId
+hitChart metrics zoom at =
   let
     point = at 
-      |> Geometry.add (Geometry.scale -1 offset)
-      |> Geometry.scale (1/size)
-      |> Geometry.scale (1/zoom)
       |> Geometry.add (-0.5,-0.5)
       |> flip
     godHit = metrics.gods
@@ -265,7 +261,7 @@ focusAngleOf {gods} target =
     |> Array.filter (\{god} -> god == target)
     |> Array.get 0
     |> Maybe.map .focusAngle
-   |> Maybe.withDefault 0
+    |> Maybe.withDefault 0
 
 focusPositionOf : ChartMetrics -> God -> Point
 focusPositionOf {gods} target =
@@ -274,9 +270,6 @@ focusPositionOf {gods} target =
     |> Array.get 0
     |> Maybe.map .center
     |> Maybe.withDefault (0,0)
-    |> Geometry.add (-0.5,-0.5)
-    |> Geometry.scale size
-    |> Debug.log "focus"
 
 displayGods : ChartMetrics -> List (Collage msg)
 displayGods metrics =

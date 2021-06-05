@@ -1,4 +1,4 @@
-module View exposing (Msg(..), document, view)
+module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
 import Traits exposing (TraitId)
@@ -19,6 +19,8 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
+
+chartSize = 4069
 
 document tagger model =
   { title = "Hades Boons"
@@ -53,6 +55,7 @@ view model =
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom
+        , size = chartSize
         } |> html
       ]
 

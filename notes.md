@@ -22,7 +22,7 @@
   - ares - maybe flip pomel?
 - basic trait quick select
 - jump to god
-- fill screen
+- x fill screen
 - chrome graphic size
 - any/some casts - prereqs?, design issues
 - line formatting
