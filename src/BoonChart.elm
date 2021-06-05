@@ -1,4 +1,4 @@
-module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMetrics, calculateMetrics, focusAngleOf)
+module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMetrics, calculateMetrics, focusAngleOf, focusPositionOf)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
@@ -265,7 +265,18 @@ focusAngleOf {gods} target =
     |> Array.filter (\{god} -> god == target)
     |> Array.get 0
     |> Maybe.map .focusAngle
-    |> Maybe.withDefault 0
+   |> Maybe.withDefault 0
+
+focusPositionOf : ChartMetrics -> God -> Point
+focusPositionOf {gods} target =
+  gods
+    |> Array.filter (\{god} -> god == target)
+    |> Array.get 0
+    |> Maybe.map .center
+    |> Maybe.withDefault (0,0)
+    |> Geometry.add (-0.5,-0.5)
+    |> Geometry.scale size
+    |> Debug.log "focus"
 
 displayGods : ChartMetrics -> List (Collage msg)
 displayGods metrics =

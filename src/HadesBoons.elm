@@ -166,7 +166,7 @@ update msg model =
       )
     UI (View.OnMouseUp point) ->
       ( { model
-        | offset = dragTo model.drag point model.offset
+        | offset = dragTo model.drag point model.offset |> Debug.log "offset"
         , drag = Released
         }
       , Cmd.none
@@ -221,11 +221,20 @@ updateChartMetrics model =
 
 focusOn : God -> Model -> Model
 focusOn god model =
-  let rotation = BoonChart.focusAngleOf model.chartMetrics god in
+  let
+    zoom = 1.0
+    rotation = BoonChart.focusAngleOf model.chartMetrics god
+    chartMetrics = BoonChart.calculateMetrics model.traits rotation
+    offset = BoonChart.focusPositionOf chartMetrics god
+      |> Geometry.scale zoom
+      |> Geometry.add (200, 200)
+  in
   { model
   | focusGod = Just god
   , rotation = rotation
-  , chartMetrics = BoonChart.calculateMetrics model.traits rotation 
+  , chartMetrics = chartMetrics
+  , offset = offset
+  , zoom = zoom
   }
 
 dragTo : DragMode -> Point -> Point -> Point
