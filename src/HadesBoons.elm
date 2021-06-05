@@ -2,7 +2,7 @@ module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
 import Dxf.Decode
-import Geometry exposing (Point)
+import Geometry exposing (Point, tau)
 import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Log
@@ -43,6 +43,8 @@ type alias Model =
   , activeDuoGroups : Set GroupId
   , activeSlots : Set SlotId
   , boonStatus : Dict TraitId BoonStatus
+  , focusGod : Maybe God
+  , rotation : Float
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -59,18 +61,21 @@ main = Browser.application
 
 initialModel : () -> Url -> Navigation.Key -> Model
 initialModel flags location key =
+  let rotation = -tau / 16 in
   { location = location
   , navigationKey = key
   --, windowWidth = 320
   --, windowHeight = 300
   --, labelWidths = Dict.empty
   , traits = Traits.empty
-  , chartMetrics = BoonChart.calculateMetrics Traits.empty
+  , chartMetrics = BoonChart.calculateMetrics Traits.empty rotation
   , activeTraits = Set.empty
   , activeBasicGroups = []
   , activeDuoGroups = Set.empty
   , activeSlots = Set.empty
   , boonStatus = Dict.empty
+  , focusGod = Nothing
+  , rotation = rotation
   , drag = Released
   , offset = (0,0)
   , zoom = 0.15
@@ -212,7 +217,16 @@ updateDerivedStatus model =
 
 updateChartMetrics : Model -> Model
 updateChartMetrics model =
-  { model | chartMetrics = BoonChart.calculateMetrics model.traits }
+  { model | chartMetrics = BoonChart.calculateMetrics model.traits model.rotation }
+
+focusOn : God -> Model -> Model
+focusOn god model =
+  let rotation = BoonChart.focusAngleOf model.chartMetrics god in
+  { model
+  | focusGod = Just god
+  , rotation = rotation
+  , chartMetrics = BoonChart.calculateMetrics model.traits rotation 
+  }
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =

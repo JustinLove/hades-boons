@@ -15,6 +15,7 @@
   - x import points
   - x activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
+  - boundary arcs not working under rotation
 - design issues
   - any aid
   - poseidon - area asymetry

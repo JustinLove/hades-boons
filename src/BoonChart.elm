@@ -1,4 +1,4 @@
-module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMetrics, calculateMetrics)
+module BoonChart exposing (DragMode(..), BoonChart, boonChart, hitChart, ChartMetrics, calculateMetrics, focusAngleOf)
 
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
@@ -48,6 +48,7 @@ type alias ChartMetrics =
 type alias GodMetrics =
   { center : Point
   , angle : Float
+  , focusAngle : Float
   , god : God
   , name : String
   , color : Color
@@ -208,10 +209,10 @@ when test f collage =
 flip : Point -> Point
 flip (x, y) = (x, -y)
 
-calculateMetrics : Traits -> ChartMetrics
-calculateMetrics traits =
+calculateMetrics : Traits -> Float -> ChartMetrics
+calculateMetrics traits rotation =
   let
-    metrics = initialMetrics traits
+    metrics = initialMetrics traits rotation
     (duoBoons, duoConnectors) = layoutDuoBoons metrics (Traits.duoBoons traits)
   in
     { metrics
@@ -219,8 +220,8 @@ calculateMetrics traits =
     , duoConnectors = duoConnectors
     }
 
-initialMetrics : Traits -> ChartMetrics
-initialMetrics traits =
+initialMetrics : Traits -> Float -> ChartMetrics
+initialMetrics traits rotation =
   let
     main = Traits.linkableGods traits
     count = List.length main
@@ -231,15 +232,19 @@ initialMetrics traits =
       |> List.sortBy (Traits.dataGod >> godIndex)
       |> List.indexedMap (\i data ->
         let
+          focus =
+            if i == 0 then 0
+            else (((toFloat (i-1)) * -angle))
           a =
             if i == 0 then 0
-            else (((toFloat (i-1)) * -angle) + -angle/2)
+            else (focus + rotation)
           center =
             if i == 0 then (0,0)
             else (0, mainRingRadius) |> Geometry.rotate a
         in
           { center = center
           , angle = a
+          , focusAngle = -focus
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
@@ -253,6 +258,14 @@ initialMetrics traits =
     , angle = angle
     , adjacentDistance = adjacentDistance
     }
+
+focusAngleOf : ChartMetrics -> God -> Float
+focusAngleOf {gods} target =
+  gods
+    |> Array.filter (\{god} -> god == target)
+    |> Array.get 0
+    |> Maybe.map .focusAngle
+    |> Maybe.withDefault 0
 
 displayGods : ChartMetrics -> List (Collage msg)
 displayGods metrics =
