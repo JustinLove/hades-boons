@@ -66,7 +66,7 @@ type EntityType
   | Linetype
   | LWPolyLineEntity
   | Placeholder
-  | Point
+  | PointEntity
   | Scale
   | SectionStart
   | SectionEnd

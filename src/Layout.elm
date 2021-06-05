@@ -60,6 +60,7 @@ type ConnectionType
   = Arc ArcType
   | Area (List Boundary)
   | Circle Point Float
+  | Dot Point
   | EllipticArc EllipticArcType
   | Line Point Point
   | PolyLine (List Point)

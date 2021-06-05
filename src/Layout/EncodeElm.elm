@@ -44,6 +44,7 @@ connectionType ct =
   case ct of
     Arc at -> construct "Arc" [arcType at]
     Area boundaries -> construct "Area" [boundaries |> List.map boundary |> list]
+    Dot p -> construct "Dot" [point p]
     Circle c r -> construct "Circle" [point c, float r]
     EllipticArc at -> construct "EllipticArc" [ellipticArcType at]
     Line a b -> construct "Line" [point a, point b]

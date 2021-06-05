@@ -68,6 +68,7 @@ type ConnectorShape
   | EllipticArc EllipticArcType
   | Line Point Point
   | PolyLine (List Point)
+  | Tag
 
 type alias ArcType =
   { center : Point
@@ -298,6 +299,8 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
           Circle
             (center |> toScale)
             (radius * scaleFactor)
+        Layout.Dot p ->
+          Tag
         Layout.EllipticArc {center, majorAxis, minorRatio, fromAngle, toAngle} ->
           EllipticArc
             { center = center |> toScale
@@ -336,6 +339,7 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
         , group = group
         }
       )
+      |> List.filter (\{shape} -> shape /= Tag)
 
 
 layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
@@ -472,19 +476,6 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
     Arc arcInfo ->
       arcFromAngles arcInfo
         |> traced lineStyle
-    Circle center radius ->
-      circle radius
-        |> outlined lineStyle
-        |> shift center
-    EllipticArc arcInfo ->
-      ellipticArcFromAngles arcInfo
-        |> traced lineStyle
-    Line a b ->
-      segment a b
-        |> traced lineStyle
-    PolyLine points ->
-      path points
-        |> traced lineStyle
     Area boundaries ->
       boundaries
         |> List.map (\bound ->
@@ -498,6 +489,21 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
         |> cubicCurve
         |> close
         |> filled color
+    Circle center radius ->
+      circle radius
+        |> outlined lineStyle
+        |> shift center
+    EllipticArc arcInfo ->
+      ellipticArcFromAngles arcInfo
+        |> traced lineStyle
+    Line a b ->
+      segment a b
+        |> traced lineStyle
+    PolyLine points ->
+      path points
+        |> traced lineStyle
+    Tag ->
+      Collage.group []
 
 displayDuoConnector : Set GroupId -> DuoConnector -> Collage msg
 displayDuoConnector activeGroups {shape, groupA, colorA, groupB, colorB} =

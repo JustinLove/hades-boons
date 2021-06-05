@@ -121,7 +121,7 @@ entityMap s =
     "LTYPE" -> Linetype
     "LWPOLYLINE" -> LWPolyLineEntity
     "ACDBPLACEHOLDER" -> Placeholder
-    "POINT" -> Point
+    "POINT" -> PointEntity
     "SCALE" -> Scale
     "SECTION" -> SectionStart
     "ENDSEC" -> SectionEnd

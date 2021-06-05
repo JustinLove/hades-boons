@@ -12,15 +12,18 @@
     - https://www.blog.akhil.cc/ellipse
     - http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
   - x ares arc broke
-  - import points
-  - activating areas/outlines
+  - x import points
+  - x activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
 - design issues
   - any aid
   - poseidon - area asymetry
   - ares - maybe flip pomel?
+- basic trait quick select
+- jump to god
+- fill screen
+- chrome graphic size
 - any/some casts - prereqs?, design issues
-- save calculated metrics
 - line formatting
   - zoom relative size?
 - text display when small
@@ -28,6 +31,4 @@
 - where does hermes go?
   - duo lines passing behind
 - trinket display
-- jump to god
-- chrome graphic size
-- fill screen
+- save calculated metrics

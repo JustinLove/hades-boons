@@ -23,13 +23,14 @@ placement =
 
 connections : Decoder (List Connection)
 connections =
-  succeed (\a c l p h e -> List.concat [a, c, l, p, h, e] |> removeGuidelines)
+  succeed (\a c l p h e d -> List.concat [a, c, l, p, h, e, d] |> removeGuidelines)
     |> with (entities ArcEntity (connection arc))
     |> with (entities CircleEntity (connection circle))
     |> with (entities LineEntity (connection line))
     |> with (entities LWPolyLineEntity (connection polyline))
     |> with (entities HatchEntity (connection area))
     |> with (entities EllipseEntity (connection ellipticArc))
+    |> with (entities PointEntity (connection point))
 
 connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
@@ -107,6 +108,11 @@ boundaryData =
         4 -> fail "spline"
         _ -> fail "invalid edge type"
       )
+
+point : Decoder ConnectionType
+point =
+  pointBase 10
+    |> andThen(\p -> succeed (Line p p))
 
 inLayer : Decoder String
 inLayer =
