@@ -1,13 +1,14 @@
 module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
-import Traits exposing (TraitId)
+import Traits exposing (TraitId, God)
 
 import Element exposing (..)
 import Element.Region as Region
+import Element.Events as Events
 import Html exposing (Html)
 import Html.Attributes
-import Html.Events exposing (on)
+--import Html.Events exposing (on)
 import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
 import Json.Decode
@@ -19,6 +20,7 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
+  | SelectGod God
 
 chartSize = 4069
 
@@ -38,6 +40,7 @@ view model =
         , clip
         , inFront displayFooter
         --, inFront (model.zoom |> String.fromFloat |> text)
+        , inFront (displayGodSelect model)
       ]
       [ BoonChart.boonChart
         [ Html.Attributes.style "width" "100%"
@@ -58,6 +61,19 @@ view model =
         , size = chartSize
         } |> html
       ]
+
+displayGodSelect model =
+  row [ spacing 10 ]
+    (model.traits
+      |> Traits.allGods
+      |> List.map Traits.dataGod
+      |> List.map displayGod
+    )
+
+displayGod : God -> Element Msg
+displayGod god =
+  el [ Events.onClick (SelectGod god) ]
+    (god |> Traits.godName |> text)
 
 displayFooter : Element msg
 displayFooter =

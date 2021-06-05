@@ -196,6 +196,8 @@ update msg model =
         }
       , Cmd.none
       )
+    UI (View.SelectGod god) ->
+      (model |> focusOn god, Cmd.none)
 
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
