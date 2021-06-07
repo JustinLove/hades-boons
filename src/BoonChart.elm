@@ -139,8 +139,8 @@ boonChart attributes model =
       |> stack
   , displayGods metrics |> stack
   , rectangle 1 1
-      --|> filled (uniform Color.black)
-      |> styled (uniform Color.black, dot 0.001 (uniform Color.white))
+      |> filled (uniform Color.black)
+      --|> styled (uniform Color.black, dot 0.001 (uniform Color.white))
       --|> outlined (solid 0.005 (uniform Color.white))
       --|> outlined (solid 0.005 (transparent))
   ]
@@ -149,7 +149,7 @@ boonChart attributes model =
     |> List.singleton
     |> group
     |> scale model.size
-    |> debug
+    --|> debug
     |> shift (flip model.offset)
     |> scale model.zoom
     |> when (model.drag == Released) (Events.onMouseDown model.onMouseDown)

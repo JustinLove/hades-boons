@@ -28,6 +28,8 @@
 - x jump to god
 - x fill screen
 - x chrome graphic size
+- need trait icons on side menu
+- lock icons are smaller on weapon aspects
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
