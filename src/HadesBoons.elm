@@ -156,7 +156,7 @@ update msg model =
     GotLayout god (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
     WindowSize (width, height) ->
-      ( {model | windowWidth = width - 16, windowHeight = height - 16}
+      ( {model | windowWidth = width, windowHeight = height}
         |> defaultView
       , Cmd.none)
     WindowReSize (width, height) ->
@@ -204,7 +204,6 @@ update msg model =
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
   point
-    |> Geometry.add (-8, -8)
     |> Geometry.add (Geometry.scale -1 model.offset)
     |> Geometry.scale (1/View.chartSize)
     |> Geometry.scale (1/model.zoom)
@@ -255,8 +254,8 @@ focusView : Point -> Float -> Float -> Model -> Model
 focusView center diameter rotation model =
   let
     size = diameter * View.chartSize
-    widthScale = (toFloat model.windowWidth) / size
-    heightScale = (toFloat model.windowHeight-40) / size
+    widthScale = (toFloat model.windowWidth-16) / size
+    heightScale = (toFloat model.windowHeight-56) / size
     zoom = min widthScale heightScale
     offset = center
       |> Geometry.add (-0.5,-0.5)

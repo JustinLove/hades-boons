@@ -22,7 +22,7 @@
   - ares - maybe flip pomel?
 - x hermes angle
 - x full view
-- footer misaligned
+- x footer misaligned
 - basic trait quick select
 - x jump to god
 - x fill screen

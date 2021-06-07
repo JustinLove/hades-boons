@@ -64,7 +64,7 @@ view model =
       ]
 
 displayGodSelect model =
-  row [ spacing 10, centerX ]
+  row [ spacing 10, centerX, padding 8 ]
     ( List.append
       (model.traits
         |> Traits.allGods
@@ -98,7 +98,7 @@ displayGodButton message iconPath name =
 
 displayFooter : Element msg
 displayFooter =
-  row [ Region.footer, spacing 10, alignBottom ]
+  row [ Region.footer, spacing 10, alignBottom, padding 8 ]
     {-[ link []
       { url = "https://github.com/JustinLove/"
       , label = row [] [ icon "github", text "hades-boons" ]

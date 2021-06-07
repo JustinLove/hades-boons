@@ -1,5 +1,5 @@
 body { margin: 0; overflow: hidden; }
-#top { padding: 8px; }
+#top {}
 h2 { text-align: center; margin: 0;}
 .error-message { text-align: center; margin-top: 2em; }
 footer { position: fixed; bottom: 0;}
