@@ -21,6 +21,7 @@ type Msg
   | OnMouseUp Point
   | OnWheel Point Int
   | SelectGod God
+  | ViewAll
 
 chartSize = 4069
 
@@ -64,26 +65,33 @@ view model =
 
 displayGodSelect model =
   row [ spacing 10, centerX ]
-    (model.traits
-      |> Traits.allGods
-      |> List.map Traits.dataGod
-      |> List.map displayGod
+    ( List.append
+      (model.traits
+        |> Traits.allGods
+        |> List.map Traits.dataGod
+        |> List.map displayGod
+      )
+      [ displayGodButton ViewAll "GUI/Screens/BoonIcons/godmode.png" "All"]
     )
 
 displayGod : God -> Element Msg
 displayGod god =
+  displayGodButton (SelectGod god) (god |> Traits.godIcon) (god |> Traits.godName)
+
+displayGodButton : Msg -> String -> String -> Element Msg
+displayGodButton message iconPath name =
   Input.button
     [ width (px 40)
     ]
-    { onPress = Just (SelectGod god)
+    { onPress = Just message
     , label =
       (image
         [ centerX
         , centerY
         , height (px 40)
         ]
-        { src = (god |> Traits.godIcon)
-        , description = (god |> Traits.godName)
+        { src = iconPath
+        , description = name
         }
       )
     }

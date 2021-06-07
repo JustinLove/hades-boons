@@ -229,7 +229,7 @@ initialMetrics traits rotation =
       |> List.indexedMap (\i data ->
         let
           focus =
-            if i == 0 then 0
+            if i == 0 then angle/2
             else (((toFloat (i-1)) * -angle))
           a =
             if i == 0 then 0

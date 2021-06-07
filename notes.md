@@ -20,6 +20,9 @@
   - any aid
   - poseidon - area asymetry
   - ares - maybe flip pomel?
+- x hermes angle
+- x full view
+- footer misaligned
 - basic trait quick select
 - x jump to god
 - x fill screen

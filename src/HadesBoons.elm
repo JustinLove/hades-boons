@@ -198,6 +198,8 @@ update msg model =
       )
     UI (View.SelectGod god) ->
       (model |> focusOn god, Cmd.none)
+    UI (View.ViewAll) ->
+      (model |> defaultView, Cmd.none)
 
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
@@ -239,7 +241,7 @@ updateChartMetrics model =
 focusOn : God -> Model -> Model
 focusOn god model =
   let
-    rotation = BoonChart.focusAngleOf model.chartMetrics god
+    rotation = BoonChart.focusAngleOf model.chartMetrics god |> Debug.log "rotation"
     chartMetrics = BoonChart.calculateMetrics model.traits rotation
     center = BoonChart.focusPositionOf chartMetrics god
   in
@@ -270,7 +272,8 @@ focusView center diameter rotation model =
 
 defaultView : Model -> Model
 defaultView =
-  focusView (0, 0) 1 0
+  focusView (0, 0) 1 (-tau/16)
+    >> updateChartMetrics
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
