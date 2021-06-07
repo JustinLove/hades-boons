@@ -22,6 +22,7 @@ type Msg
   | OnMouseUp Point
   | OnWheel Point Int
   | SelectGod God
+  | SelectSlot SlotId
   | SelectPrimary SlotId God
   | ViewAll
 
@@ -138,20 +139,17 @@ primaryBoonBacking scaled =
 
 slotIcon model scaled path desc slot =
   el
-    [ inFront (slotMenu model scaled slot)
+    [ if model.currentPrimaryMenu == Just slot then
+        onRight (slotMenu model scaled slot)
+      else
+        padding 0
     , width (px (scaled 288))
     ]
-    (boonIcon scaled path desc)
+    (boonIcon (SelectSlot slot) scaled path desc)
 
 slotMenu model scaled slot =
   row
-    [ paddingEach
-      { top = 0
-      , right = 0
-      , bottom = 0
-      , left = (scaled 200)
-      }
-    , centerY
+    [ centerY
     ]
     (model.traits
       |> Traits.linkableGods
@@ -163,7 +161,7 @@ boonSelectForGod : SlotId -> God -> Element Msg
 boonSelectForGod slot god =
   displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)
 
-boonIcon scaled path desc =
+boonIcon msg scaled path desc =
   Input.button
     [ width (px (scaled 201))
     , height (px (scaled 187))
@@ -177,7 +175,7 @@ boonIcon scaled path desc =
         , centerY
         ] none
     ]
-    { onPress = Nothing
+    { onPress = Just msg
     , label =
       (image
         [ width (px (scaled 148))

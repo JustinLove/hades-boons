@@ -47,6 +47,7 @@ type alias Model =
   , activeDuoGroups : Set GroupId
   , activeSlots : Set SlotId
   , boonStatus : Dict TraitId BoonStatus
+  , currentPrimaryMenu : Maybe SlotId
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -78,6 +79,7 @@ initialModel flags location key =
   , activeDuoGroups = Set.empty
   , activeSlots = Set.empty
   , boonStatus = Dict.empty
+  , currentPrimaryMenu = Nothing
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -198,14 +200,30 @@ update msg model =
       )
     UI (View.SelectGod god) ->
       (model |> focusOn god, Cmd.none)
+    UI (View.SelectSlot slot) ->
+      ( {model | currentPrimaryMenu = Just slot}
+      , Cmd.none
+      )
     UI (View.SelectPrimary slot god) ->
+      let
+        closed =
+          { model
+          | currentPrimaryMenu = Nothing
+          , activeTraits = Set.diff model.activeTraits
+            (model.traits
+              |> Traits.boonsForSlot slot
+              |> List.map .trait
+              |> Set.fromList
+            )
+          }
+      in
       ( model.traits
         |> Traits.boonsOf god
         |> List.filter (Traits.isSlot slot)
         |> List.map (.trait)
         |> List.head
-        |> Maybe.map (\id -> selectBoon id model)
-        |> Maybe.withDefault model
+        |> Maybe.map (\id -> selectBoon id closed)
+        |> Maybe.withDefault closed
       , Cmd.none
       )
     UI (View.ViewAll) ->
