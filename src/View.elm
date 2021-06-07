@@ -1,7 +1,7 @@
 module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
-import Traits exposing (TraitId, God)
+import Traits exposing (TraitId, God, SlotId)
 
 import Element exposing (..)
 import Element.Background as Background
@@ -22,6 +22,7 @@ type Msg
   | OnMouseUp Point
   | OnWheel Point Int
   | SelectGod God
+  | SelectPrimary SlotId God
   | ViewAll
 
 chartSize = 4069
@@ -101,63 +102,93 @@ displayGodButton message iconPath name =
 displaySlotSelect model =
   let 
     scale = ((toFloat model.windowHeight) - 60) / 1188.0
-    int = (\x -> x * scale |> round)
-    spx = (\x -> x * scale |> round |> px)
-    primaryBoonBacking =
-      el
-        [ Background.image "GUI/HUD/PrimaryBoons/PrimaryBoonBacking_6.png"
-        , width (spx 138)
-        , height (spx 1188)
-        , centerX
-        ]
-        none
-    slotIcon = (\path desc ->
-      Input.button
-        [ width (spx 288)
-        , height (spx 187)
-        , behindContent <|
-          el
-            [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
-            , width (spx 201)
-            , height (spx 206)
-            , centerX
-            , centerY
-            ] none
-        ]
-        { onPress = Nothing
-        , label =
-          (image
-            [ width (spx 148)
-            , centerX
-            , centerY
-            ]
-            { src = path
-            , description = desc
-            }
-          )
-        }
-      )
+    scaled = (\x -> x * scale |> round)
   in
   column
     [ alignLeft
     , centerY
-    , height (spx 1188)
-    , width (spx 288)
-    , behindContent primaryBoonBacking
-    , spacing (int -1)
+    , height (px (scaled 1188))
+    , width (px (scaled 288))
+    , behindContent (primaryBoonBacking scaled)
+    , spacing (scaled -1)
     , paddingEach
-      { top = (int 24)
+      { top = (scaled 24)
       , right = 0
       , bottom = 0
-      , left = 0
+      , left = 1
       }
     ]
-    [ slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot"
-    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot"
-    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot"
-    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot"
-    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot"
+    [ slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot" "Melee"
+    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot" "Secondary"
+    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot" "Ranged"
+    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot" "Rush"
+    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot" "Shout"
     ]
+
+primaryBoonBacking : (Float -> Int) -> Element Msg
+primaryBoonBacking scaled =
+  el
+    [ Background.image "GUI/HUD/PrimaryBoons/PrimaryBoonBacking_6.png"
+    , width (px (scaled 138))
+    , height (px (scaled 1188))
+    , centerX
+    ]
+    none
+
+
+slotIcon model scaled path desc slot =
+  el
+    [ inFront (slotMenu model scaled slot)
+    , width (px (scaled 288))
+    ]
+    (boonIcon scaled path desc)
+
+slotMenu model scaled slot =
+  row
+    [ paddingEach
+      { top = 0
+      , right = 0
+      , bottom = 0
+      , left = (scaled 200)
+      }
+    , centerY
+    ]
+    (model.traits
+      |> Traits.linkableGods
+      |> List.map Traits.dataGod
+      |> List.map (boonSelectForGod slot)
+    )
+
+boonSelectForGod : SlotId -> God -> Element Msg
+boonSelectForGod slot god =
+  displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)
+
+boonIcon scaled path desc =
+  Input.button
+    [ width (px (scaled 201))
+    , height (px (scaled 187))
+    , centerX
+    , behindContent <|
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
+        , width (px (scaled 201))
+        , height (px (scaled 206))
+        , centerX
+        , centerY
+        ] none
+    ]
+    { onPress = Nothing
+    , label =
+      (image
+        [ width (px (scaled 148))
+        , centerX
+        , centerY
+        ]
+        { src = path
+        , description = desc
+        }
+      )
+    }
 
 displayFooter : Element msg
 displayFooter =

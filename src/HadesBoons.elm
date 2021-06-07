@@ -198,6 +198,16 @@ update msg model =
       )
     UI (View.SelectGod god) ->
       (model |> focusOn god, Cmd.none)
+    UI (View.SelectPrimary slot god) ->
+      ( model.traits
+        |> Traits.boonsOf god
+        |> List.filter (Traits.isSlot slot)
+        |> List.map (.trait)
+        |> List.head
+        |> Maybe.map (\id -> selectBoon id model)
+        |> Maybe.withDefault model
+      , Cmd.none
+      )
     UI (View.ViewAll) ->
       (model |> defaultView, Cmd.none)
 

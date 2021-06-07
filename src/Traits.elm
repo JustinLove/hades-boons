@@ -23,6 +23,8 @@ module Traits exposing
   , godName
   , godIcon
   , duoBoons
+  , isSlot
+  , boonsOf
   , basicBoons
   , boonStatus
   , traitStatus
@@ -143,6 +145,16 @@ basicBoons data =
   data
     |> godTraits
     |> List.filter isBasicBoon
+
+isSlot : SlotId -> Trait -> Bool
+isSlot target {slot} =
+  slot == Just target
+
+boonsOf : God -> Traits -> List Trait
+boonsOf target (Traits {gods}) =
+  gods
+    |> List.filter (\data -> dataGod data == target)
+    |> List.concatMap basicBoons
 
 duoBoons : Traits -> List Trait
 duoBoons (Traits {duos}) = duos
