@@ -4,8 +4,9 @@ import BoonChart
 import Traits exposing (TraitId, God)
 
 import Element exposing (..)
-import Element.Region as Region
+import Element.Background as Background
 import Element.Input as Input
+import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
 --import Html.Events exposing (on)
@@ -42,6 +43,7 @@ view model =
         , inFront displayFooter
         --, inFront (model.zoom |> String.fromFloat |> text)
         , inFront (displayGodSelect model)
+        , inFront (displaySlotSelect model)
       ]
       [ BoonChart.boonChart
         [ Html.Attributes.style "width" "100vw"
@@ -95,6 +97,67 @@ displayGodButton message iconPath name =
         }
       )
     }
+
+displaySlotSelect model =
+  let 
+    scale = ((toFloat model.windowHeight) - 60) / 1188.0
+    int = (\x -> x * scale |> round)
+    spx = (\x -> x * scale |> round |> px)
+    primaryBoonBacking =
+      el
+        [ Background.image "GUI/HUD/PrimaryBoons/PrimaryBoonBacking_6.png"
+        , width (spx 138)
+        , height (spx 1188)
+        , centerX
+        ]
+        none
+    slotIcon = (\path desc ->
+      Input.button
+        [ width (spx 288)
+        , height (spx 187)
+        , behindContent <|
+          el
+            [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
+            , width (spx 201)
+            , height (spx 206)
+            , centerX
+            , centerY
+            ] none
+        ]
+        { onPress = Nothing
+        , label =
+          (image
+            [ width (spx 148)
+            , centerX
+            , centerY
+            ]
+            { src = path
+            , description = desc
+            }
+          )
+        }
+      )
+  in
+  column
+    [ alignLeft
+    , centerY
+    , height (spx 1188)
+    , width (spx 288)
+    , behindContent primaryBoonBacking
+    , spacing (int -1)
+    , paddingEach
+      { top = (int 24)
+      , right = 0
+      , bottom = 0
+      , left = 0
+      }
+    ]
+    [ slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot"
+    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot"
+    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot"
+    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot"
+    , slotIcon "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot"
+    ]
 
 displayFooter : Element msg
 displayFooter =
