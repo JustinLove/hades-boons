@@ -25,7 +25,13 @@ type Msg
   | SelectGod God
   | SelectSlot SlotId
   | SelectPrimary SlotId God
+  | SelectKeepsake TraitId
   | ViewAll
+
+type Frame
+  = Primary
+  | Common
+  | Keepsake
 
 chartSize = 4069
 
@@ -110,8 +116,9 @@ displaySlotSelect model =
     [ alignLeft
     , centerY
     , height (px (scaled 1188))
-    , width (px (scaled 288))
+    , width (px (scaled 200))
     , behindContent (primaryBoonBacking scaled)
+    , spacing (scaled -4)
     , paddingEach
       { top = (scaled 30)
       , right = 0
@@ -124,6 +131,7 @@ displaySlotSelect model =
     , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot" "Ranged"
     , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot" "Rush"
     , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot" "Shout"
+    , slotIcon model scaled "" "Keepsake" "Keepsake"
     ]
 
 primaryBoonBacking : (Float -> Int) -> Element Msg
@@ -147,16 +155,19 @@ slotIcon model scaled path desc slot =
   in
   el
     [ if model.currentPrimaryMenu == Just slot then
-        onRight (slotMenu model scaled slot)
+        if slot == "Keepsake" then
+          onRight (keepsakeMenu model scaled)
+        else
+          onRight (slotMenu model scaled slot)
       else
         padding 0
-    , width (px (scaled 288))
+    , width (px (scaled 200))
     ]
     (case inSlot of
       Just boon ->
-        (boonIcon (SelectSlot slot) scaled True boon.icon boon.name)
+        (boonIcon (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Common) boon.icon boon.name)
       Nothing ->
-        (boonIcon (SelectSlot slot) scaled False path desc)
+        (boonIcon (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) path desc)
     )
 
 slotMenu model scaled slot =
@@ -169,40 +180,71 @@ slotMenu model scaled slot =
       |> List.map (boonSelectForGod slot)
     )
 
+keepsakeMenu model scaled =
+  row
+    [ centerY
+    ]
+    (model.traits
+      |> Traits.boonsForSlot "Keepsake"
+      |> List.map (\boon -> boonIcon (SelectKeepsake boon.trait) scaled Keepsake (boon.icon) (boon.name))
+    )
+
 boonSelectForGod : SlotId -> God -> Element Msg
 boonSelectForGod slot god =
   displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)
 
-boonIcon msg scaled active path desc =
+boonIcon msg scaled frame path desc =
   Input.button
     [ width (px (scaled 201))
     , height (px (scaled 187))
     , centerX
-    , inFront <|
+    , behindContent (displayFrame scaled frame)
+    ]
+    { onPress = Just msg
+    , label =
+      if path == "" then
+        none
+      else
+        (image
+          [ width (px (scaled 150))
+          , centerX
+          , centerY
+          , moveDown ((scaled 4) |> toFloat)
+          ]
+          { src = path
+          , description = desc
+          }
+        )
+    }
+
+displayFrame : (Float -> Int) -> Frame -> Element msg
+displayFrame scaled frame = 
+  case frame of
+    Primary ->
       el
-        [ if active then
-            Background.image "GUI/Screens/BoonIconFrames/common.png"
-          else
-            Background.image "GUI/Screens/BoonIconFrames/primary.png"
+        [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
         , width (px (scaled 201))
         , height (px (scaled 206))
         , centerX
         , centerY
         ] none
-    ]
-    { onPress = Just msg
-    , label =
-      (image
-        [ width (px (scaled 150))
+    Common ->
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/common.png"
+        , width (px (scaled 201))
+        , height (px (scaled 203))
         , centerX
         , centerY
-        , moveDown ((scaled 4) |> toFloat)
-        ]
-        { src = path
-        , description = desc
-        }
-      )
-    }
+        ] none
+    Keepsake ->
+      el
+        [ Background.image "GUI/HUD/Primaryboons/Keepsake_Backing.png"
+        , width (px (scaled 173))
+        , height (px (scaled 114))
+        , moveDown (scaled 50 |> toFloat)
+        , centerX
+        , centerY
+        ] none
 
 displayFooter : Element msg
 displayFooter =

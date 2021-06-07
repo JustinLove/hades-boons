@@ -24,6 +24,7 @@
 - x full view
 - x footer misaligned
 - x primary trait quick select
+- x keepsake in trait bar
 - x jump to god
 - x fill screen
 - x chrome graphic size
@@ -34,6 +35,9 @@
 - fix colors
 - where does hermes go?
   - duo lines passing behind
-- trinket display
+- keepsake display - mask wrong shape
+- keepsake derived exclusions
+- special weapons
+- mirror - only soul?
 - save calculated metrics
 - rotation outside metrics?

@@ -226,6 +226,19 @@ update msg model =
         |> Maybe.withDefault closed
       , Cmd.none
       )
+    UI (View.SelectKeepsake id) ->
+      ( { model
+        | currentPrimaryMenu = Nothing
+        , activeTraits = Set.diff model.activeTraits
+          (model.traits
+            |> Traits.boonsForSlot "Keepsake"
+            |> List.map .trait
+            |> Set.fromList
+          )
+        }
+          |> selectBoon id
+      , Cmd.none
+      )
     UI (View.ViewAll) ->
       (model |> defaultView, Cmd.none)
 
@@ -282,14 +295,14 @@ focusView : Point -> Float -> Float -> Model -> Model
 focusView center diameter rotation model =
   let
     size = diameter * View.chartSize
-    widthScale = (toFloat model.windowWidth-16) / size
-    heightScale = (toFloat model.windowHeight-56) / size
+    widthScale = (toFloat model.windowWidth-80-16) / size
+    heightScale = (toFloat model.windowHeight-40-16) / size
     zoom = min widthScale heightScale
     offset = center
       |> Geometry.add (-0.5,-0.5)
       |> Geometry.scale View.chartSize
       |> Geometry.scale zoom
-      |> Geometry.add ((toFloat model.windowWidth)/2, (toFloat model.windowHeight+40)/2)
+      |> Geometry.add ((toFloat model.windowWidth+80)/2, (toFloat model.windowHeight+40)/2)
   in
   { model
   | rotation = rotation
