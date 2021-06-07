@@ -200,6 +200,8 @@ update msg model =
       )
     UI (View.SelectGod god) ->
       (model |> focusOn god, Cmd.none)
+    UI (View.ViewAll) ->
+      (model |> defaultView, Cmd.none)
     UI (View.SelectSlot slot) ->
       ( {model | currentPrimaryMenu = Just slot}
       , Cmd.none
@@ -239,8 +241,11 @@ update msg model =
           |> selectBoon id
       , Cmd.none
       )
-    UI (View.ViewAll) ->
-      (model |> defaultView, Cmd.none)
+    UI (View.Reset) ->
+      ( { model | activeTraits = Set.empty }
+        |> updateDerivedStatus
+      , Cmd.none
+      )
 
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =

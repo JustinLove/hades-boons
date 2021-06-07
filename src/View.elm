@@ -23,10 +23,11 @@ type Msg
   | OnMouseUp Point
   | OnWheel Point Int
   | SelectGod God
+  | ViewAll
   | SelectSlot SlotId
   | SelectPrimary SlotId God
   | SelectKeepsake TraitId
-  | ViewAll
+  | Reset
 
 type Frame
   = Primary
@@ -53,6 +54,7 @@ view model =
         --, inFront (model.zoom |> String.fromFloat |> text)
         , inFront (displayGodSelect model)
         , inFront (displaySlotSelect model)
+        , inFront displayReset
       ]
       [ BoonChart.boonChart
         [ Html.Attributes.style "width" "100vw"
@@ -245,6 +247,24 @@ displayFrame scaled frame =
         , centerX
         , centerY
         ] none
+
+displayReset : Element Msg
+displayReset =
+  Input.button
+    [ alignBottom
+    , alignRight
+    ]
+    { onPress = Just Reset
+    , label =
+      (image
+        [ width (px 80)
+        ]
+        { src = "GUI/Screens/LevelUpRespec.png"
+        , description = "Reset"
+        }
+      )
+    }
+
 
 displayFooter : Element msg
 displayFooter =
