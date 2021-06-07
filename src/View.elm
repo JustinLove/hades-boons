@@ -10,6 +10,7 @@ import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
 --import Html.Events exposing (on)
+import Set exposing (Set)
 import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
 import Json.Decode
@@ -102,7 +103,7 @@ displayGodButton message iconPath name =
 
 displaySlotSelect model =
   let 
-    scale = ((toFloat model.windowHeight) - 60) / 1188.0
+    scale = (((toFloat model.windowHeight) - 60) / 1188.0) |> atMost 0.5
     scaled = (\x -> x * scale |> round)
   in
   column
@@ -111,9 +112,8 @@ displaySlotSelect model =
     , height (px (scaled 1188))
     , width (px (scaled 288))
     , behindContent (primaryBoonBacking scaled)
-    , spacing (scaled -1)
     , paddingEach
-      { top = (scaled 24)
+      { top = (scaled 30)
       , right = 0
       , bottom = 0
       , left = 1
@@ -138,6 +138,13 @@ primaryBoonBacking scaled =
 
 
 slotIcon model scaled path desc slot =
+  let
+    inSlot =
+      model.traits
+        |> Traits.boonsForSlot slot
+        |> List.filter (\{trait} -> Set.member trait model.activeTraits)
+        |> List.head
+  in
   el
     [ if model.currentPrimaryMenu == Just slot then
         onRight (slotMenu model scaled slot)
@@ -145,7 +152,12 @@ slotIcon model scaled path desc slot =
         padding 0
     , width (px (scaled 288))
     ]
-    (boonIcon (SelectSlot slot) scaled path desc)
+    (case inSlot of
+      Just boon ->
+        (boonIcon (SelectSlot slot) scaled True boon.icon boon.name)
+      Nothing ->
+        (boonIcon (SelectSlot slot) scaled False path desc)
+    )
 
 slotMenu model scaled slot =
   row
@@ -161,14 +173,17 @@ boonSelectForGod : SlotId -> God -> Element Msg
 boonSelectForGod slot god =
   displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)
 
-boonIcon msg scaled path desc =
+boonIcon msg scaled active path desc =
   Input.button
     [ width (px (scaled 201))
     , height (px (scaled 187))
     , centerX
-    , behindContent <|
+    , inFront <|
       el
-        [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
+        [ if active then
+            Background.image "GUI/Screens/BoonIconFrames/common.png"
+          else
+            Background.image "GUI/Screens/BoonIconFrames/primary.png"
         , width (px (scaled 201))
         , height (px (scaled 206))
         , centerX
@@ -178,9 +193,10 @@ boonIcon msg scaled path desc =
     { onPress = Just msg
     , label =
       (image
-        [ width (px (scaled 148))
+        [ width (px (scaled 150))
         , centerX
         , centerY
+        , moveDown ((scaled 4) |> toFloat)
         ]
         { src = path
         , description = desc
@@ -211,3 +227,6 @@ icon name =
   svg [ Svg.Attributes.class ("icon icon-"++name) ]
     [ use [ xlinkHref ("symbol-defs.svg#icon-"++name) ] [] ]
   |> html
+
+atMost : number -> number -> number
+atMost = min

@@ -23,7 +23,7 @@
 - x hermes angle
 - x full view
 - x footer misaligned
-- basic trait quick select
+- x primary trait quick select
 - x jump to god
 - x fill screen
 - x chrome graphic size
