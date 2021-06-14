@@ -48,6 +48,8 @@ trinkets godTag =
         , name = "Conch Shell"
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
+        , requiredMetaUpgradeSelected = Nothing
+        , requiredFalseTraits = Set.empty
         , requirements = None
         , boonType = BasicBoon Poseidon
         }
@@ -58,6 +60,8 @@ trinkets godTag =
         , name = "Lambent Plume"
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
+        , requiredMetaUpgradeSelected = Nothing
+        , requiredFalseTraits = Set.empty
         , requirements = None
         , boonType = BasicBoon Hermes
         }
@@ -90,6 +94,12 @@ trait godTag =
     |> map2 (|>) (field "name" string)
     |> map2 (|>) (maybe (field "slot" string))
     |> map2 (|>) (maybe (field "RequiredSlottedTrait" string))
+    |> map2 (|>) (maybe (field "RequiredMetaUpgradeSelected" string))
+    |> map2 (|>) (oneOf
+      [ (field "RequiredFalseTraits" (set string))
+      , succeed Set.empty
+      ]
+    )
     |> map2 (|>) requirements
     |> map2 (|>) (succeed (BasicBoon godTag))
 

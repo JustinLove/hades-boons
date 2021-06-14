@@ -31,6 +31,7 @@
 - x need trait icons on side menu
 - x lock icons are smaller on weapon aspects
 - any/some casts - prereqs?, design issues
+- hades keepsake
 - line formatting
   - zoom relative size?
 - text display when small

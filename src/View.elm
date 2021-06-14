@@ -5,6 +5,7 @@ import Traits exposing (TraitId, God, SlotId)
 
 import Element exposing (..)
 import Element.Background as Background
+import Element.Border as Border
 import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
@@ -199,7 +200,7 @@ boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Ms
 boonSelectButton scaled slot god boon =
   el
     [ inFront
-      (el [ alignBottom, alignRight ] (displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)))
+      (el [ alignBottom, alignRight, Border.rounded 20, Background.color (rgba 0 0 0 0.5) ] (displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
     (boonIcon (SelectPrimary slot god) scaled Common boon.icon boon.name)
 

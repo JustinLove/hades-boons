@@ -83,6 +83,8 @@ type alias Trait =
   , name : String
   , slot : Maybe SlotId
   , requiredSlottedTrait : Maybe SlotId
+  , requiredMetaUpgradeSelected : Maybe TraitId
+  , requiredFalseTraits : Set TraitId
   , requirements : Requirements
   , boonType : BoonType
   }
@@ -165,6 +167,11 @@ boonsOf target (Traits {gods}) =
 
 duoBoons : Traits -> List Trait
 duoBoons (Traits {duos}) = duos
+
+singleBoons : Traits -> List Trait
+singleBoons (Traits {gods}) =
+  gods
+    |> List.concatMap godTraits
 
 isBasicBoon : Trait -> Bool
 isBasicBoon {boonType} =
@@ -448,9 +455,14 @@ calculateActiveSlots activeTraits (Traits {gods}) =
     |> Set.fromList
 
 calculateExcludedTraits : Set TraitId -> Set SlotId -> Traits -> Set TraitId
-calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos}) =
-  let basics = gods |> List.concatMap godTraits in
-  calculateExcludedSlotTraits activeTraits activeSlots gods
+calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos} as traits) =
+  let
+    basics = gods |> List.concatMap godTraits
+    all = allTraits traits
+  in
+  Set.union
+    (calculateExcludedSlotTraits activeTraits activeSlots gods)
+    (calculateExcludedIncompatibleTraits activeTraits all)
     |> calculateExcludedDerivedTraits basics -- first requirments
     |> calculateExcludedDerivedTraits basics -- legendary
     |> calculateExcludedDerivedTraits duos -- duos
@@ -461,6 +473,14 @@ calculateExcludedSlotTraits activeTraits activeSlots gods =
     |> List.concatMap godTraits
     |> List.filter (\{trait} -> not <| Set.member trait activeTraits)
     |> List.filter (\trait -> slotFilled activeSlots trait)
+    |> List.map .trait
+    |> Set.fromList
+
+calculateExcludedIncompatibleTraits : Set TraitId -> List Trait -> Set TraitId
+calculateExcludedIncompatibleTraits activeTraits traits =
+  traits
+    |> List.filter (\{trait} -> not <| Set.member trait activeTraits)
+    |> List.filter (\{requiredFalseTraits} -> Set.intersect activeTraits (requiredFalseTraits |> Debug.log "false") |> Set.isEmpty |> not)
     |> List.map .trait
     |> Set.fromList
 

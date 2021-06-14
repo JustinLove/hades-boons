@@ -61,6 +61,8 @@ trait t =
     , ("name", t.name |> string)
     , ("slot", t.slot |> maybe string)
     , ("requiredSlottedTrait", t.requiredSlottedTrait |> maybe string)
+    , ("requiredMetaUpgradeSelected", t.requiredMetaUpgradeSelected |> maybe string)
+    , ("requiredFalseTraits", t.requiredFalseTraits |> set)
     , ("requirements", t.requirements |> requirements)
     , ("boonType", t.boonType |> boonType)
     ]

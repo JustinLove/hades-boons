@@ -23,6 +23,15 @@ local function ArrayConcat(arrays)
 	return result
 end
 
+local function RemoveFromList(list, item)
+	for i,v in ipairs(list) do
+		if v == item then
+			table.remove(list, i)
+			return
+		end
+	end
+end
+
 local function String(s)
 	return '"' .. s .. '"'
 end
@@ -117,6 +126,54 @@ local function TraitRequiredSlotted(trait)
 	end
 end
 
+local function TraitRequiredTraits(trait)
+	if TraitData[trait] then
+		if TraitData[trait].RequiredOneOfTraits then
+			return TraitData[trait].RequiredOneOfTraits
+		elseif TraitData[trait].RequiredTrait then
+			return {TraitData[trait].RequiredTrait}
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				upvalue = TraitRequiredTraits(parent)
+				if upvalue then
+					return upvalue
+				end
+			end
+		end
+	end
+end
+
+local function TraitRequiredFalseTraits(trait)
+	if TraitData[trait] then
+		if TraitData[trait].RequiredFalseTraits then
+			return TraitData[trait].RequiredFalseTraits
+		elseif TraitData[trait].RequiredFalseTrait then
+			return {TraitData[trait].RequiredFalseTrait}
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				upvalue = TraitRequiredFalseTraits(parent)
+				if upvalue then
+					return upvalue
+				end
+			end
+		end
+	end
+end
+
+local function TraitRequiredMetaUpgradeSelected(trait)
+	if TraitData[trait] then
+		if TraitData[trait].RequiredMetaUpgradeSelected then
+			return TraitData[trait].RequiredMetaUpgradeSelected
+		elseif TraitData[trait].InheritFrom then
+			for i,parent in ipairs(TraitData[trait].InheritFrom) do
+				upvalue = TraitRequiredMetaUpgradeSelected(parent)
+				if upvalue then
+					return upvalue
+				end
+			end
+		end
+	end
+end
 
 local function GodTrait(trait, extra)
 	local name = trait
@@ -137,9 +194,24 @@ local function GodTrait(trait, extra)
 	if slot then
 		item = item .. '        "slot": ' .. String(slot) .. ',\n'
 	end
-	req = TraitRequiredSlotted(trait)
-	if req then
-		item = item .. '        "RequiredSlottedTrait": ' .. String(req) .. ',\n'
+	reqSlot = TraitRequiredSlotted(trait)
+	if reqSlot then
+		item = item .. '        "RequiredSlottedTrait": ' .. String(reqSlot) .. ',\n'
+	end
+	reqTraits = TraitRequiredTraits(trait)
+	if reqTraits then
+		item = item .. '        "OneOf": ' .. ArrayOfStrings(reqTraits) .. ',\n'
+	end
+	falseTraits = TraitRequiredFalseTraits(trait)
+	if falseTraits then
+		RemoveFromList(falseTraits, trait)
+		if #falseTraits > 0 then
+			item = item .. '        "RequiredFalseTraits": ' .. ArrayOfStrings(falseTraits) .. ',\n'
+		end
+	end
+	meta = TraitRequiredMetaUpgradeSelected(trait)
+	if meta then
+		item = item .. '        "RequiredMetaUpgradeSelected": ' .. String(meta) .. ',\n'
 	end
 	item = item .. '        "trait": ' .. String(trait) .. ',\n'
 	item = item .. '        "name": ' .. String(name) .. '\n'
