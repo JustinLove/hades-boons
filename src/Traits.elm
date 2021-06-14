@@ -480,7 +480,7 @@ calculateExcludedIncompatibleTraits : Set TraitId -> List Trait -> Set TraitId
 calculateExcludedIncompatibleTraits activeTraits traits =
   traits
     |> List.filter (\{trait} -> not <| Set.member trait activeTraits)
-    |> List.filter (\{requiredFalseTraits} -> Set.intersect activeTraits (requiredFalseTraits |> Debug.log "false") |> Set.isEmpty |> not)
+    |> List.filter (\{requiredFalseTraits} -> Set.intersect activeTraits requiredFalseTraits |> Set.isEmpty |> not)
     |> List.map .trait
     |> Set.fromList
 

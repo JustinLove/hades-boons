@@ -20,6 +20,7 @@
   - any aid
   - poseidon - area asymetry
   - ares - maybe flip pomel?
+  - incompatible boons?
 - x hermes angle
 - x full view
 - x footer misaligned

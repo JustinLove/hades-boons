@@ -1,8 +1,9 @@
 module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
-import Traits exposing (TraitId, God, SlotId)
+import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
+import Dict
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -183,6 +184,14 @@ slotMenu model scaled slot =
         data
           |> Traits.basicBoons
           |> List.filter (Traits.isSlot slot)
+          |> List.filter (\{trait} ->
+            case Dict.get trait model.boonStatus of
+              Just Active -> True
+              Just Available -> True
+              Just Excluded -> False
+              Just Unavailable -> False
+              Nothing -> False
+            )
           |> List.map (boonSelectButton scaled slot (Traits.dataGod data))
       )
     )

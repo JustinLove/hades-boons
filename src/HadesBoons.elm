@@ -203,7 +203,20 @@ update msg model =
     UI (View.ViewAll) ->
       (model |> defaultView, Cmd.none)
     UI (View.SelectSlot slot) ->
-      ( {model | currentPrimaryMenu = Just slot}
+      ( { model
+        | currentPrimaryMenu =
+          if model.currentPrimaryMenu == Just slot then
+            Nothing
+          else
+            Just slot
+        , activeTraits = Set.diff model.activeTraits
+          (model.traits
+            |> Traits.boonsForSlot slot
+            |> List.map .trait
+            |> Set.fromList
+          )
+        }
+          |> updateDerivedStatus
       , Cmd.none
       )
     UI (View.SelectPrimary slot god) ->
