@@ -178,8 +178,12 @@ slotMenu model scaled slot =
     ]
     (model.traits
       |> Traits.linkableGods
-      |> List.map Traits.dataGod
-      |> List.map (boonSelectForGod slot)
+      |> List.concatMap (\data ->
+        data
+          |> Traits.basicBoons
+          |> List.filter (Traits.isSlot slot)
+          |> List.map (boonSelectButton scaled slot (Traits.dataGod data))
+      )
     )
 
 keepsakeMenu model scaled =
@@ -191,9 +195,13 @@ keepsakeMenu model scaled =
       |> List.map (\boon -> boonIcon (SelectKeepsake boon.trait) scaled Keepsake (boon.icon) (boon.name))
     )
 
-boonSelectForGod : SlotId -> God -> Element Msg
-boonSelectForGod slot god =
-  displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)
+boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Msg
+boonSelectButton scaled slot god boon =
+  el
+    [ inFront
+      (el [ alignBottom, alignRight ] (displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)))
+    ]
+    (boonIcon (SelectPrimary slot god) scaled Common boon.icon boon.name)
 
 boonIcon msg scaled frame path desc =
   Input.button
