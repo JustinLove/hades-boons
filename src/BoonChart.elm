@@ -456,7 +456,7 @@ displayBoonTrait boonStatus boon =
       |> scale 0.001
       |> shiftY -0.65
   , if status == Excluded then
-      image (0.9, 0.9) "GUI/LockIcon/LockIcon0001.png"
+      image (0.7, 0.7) "GUI/LockIcon/LockIcon0001.png"
     else
       group []
   , square (0.47 * (sqrt 2))
