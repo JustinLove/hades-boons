@@ -29,6 +29,7 @@ type Msg
   | SelectSlot SlotId
   | SelectPrimary SlotId God
   | SelectKeepsake TraitId
+  | SelectWeapon TraitId
   | Reset
 
 type Frame
@@ -99,43 +100,67 @@ displayGodButton message iconPath name =
     [ width (px 40)
     ]
     { onPress = Just message
-    , label =
-      (image
-        [ centerX
-        , centerY
-        , height (px 40)
-        ]
-        { src = iconPath
-        , description = name
-        }
-      )
+    , label = displayGodIcon (\s -> s/2 |> round) iconPath name
     }
+
+displayGodIcon : (Float -> Int) -> String -> String -> Element Msg
+displayGodIcon scaled iconPath name =
+  (image
+    [ centerX
+    , centerY
+    , height (px (scaled 80))
+    , Border.rounded (scaled 40)
+    , Background.color (rgba 0 0 0 0.5)
+    ]
+    { src = iconPath
+    , description = name
+    }
+  )
 
 displaySlotSelect model =
   let 
-    scale = (((toFloat model.windowHeight) - 60) / 1188.0) |> atMost 0.5
+    scale = (((toFloat model.windowHeight) - 60) / 1188.0)
+      |> atMost 0.5
+      |> atLeast 0.2
     scaled = (\x -> x * scale |> round)
   in
-  column
+  row
     [ alignLeft
     , centerY
-    , height (px (scaled 1188))
-    , width (px (scaled 200))
-    , behindContent (primaryBoonBacking scaled)
-    , spacing (scaled -4)
-    , paddingEach
-      { top = (scaled 30)
-      , right = 0
-      , bottom = 0
-      , left = 1
-      }
+    , spacing (scaled -70)
     ]
-    [ slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot" "Melee"
-    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot" "Secondary"
-    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot" "Ranged"
-    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot" "Rush"
-    , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot" "Shout"
-    , slotIcon model scaled "" "Keepsake" "Keepsake"
+    [ column
+      [ height (px (scaled 1188))
+      , width (px (scaled 200))
+      , behindContent (primaryBoonBacking scaled)
+      , spacing (scaled -4)
+      , paddingEach
+        { top = (scaled 30)
+        , right = 0
+        , bottom = 0
+        , left = 1
+        }
+      ]
+      [ slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot" "Melee"
+      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot" "Secondary"
+      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot" "Ranged"
+      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot" "Rush"
+      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot" "Shout"
+      , slotIcon model scaled "" "Keepsake" "Keepsake"
+      ]
+    , column
+      [ height (px (scaled 1188))
+      , width (px (scaled 200))
+      , spacing (scaled -4)
+      , paddingEach
+        { top = (scaled 120)
+        , right = 0
+        , bottom = 0
+        , left = 1
+        }
+      ]
+      [ slotIcon model scaled "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png" "Weapon" "Weapon"
+      ]
     ]
 
 primaryBoonBacking : (Float -> Int) -> Element Msg
@@ -159,10 +184,10 @@ slotIcon model scaled path desc slot =
   in
   el
     [ if model.currentPrimaryMenu == Just slot then
-        if slot == "Keepsake" then
-          onRight (keepsakeMenu model scaled)
-        else
-          onRight (slotMenu model scaled slot)
+        case slot of
+          "Keepsake" -> onRight (keepsakeMenu model scaled)
+          "Weapon" -> onRight (weaponMenu model scaled)
+          _ -> onRight (slotMenu model scaled slot)
       else
         padding 0
     , width (px (scaled 200))
@@ -205,11 +230,19 @@ keepsakeMenu model scaled =
       |> List.map (\boon -> boonIcon (SelectKeepsake boon.trait) scaled Keepsake (boon.icon) (boon.name))
     )
 
+weaponMenu model scaled =
+  row
+    [ centerY
+    ]
+    (Traits.miscBoons
+      |> List.map (\boon -> boonIcon (SelectWeapon boon.trait) scaled Common (boon.icon) (boon.name))
+    )
+
 boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Msg
 boonSelectButton scaled slot god boon =
   el
     [ inFront
-      (el [ alignBottom, alignRight, Border.rounded 20, Background.color (rgba 0 0 0 0.5) ] (displayGodButton (SelectPrimary slot god) (god |> Traits.godIcon) (god |> Traits.godName)))
+      (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
     (boonIcon (SelectPrimary slot god) scaled Common boon.icon boon.name)
 
@@ -244,7 +277,7 @@ displayFrame scaled frame =
       el
         [ Background.image "GUI/Screens/BoonIconFrames/primary.png"
         , width (px (scaled 201))
-        , height (px (scaled 206))
+        , height (px (scaled 198))
         , centerX
         , centerY
         ] none
@@ -310,3 +343,6 @@ icon name =
 
 atMost : number -> number -> number
 atMost = min
+
+atLeast : number -> number -> number
+atLeast = max

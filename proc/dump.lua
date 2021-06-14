@@ -149,13 +149,12 @@ local function TraitRequiredFalseTraits(trait)
 			return TraitData[trait].RequiredFalseTraits
 		elseif TraitData[trait].RequiredFalseTrait then
 			return {TraitData[trait].RequiredFalseTrait}
-		elseif TraitData[trait].InheritFrom then
-			for i,parent in ipairs(TraitData[trait].InheritFrom) do
-				upvalue = TraitRequiredFalseTraits(parent)
-				if upvalue then
-					return upvalue
-				end
+		elseif TraitData[trait].TraitDependencyTextOverrides then
+			exclude = {}
+			for k,v in pairs(TraitData[trait].TraitDependencyTextOverrides) do
+				table.insert(exclude, k)
 			end
+			return exclude
 		end
 	end
 end

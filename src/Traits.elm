@@ -23,6 +23,7 @@ module Traits exposing
   , godName
   , godIcon
   , duoBoons
+  , miscBoons
   , boonsForSlot
   , isSlot
   , boonsOf
@@ -47,10 +48,11 @@ type alias SlotId = String
 type Traits = Traits
   { gods : List GodData
   , duos : List Trait
+  , misc : List Trait
   }
 
 empty : Traits
-empty = Traits {gods = [], duos = []}
+empty = Traits {gods = [], duos = [], misc = []}
 
 type God
   = Hermes
@@ -153,6 +155,7 @@ boonsForSlot : SlotId -> Traits -> List Trait
 boonsForSlot slot (Traits {gods}) =
   gods
     |> List.concatMap basicBoons
+    |> List.append miscBoons
     |> List.filter (isSlot slot)
 
 isSlot : SlotId -> Trait -> Bool
@@ -196,7 +199,32 @@ loadPreprocessedGodsAndDuoBoons basicGods duos =
   Traits
     { gods = basicGods
     , duos = duos
+    , misc = miscBoons
     }
+
+miscBoons : List Trait
+miscBoons =
+  [ { icon = "GUI/Screens/WeaponEnchantmentIcons/bow_echantment_2.png"
+    , trait = "BowLoadAmmoTrait"
+    , name = "Aspect of Hera"
+    , slot = Just "Weapon"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Poseidon
+    }
+  , { icon = "GUI/Screens/WeaponEnchantmentIcons/shield_enchantment_3.png"
+    , trait = "ShieldLoadAmmoTrait"
+    , name = "Aspect of Beowulf"
+    , slot = Just "Weapon"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Poseidon
+    }
+  ]
 
 tagLinkedBoons : List GodData -> List GodData
 tagLinkedBoons gods =
@@ -460,9 +488,9 @@ calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos} as traits)
     basics = gods |> List.concatMap godTraits
     all = allTraits traits
   in
-  Set.union
-    (calculateExcludedSlotTraits activeTraits activeSlots gods)
-    (calculateExcludedIncompatibleTraits activeTraits all)
+  (Set.diff (Set.fromList ["ShieldLoadAmmoTrait", "BowLoadAmmoTrait"]) activeTraits)
+    |> Set.union (calculateExcludedSlotTraits activeTraits activeSlots gods)
+    |> Set.union (calculateExcludedIncompatibleTraits activeTraits all)
     |> calculateExcludedDerivedTraits basics -- first requirments
     |> calculateExcludedDerivedTraits basics -- legendary
     |> calculateExcludedDerivedTraits duos -- duos

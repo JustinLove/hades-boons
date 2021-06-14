@@ -7,19 +7,16 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_13.png",
         "RequiredSlottedTrait": "Shout",
-        "RequiredFalseTraits": ["RegeneratingSuperTrait"],
         "trait": "RegeneratingSuperTrait",
         "name": "Quick Favor"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_14.png",
-        "RequiredFalseTraits": ["ChamberGoldTrait"],
         "trait": "ChamberGoldTrait",
         "name": "Side Hustle"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_03.png",
-        "RequiredFalseTraits": ["AmmoReloadTrait"],
         "RequiredMetaUpgradeSelected": "ReloadAmmoMetaUpgrade",
         "trait": "AmmoReloadTrait",
         "name": "Auto Reload"
@@ -27,7 +24,6 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_12.png",
         "RequiredSlottedTrait": "Shout",
-        "RequiredFalseTraits": ["HermesShoutDodge"],
         "trait": "HermesShoutDodge",
         "name": "Second Wind"
       },
@@ -44,38 +40,33 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_07.png",
-        "RequiredFalseTraits": ["RushRallyTrait"],
         "trait": "RushRallyTrait",
         "name": "Quick Recovery"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_05.png",
-        "RequiredFalseTraits": ["MoveSpeedTrait"],
         "trait": "MoveSpeedTrait",
         "name": "Greater Haste"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_08.png",
-        "RequiredFalseTraits": ["RushSpeedBoostTrait"],
         "trait": "RushSpeedBoostTrait",
         "name": "Hyper Sprint"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_02.png",
-        "RequiredFalseTraits": ["RapidCastTrait", "BowLoadAmmoTrait", "ShieldLoadAmmoTrait"],
+        "RequiredFalseTraits": ["BowLoadAmmoTrait", "ShieldLoadAmmoTrait"],
         "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
         "trait": "RapidCastTrait",
         "name": "Flurry Cast"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_01.png",
-        "RequiredFalseTraits": ["BonusDashTrait"],
         "trait": "BonusDashTrait",
         "name": "Greatest Reflex"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_04.png",
-        "RequiredFalseTraits": ["DodgeChanceTrait"],
         "trait": "DodgeChanceTrait",
         "name": "Greater Evasion"
       },
@@ -90,27 +81,25 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["RapidCastTrait", "AmmoReclaimTrait", "FastClearDodgeBonusTrait"],
-        "icon": "GUI/Screens/BoonIcons/Hermes_11.png",
-        "RequiredFalseTraits": ["MagnetismTrait"],
-        "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
-        "trait": "MagnetismTrait",
-        "name": "Greater Recall"
-      },
-      {
         "OneOf":["MoveSpeedTrait", "RushSpeedBoostTrait", "FastClearDodgeBonusTrait"],
         "icon": "GUI/Screens/BoonIcons/Hermes_15.png",
-        "RequiredFalseTraits": ["SpeedDamageTrait"],
         "trait": "SpeedDamageTrait",
         "name": "Rush Delivery"
       },
       {
         "OneOf":["AmmoReloadTrait", "FastClearDodgeBonusTrait"],
         "icon": "GUI/Screens/BoonIcons/Hermes_02.png",
-        "RequiredFalseTraits": ["UnstoredAmmoDamageTrait", "MagnetismTrait"],
+        "RequiredFalseTraits": ["MagnetismTrait"],
         "RequiredMetaUpgradeSelected": "ReloadAmmoMetaUpgrade",
         "trait": "UnstoredAmmoDamageTrait",
         "name": "Bad News"
+      },
+      {
+        "OneOf":["RapidCastTrait", "AmmoReclaimTrait", "FastClearDodgeBonusTrait"],
+        "icon": "GUI/Screens/BoonIcons/Hermes_11.png",
+        "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "trait": "MagnetismTrait",
+        "name": "Greater Recall"
       }
     ]
   }
@@ -175,7 +164,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_11_Large.png",
-        "RequiredFalseTraits": ["HealthRewardBonusTrait"],
         "trait": "HealthRewardBonusTrait",
         "name": "Life Affirmation"
       }
@@ -185,37 +173,15 @@
       {
         "OneFromEachSet":[["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["AphroditeDurationTrait", "AphroditeWeakenTrait", "AphroditePotencyTrait"]],
         "icon": "GUI/Screens/BoonIcons/Aphrodite_10_Large.png",
-        "RequiredFalseTraits": ["CharmTrait"],
         "trait": "CharmTrait",
         "name": "Unhealthy Fixation"
       },
       {
-        "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_12_Large.png",
-        "RequiredFalseTraits": ["AphroditePotencyTrait"],
-        "trait": "AphroditePotencyTrait",
-        "name": "Broken Resolve"
-      },
-      {
-        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Aphrodite_01.png",
-        "RequiredFalseTraits": ["DionysusAphroditeStackIncreaseTrait"],
-        "trait": "DionysusAphroditeStackIncreaseTrait",
-        "name": "Low Tolerance"
-      },
-      {
-        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Ares_Aphrodite_01.png",
-        "RequiredFalseTraits": ["CurseSickTrait"],
-        "trait": "CurseSickTrait",
-        "name": "Curse of Longing"
-      },
-      {
-        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Poseidon_01.png",
-        "RequiredFalseTraits": ["ImprovedPomTrait"],
-        "trait": "ImprovedPomTrait",
-        "name": "Sweet Nectar"
+        "OneOf":["AphroditeRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_13_Large.png",
+        "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "trait": "AphroditeRangedBonusTrait",
+        "name": "Blown Kiss"
       },
       {
         "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
@@ -224,46 +190,62 @@
         "name": "Empty Inside"
       },
       {
-        "OneFromEachSet":[["DemeterRangedTrait"], ["AphroditeWeaponTrait", "AphroditeRushTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Demeter_01.png",
-        "RequiredFalseTraits": ["SelfLaserTrait", "HomingLaserTrait"],
-        "trait": "SelfLaserTrait",
-        "name": "Cold Embrace"
+        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Poseidon_01.png",
+        "trait": "ImprovedPomTrait",
+        "name": "Sweet Nectar"
       },
       {
-        "OneOf":["AphroditeRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_13_Large.png",
-        "RequiredFalseTraits": ["AphroditeRangedBonusTrait", "ShieldLoadAmmoTrait"],
-        "trait": "AphroditeRangedBonusTrait",
-        "name": "Blown Kiss"
-      },
-      {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Athena_01.png",
-        "RequiredFalseTraits": ["CastBackstabTrait", "DionysusRangedTrait", "ShieldLoadAmmoTrait"],
-        "trait": "CastBackstabTrait",
-        "name": "Parting Shot"
-      },
-      {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_Aphrodite_01.png",
-        "RequiredFalseTraits": ["HeartsickCritDamageTrait"],
-        "trait": "HeartsickCritDamageTrait",
-        "name": "Heart Rend"
-      },
-      {
-        "OneFromEachSet":[["AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeRangedTrait", "AphroditeRushTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Zeus_Aphrodite_01.png",
-        "RequiredSlottedTrait": "Shout",
-        "RequiredFalseTraits": ["RegeneratingCappedSuperTrait", "HadesShoutTrait"],
-        "trait": "RegeneratingCappedSuperTrait",
-        "name": "Smoldering Air"
+        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Ares_Aphrodite_01.png",
+        "trait": "CurseSickTrait",
+        "name": "Curse of Longing"
       },
       {
         "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Aphrodite_06_Large.png",
         "trait": "AphroditeWeakenTrait",
         "name": "Sweet Surrender"
+      },
+      {
+        "OneFromEachSet":[["AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeRangedTrait", "AphroditeRushTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Zeus_Aphrodite_01.png",
+        "RequiredSlottedTrait": "Shout",
+        "RequiredFalseTraits": ["HadesShoutTrait"],
+        "trait": "RegeneratingCappedSuperTrait",
+        "name": "Smoldering Air"
+      },
+      {
+        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Aphrodite_01.png",
+        "trait": "DionysusAphroditeStackIncreaseTrait",
+        "name": "Low Tolerance"
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Athena_01.png",
+        "RequiredFalseTraits": ["DionysusRangedTrait", "ShieldLoadAmmoTrait"],
+        "trait": "CastBackstabTrait",
+        "name": "Parting Shot"
+      },
+      {
+        "OneFromEachSet":[["DemeterRangedTrait"], ["AphroditeWeaponTrait", "AphroditeRushTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Demeter_01.png",
+        "RequiredFalseTraits": ["HomingLaserTrait"],
+        "trait": "SelfLaserTrait",
+        "name": "Cold Embrace"
+      },
+      {
+        "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_12_Large.png",
+        "trait": "AphroditePotencyTrait",
+        "name": "Broken Resolve"
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_Aphrodite_01.png",
+        "trait": "HeartsickCritDamageTrait",
+        "name": "Heart Rend"
       }
     ]
   }
@@ -328,7 +310,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Ares_14_Large.png",
-        "RequiredFalseTraits": ["LastStandDamageBonusTrait"],
         "trait": "LastStandDamageBonusTrait",
         "name": "Blood Frenzy"
       }
@@ -336,31 +317,35 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"], ["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Ares_01.png",
-        "RequiredFalseTraits": ["PoisonTickRateTrait"],
-        "trait": "PoisonTickRateTrait",
-        "name": "Curse of Nausea"
-      },
-      {
-        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Athena_Ares_01.png",
-        "RequiredFalseTraits": ["TriggerCurseTrait"],
-        "trait": "TriggerCurseTrait",
-        "name": "Merciful End"
-      },
-      {
         "OneOf":["AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Ares_07_Large.png",
         "trait": "AresAoETrait",
         "name": "Black Metal"
       },
       {
-        "OneOf":["AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Ares_08_Large.png",
-        "RequiredFalseTraits": ["AresDragTrait"],
-        "trait": "AresDragTrait",
-        "name": "Engulfing Vortex"
+        "OneFromEachSet":[["AresRangedTrait", "ShieldLoadAmmo_AresRangedTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Ares_Demeter_01.png",
+        "RequiredFalseTraits": ["AresHomingTrait"],
+        "trait": "StationaryRiftTrait",
+        "name": "Freezing Vortex"
+      },
+      {
+        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait", "ShieldLoadAmmo_ZeusRangedTrait"], ["AresWeaponTrait", "AresSecondaryTrait", "AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"], ["AresRetaliateTrait", "RetaliateWeaponTrait", "AthenaRetaliateTrait", "AphroditeRetaliateTrait", "DemeterRetaliateTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Zeus_Ares_01.png",
+        "trait": "AutoRetaliateTrait",
+        "name": "Vengeful Mood"
+      },
+      {
+        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Athena_Ares_01.png",
+        "trait": "TriggerCurseTrait",
+        "name": "Merciful End"
+      },
+      {
+        "OneOf":["AresWeaponTrait", "AresSecondaryTrait"],
+        "icon": "GUI/Screens/BoonIcons/Ares_11_Large.png",
+        "trait": "AresLoadCurseTrait",
+        "name": "Dire Misfortune"
       },
       {
         "OneOf":["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"],
@@ -371,44 +356,34 @@
       {
         "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRushTrait", "AresShoutTrait"], ["PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_Ares_01.png",
-        "RequiredFalseTraits": ["PoseidonAresProjectileTrait", "BlizzardOrbTrait", "ArtemisBonusProjectileTrait", "BowLoadAmmoTrait"],
+        "RequiredFalseTraits": ["BlizzardOrbTrait", "ArtemisBonusProjectileTrait", "BowLoadAmmoTrait"],
         "trait": "PoseidonAresProjectileTrait",
         "name": "Curse of Drowning"
       },
       {
-        "OneOf":["AresWeaponTrait", "AresSecondaryTrait"],
-        "icon": "GUI/Screens/BoonIcons/Ares_11_Large.png",
-        "RequiredFalseTraits": ["AresLoadCurseTrait"],
-        "trait": "AresLoadCurseTrait",
-        "name": "Dire Misfortune"
-      },
-      {
         "OneOf":["AresAoETrait", "AresDragTrait"],
         "icon": "GUI/Screens/BoonIcons/Ares_09_Large.png",
-        "RequiredFalseTraits": ["AresCursedRiftTrait"],
         "trait": "AresCursedRiftTrait",
         "name": "Vicious Cycle"
       },
       {
-        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait", "ShieldLoadAmmo_ZeusRangedTrait"], ["AresWeaponTrait", "AresSecondaryTrait", "AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"], ["AresRetaliateTrait", "RetaliateWeaponTrait", "AthenaRetaliateTrait", "AphroditeRetaliateTrait", "DemeterRetaliateTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Zeus_Ares_01.png",
-        "RequiredFalseTraits": ["AutoRetaliateTrait"],
-        "trait": "AutoRetaliateTrait",
-        "name": "Vengeful Mood"
-      },
-      {
-        "OneFromEachSet":[["AresRangedTrait", "ShieldLoadAmmo_AresRangedTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Ares_Demeter_01.png",
-        "RequiredFalseTraits": ["StationaryRiftTrait", "AresHomingTrait"],
-        "trait": "StationaryRiftTrait",
-        "name": "Freezing Vortex"
+        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"], ["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Ares_01.png",
+        "trait": "PoisonTickRateTrait",
+        "name": "Curse of Nausea"
       },
       {
         "OneFromEachSet":[["AresRangedTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Artemis_Ares_01.png",
-        "RequiredFalseTraits": ["AresHomingTrait", "StationaryRiftTrait", "ShieldLoadAmmoTrait"],
+        "RequiredFalseTraits": ["StationaryRiftTrait", "ShieldLoadAmmoTrait"],
         "trait": "AresHomingTrait",
         "name": "Hunting Blades"
+      },
+      {
+        "OneOf":["AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Ares_08_Large.png",
+        "trait": "AresDragTrait",
+        "name": "Engulfing Vortex"
       }
     ]
   }
@@ -463,7 +438,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_11_Large.png",
-        "RequiredFalseTraits": ["ZeroAmmoBonusTrait"],
         "trait": "ZeroAmmoBonusTrait",
         "name": "Ravenous Will"
       },
@@ -487,36 +461,7 @@
     "LinkedUpgrades": [
       {
         "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
-        "icon": "GUI/Screens/BoonIcons/Demeter_07_Large.png",
-        "RequiredFalseTraits": ["MaximumChillBlast"],
-        "trait": "MaximumChillBlast",
-        "name": "Arctic Blast"
-      },
-      {
-        "OneFromEachSet":[["MaximumChillBlast", "ZeroAmmoBonusTrait"], ["MaximumChillBonusSlow", "MaximumChillBlast"], ["ZeroAmmoBonusTrait", "MaximumChillBonusSlow"]],
-        "icon": "GUI/Screens/BoonIcons/Demeter_10_Large.png",
-        "RequiredFalseTraits": ["InstantChillKill"],
-        "trait": "InstantChillKill",
-        "name": "Winter Harvest"
-      },
-      {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterRangedTrait", "ShieldLoadAmmo_DemeterRangedTrait", "DemeterShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Demeter_Athena_01.png",
-        "RequiredFalseTraits": ["NoLastStandRegenerationTrait"],
-        "trait": "NoLastStandRegenerationTrait",
-        "name": "Stubborn Roots"
-      },
-      {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["DemeterRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Demeter_Artemis_01.png",
-        "RequiredFalseTraits": ["SelfLaserTrait", "HomingLaserTrait", "MultiLaserTrait"],
-        "trait": "HomingLaserTrait",
-        "name": "Crystal Clarity"
-      },
-      {
-        "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
         "icon": "GUI/Screens/BoonIcons/Demeter_12_Large.png",
-        "RequiredFalseTraits": ["MaximumChillBonusSlow"],
         "trait": "MaximumChillBonusSlow",
         "name": "Killing Freeze"
       },
@@ -527,25 +472,49 @@
         "name": "Glacial Glare"
       },
       {
+        "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
+        "icon": "GUI/Screens/BoonIcons/Demeter_07_Large.png",
+        "trait": "MaximumChillBlast",
+        "name": "Arctic Blast"
+      },
+      {
         "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["ZeusLightningDebuff"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_Zeus_01.png",
-        "RequiredFalseTraits": ["JoltDurationTrait"],
         "trait": "JoltDurationTrait",
         "name": "Cold Fusion"
       },
       {
         "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_Dionysus_01.png",
-        "RequiredFalseTraits": ["IceStrikeArrayTrait", "BlizzardOrbTrait"],
+        "RequiredFalseTraits": ["BlizzardOrbTrait"],
         "trait": "IceStrikeArrayTrait",
         "name": "Ice Wine"
       },
       {
         "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["PoseidonRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_Demeter_01.png",
-        "RequiredFalseTraits": ["BlizzardOrbTrait", "PoseidonAresProjectileTrait", "IceStrikeArrayTrait", "ShieldLoadAmmoTrait"],
+        "RequiredFalseTraits": ["PoseidonAresProjectileTrait", "IceStrikeArrayTrait", "ShieldLoadAmmoTrait"],
         "trait": "BlizzardOrbTrait",
         "name": "Blizzard Shot"
+      },
+      {
+        "OneFromEachSet":[["MaximumChillBlast", "ZeroAmmoBonusTrait"], ["MaximumChillBonusSlow", "MaximumChillBlast"], ["ZeroAmmoBonusTrait", "MaximumChillBonusSlow"]],
+        "icon": "GUI/Screens/BoonIcons/Demeter_10_Large.png",
+        "trait": "InstantChillKill",
+        "name": "Winter Harvest"
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterRangedTrait", "ShieldLoadAmmo_DemeterRangedTrait", "DemeterShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Demeter_Athena_01.png",
+        "trait": "NoLastStandRegenerationTrait",
+        "name": "Stubborn Roots"
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["DemeterRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Demeter_Artemis_01.png",
+        "RequiredFalseTraits": ["SelfLaserTrait", "MultiLaserTrait"],
+        "trait": "HomingLaserTrait",
+        "name": "Crystal Clarity"
       }
     ]
   }
@@ -576,6 +545,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_02_Large.png",
         "slot": "Ranged",
+        "RequiredFalseTraits": ["BowLoadAmmoTrait", "ShieldLoadAmmoTrait"],
         "trait": "DionysusRangedTrait",
         "name": "Trippy Shot"
       },
@@ -594,7 +564,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_10_Large.png",
-        "RequiredFalseTraits": ["DoorHealTrait"],
         "trait": "DoorHealTrait",
         "name": "After Party"
       },
@@ -605,7 +574,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_13_Large.png",
-        "RequiredFalseTraits": ["FountainDamageBonusTrait"],
         "trait": "FountainDamageBonusTrait",
         "name": "Strong Drink"
       },
@@ -619,53 +587,6 @@
     "LinkedUpgrades": [
       {
         "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_06_Large.png",
-        "trait": "DionysusSlowTrait",
-        "name": "Numbing Sensation"
-      },
-      {
-        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["DionysusRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Zeus_Dionysus_01.png",
-        "RequiredFalseTraits": ["LightningCloudTrait"],
-        "trait": "LightningCloudTrait",
-        "name": "Scintillating Feast"
-      },
-      {
-        "OneFromEachSet":[["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait", "DionysusRushTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_08_Large.png",
-        "RequiredFalseTraits": ["DionysusComboVulnerability"],
-        "trait": "DionysusComboVulnerability",
-        "name": "Black Out"
-      },
-      {
-        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Poseidon_01.png",
-        "RequiredFalseTraits": ["RaritySuperBoost"],
-        "trait": "RaritySuperBoost",
-        "name": "Exclusive Access"
-      },
-      {
-        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait"],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_07_Large.png",
-        "trait": "DionysusSpreadTrait",
-        "name": "Peer Pressure"
-      },
-      {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Athena_01.png",
-        "RequiredFalseTraits": ["SlowProjectileTrait"],
-        "trait": "SlowProjectileTrait",
-        "name": "Calculated Risk"
-      },
-      {
-        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionyuss_Artemis_01.png",
-        "RequiredFalseTraits": ["PoisonCritVulnerabilityTrait"],
-        "trait": "PoisonCritVulnerabilityTrait",
-        "name": "Splitting Headache"
-      },
-      {
-        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Dionysus_09_Large.png",
         "trait": "DionysusPoisonPowerTrait",
         "name": "Bad Influence"
@@ -675,6 +596,48 @@
         "icon": "GUI/Screens/BoonIcons/Dionysus_11_Large.png",
         "trait": "DionysusDefenseTrait",
         "name": "High Tolerance"
+      },
+      {
+        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionyuss_Artemis_01.png",
+        "trait": "PoisonCritVulnerabilityTrait",
+        "name": "Splitting Headache"
+      },
+      {
+        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_06_Large.png",
+        "trait": "DionysusSlowTrait",
+        "name": "Numbing Sensation"
+      },
+      {
+        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Poseidon_01.png",
+        "trait": "RaritySuperBoost",
+        "name": "Exclusive Access"
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Athena_01.png",
+        "trait": "SlowProjectileTrait",
+        "name": "Calculated Risk"
+      },
+      {
+        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["DionysusRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Zeus_Dionysus_01.png",
+        "trait": "LightningCloudTrait",
+        "name": "Scintillating Feast"
+      },
+      {
+        "OneFromEachSet":[["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait", "DionysusRushTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_08_Large.png",
+        "trait": "DionysusComboVulnerability",
+        "name": "Black Out"
+      },
+      {
+        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait"],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_07_Large.png",
+        "trait": "DionysusSpreadTrait",
+        "name": "Peer Pressure"
       }
     ]
   }
@@ -699,6 +662,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_02_Large.png",
         "slot": "Ranged",
+        "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
         "trait": "PoseidonRangedTrait",
         "name": "Flood Shot"
       },
@@ -723,7 +687,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_09_Large.png",
-        "RequiredFalseTraits": ["RoomRewardBonusTrait"],
         "trait": "RoomRewardBonusTrait",
         "name": "Ocean's Bounty"
       },
@@ -747,11 +710,22 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["RoomRewardBonusTrait", "PoseidonPickedUpMinorLootTrait"], ["PoseidonPickedUpMinorLootTrait", "ForcePoseidonBoonTrait"], ["RoomRewardBonusTrait", "ForcePoseidonBoonTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_13_Large.png",
-        "RequiredFalseTraits": ["FishingTrait"],
-        "trait": "FishingTrait",
-        "name": "Huge Catch"
+        "OneOf":["PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_15_Large.png",
+        "trait": "PoseidonShoutDurationTrait",
+        "name": "Rip Current"
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_Athena_01.png",
+        "trait": "StatusImmunityTrait",
+        "name": "Unshakable Mettle"
+      },
+      {
+        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_05_Large.png",
+        "trait": "BonusCollisionTrait",
+        "name": "Typhoon's Fury"
       },
       {
         "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"]],
@@ -762,28 +736,9 @@
       },
       {
         "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_08_Large.png",
-        "trait": "SlamExplosionTrait",
-        "name": "Breaking Wave"
-      },
-      {
-        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"], ["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_Zeus_01.png",
-        "RequiredFalseTraits": ["ImpactBoltTrait"],
-        "trait": "ImpactBoltTrait",
-        "name": "Sea Storm"
-      },
-      {
-        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Poseidon_12_Large.png",
         "trait": "BossDamageTrait",
         "name": "Wave Pounding"
-      },
-      {
-        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_05_Large.png",
-        "trait": "BonusCollisionTrait",
-        "name": "Typhoon's Fury"
       },
       {
         "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
@@ -792,24 +747,28 @@
         "name": "Razor Shoals"
       },
       {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_Athena_01.png",
-        "RequiredFalseTraits": ["StatusImmunityTrait"],
-        "trait": "StatusImmunityTrait",
-        "name": "Unshakable Mettle"
-      },
-      {
-        "OneOf":["PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_15_Large.png",
-        "trait": "PoseidonShoutDurationTrait",
-        "name": "Rip Current"
-      },
-      {
         "OneFromEachSet":[["BonusCollisionTrait", "SlamExplosionTrait"], ["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_07_Large.png",
-        "RequiredFalseTraits": ["DoubleCollisionTrait"],
         "trait": "DoubleCollisionTrait",
         "name": "Second Wave"
+      },
+      {
+        "OneFromEachSet":[["RoomRewardBonusTrait", "PoseidonPickedUpMinorLootTrait"], ["PoseidonPickedUpMinorLootTrait", "ForcePoseidonBoonTrait"], ["RoomRewardBonusTrait", "ForcePoseidonBoonTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_13_Large.png",
+        "trait": "FishingTrait",
+        "name": "Huge Catch"
+      },
+      {
+        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"], ["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_Zeus_01.png",
+        "trait": "ImpactBoltTrait",
+        "name": "Sea Storm"
+      },
+      {
+        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_08_Large.png",
+        "trait": "SlamExplosionTrait",
+        "name": "Breaking Wave"
       }
     ]
   }
@@ -859,7 +818,6 @@
       },
       {
         "icon": "GUI/Screens/BoonIcons/Athena_07_Large.png",
-        "RequiredFalseTraits": ["TrapDamageTrait"],
         "trait": "TrapDamageTrait",
         "name": "Sure Footing"
       },
@@ -895,37 +853,34 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["AthenaShieldTrait"],
-        "icon": "GUI/Screens/BoonIcons/Athena_10_Large.png",
-        "RequiredFalseTraits": ["ShieldHitTrait"],
-        "trait": "ShieldHitTrait",
-        "name": "Divine Protection"
-      },
-      {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_Athena_01.png",
-        "RequiredFalseTraits": ["ArtemisReflectBuffTrait"],
-        "trait": "ArtemisReflectBuffTrait",
-        "name": "Deadly Reversal"
-      },
-      {
-        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["AthenaRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Athena_Zeus_01.png",
-        "RequiredFalseTraits": ["ReboundingAthenaCastTrait"],
-        "trait": "ReboundingAthenaCastTrait",
-        "name": "Lightning Phalanx"
-      },
-      {
         "OneOf":["AthenaWeaponTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaRushTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_14_Large.png",
         "trait": "AthenaBackstabDebuffTrait",
         "name": "Blinding Flash"
       },
       {
+        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["AthenaRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Athena_Zeus_01.png",
+        "trait": "ReboundingAthenaCastTrait",
+        "name": "Lightning Phalanx"
+      },
+      {
         "OneOf":["AthenaWeaponTrait", "AthenaRushTrait", "AthenaRetaliateTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_05_Large.png",
         "trait": "AthenaShieldTrait",
         "name": "Brilliant Riposte"
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_Athena_01.png",
+        "trait": "ArtemisReflectBuffTrait",
+        "name": "Deadly Reversal"
+      },
+      {
+        "OneOf":["AthenaShieldTrait"],
+        "icon": "GUI/Screens/BoonIcons/Athena_10_Large.png",
+        "trait": "ShieldHitTrait",
+        "name": "Divine Protection"
       }
     ]
   }
@@ -983,39 +938,6 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["ArtemisAmmoExitTrait", "CritBonusTrait"], ["ArtemisSupportingFireTrait", "ArtemisAmmoExitTrait"], ["ArtemisSupportingFireTrait", "CritBonusTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_07_Large.png",
-        "RequiredFalseTraits": ["MoreAmmoTrait"],
-        "trait": "MoreAmmoTrait",
-        "name": "Fully Loaded"
-      },
-      {
-        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_14_Large.png",
-        "trait": "CritVulnerabilityTrait",
-        "name": "Hunter's Mark"
-      },
-      {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_Zeus_01.png",
-        "RequiredFalseTraits": ["AmmoBoltTrait"],
-        "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
-        "trait": "AmmoBoltTrait",
-        "name": "Lightning Rod"
-      },
-      {
-        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_09_Large.png",
-        "trait": "CriticalBufferMultiplierTrait",
-        "name": "Hide Breaker"
-      },
-      {
-        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_05_Large.png",
-        "trait": "ArtemisCriticalTrait",
-        "name": "Clean Kill"
-      },
-      {
         "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Artemis_13_Large.png",
         "RequiredSlottedTrait": "Shout",
@@ -1034,6 +956,37 @@
         "RequiredFalseTraits": ["BlizzardOrbTrait", "AresRangedTrait", "DionysusRangedTrait", "DemeterRangedTrait", "ShieldLoadAmmoTrait", "PoseidonAresProjectileTrait"],
         "trait": "ArtemisAmmoExitTrait",
         "name": "Exit Wounds"
+      },
+      {
+        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_05_Large.png",
+        "trait": "ArtemisCriticalTrait",
+        "name": "Clean Kill"
+      },
+      {
+        "OneFromEachSet":[["ArtemisAmmoExitTrait", "CritBonusTrait"], ["ArtemisSupportingFireTrait", "ArtemisAmmoExitTrait"], ["ArtemisSupportingFireTrait", "CritBonusTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_07_Large.png",
+        "trait": "MoreAmmoTrait",
+        "name": "Fully Loaded"
+      },
+      {
+        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_14_Large.png",
+        "trait": "CritVulnerabilityTrait",
+        "name": "Hunter's Mark"
+      },
+      {
+        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_09_Large.png",
+        "trait": "CriticalBufferMultiplierTrait",
+        "name": "Hide Breaker"
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_Zeus_01.png",
+        "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "trait": "AmmoBoltTrait",
+        "name": "Lightning Rod"
       }
     ]
   }
@@ -1119,17 +1072,16 @@
         "name": "Storm Lightning"
       },
       {
-        "OneOf":["ZeusBonusBounceTrait", "ZeusBoltAoETrait", "ZeusBonusBoltTrait"],
-        "icon": "GUI/Screens/BoonIcons/Zeus_02_Large.png",
-        "RequiredFalseTraits": ["ZeusChargedBoltTrait"],
-        "trait": "ZeusChargedBoltTrait",
-        "name": "Splitting Bolt"
-      },
-      {
         "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Zeus_10_Large.png",
         "trait": "ZeusBoltAoETrait",
         "name": "High Voltage"
+      },
+      {
+        "OneOf":["ZeusBonusBounceTrait", "ZeusBoltAoETrait", "ZeusBonusBoltTrait"],
+        "icon": "GUI/Screens/BoonIcons/Zeus_02_Large.png",
+        "trait": "ZeusChargedBoltTrait",
+        "name": "Splitting Bolt"
       },
       {
         "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],

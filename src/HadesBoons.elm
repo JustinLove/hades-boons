@@ -254,6 +254,19 @@ update msg model =
           |> selectBoon id
       , Cmd.none
       )
+    UI (View.SelectWeapon id) ->
+      ( { model
+        | currentPrimaryMenu = Nothing
+        , activeTraits = Set.diff model.activeTraits
+          (model.traits
+            |> Traits.boonsForSlot "Weapon"
+            |> List.map .trait
+            |> Set.fromList
+          )
+        }
+          |> selectBoon id
+      , Cmd.none
+      )
     UI (View.Reset) ->
       ( { model | activeTraits = Set.empty }
         |> updateDerivedStatus
