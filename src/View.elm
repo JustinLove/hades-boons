@@ -29,6 +29,7 @@ type Msg
   | SelectSlot SlotId
   | SelectPrimary SlotId God
   | SelectKeepsake TraitId
+  | SelectSoul TraitId
   | SelectWeapon TraitId
   | Reset
 
@@ -36,6 +37,8 @@ type Frame
   = Primary
   | Common
   | Keepsake
+  | MetaUpgrade
+  | Tray
 
 chartSize = 4069
 
@@ -161,6 +164,7 @@ displaySlotSelect model =
       , htmlAttribute <| Html.Attributes.class "boon-column"
       ]
       [ slotIcon model scaled (Just "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png") "Weapon" "Weapon"
+      , metaUpgradeIcon model scaled
       ]
     ]
 
@@ -173,7 +177,6 @@ primaryBoonBacking scaled =
     , centerX
     ]
     none
-
 
 slotIcon model scaled mpath desc slot =
   let
@@ -198,6 +201,28 @@ slotIcon model scaled mpath desc slot =
         (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Common) (Just boon.icon) boon.name)
       Nothing ->
         (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) mpath desc)
+    )
+
+metaUpgradeIcon model scaled =
+  let
+    inSlot =
+      Traits.miscBoons
+        |> List.filter (Traits.isSlot "Soul")
+        |> List.filter (\{trait} -> Just trait == model.metaUpgrade)
+        |> List.head
+  in
+  el
+    [ if model.currentPrimaryMenu == Just "Soul" then
+        onRight (soulMenu model scaled)
+      else
+        padding 0
+    , width (px (scaled 200))
+    ]
+    (case inSlot of
+      Just boon ->
+        (metaIconButton (SelectSlot "Soul") scaled MetaUpgrade (Just boon.icon) boon.name)
+      Nothing ->
+        (metaIconButton (SelectSlot "Soul") scaled Tray Nothing "Soul")
     )
 
 slotMenu model scaled slot =
@@ -231,11 +256,21 @@ keepsakeMenu model scaled =
       |> List.map (\boon -> boonIconButton (SelectKeepsake boon.trait) scaled Keepsake (Just boon.icon) (boon.name))
     )
 
+soulMenu model scaled =
+  row
+    [ centerY
+    ]
+    (Traits.miscBoons
+      |> List.filter (Traits.isSlot "Soul")
+      |> List.map (\boon -> metaIconButton (SelectSoul boon.trait) scaled MetaUpgrade (Just boon.icon) (boon.name))
+    )
+
 weaponMenu model scaled =
   row
     [ centerY
     ]
     (Traits.miscBoons
+      |> List.filter (Traits.isSlot "Weapon")
       |> List.map (\boon -> boonIconButton (SelectWeapon boon.trait) scaled Common (Just boon.icon) (boon.name))
     )
 
@@ -268,12 +303,49 @@ boonIconButton msg scaled frame mpath desc =
       }
     )
 
+metaIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
+metaIconButton msg scaled frame mpath desc =
+  el
+    [ width (px (scaled 201))
+    , height (px (scaled 207))
+    , padding (scaled -100)
+    , behindContent (displayFrame scaled frame)
+    , behindContent (metaIcon scaled mpath desc)
+    ]
+    (Input.button
+      [ Border.width (scaled 80)
+      , Border.rounded (scaled 80)
+      , Border.color (rgba 1 0 0 0)
+      , centerX
+      , centerY
+      ]
+      { onPress = Just msg
+      , label = none
+      }
+    )
+
 boonIcon : (Float -> Int) -> Maybe String -> String -> Element msg
 boonIcon scaled mpath desc =
   case mpath of
     Just path ->
       image
         [ width (px (scaled 150))
+        , centerX
+        , centerY
+        , moveDown ((scaled 4) |> toFloat)
+        ]
+        { src = path
+        , description = desc
+        }
+    Nothing ->
+      none
+
+metaIcon : (Float -> Int) -> Maybe String -> String -> Element msg
+metaIcon scaled mpath desc =
+  case mpath of
+    Just path ->
+      image
+        [ width (px (scaled 100))
         , centerX
         , centerY
         , moveDown ((scaled 4) |> toFloat)
@@ -312,6 +384,23 @@ displayFrame scaled frame =
         , centerX
         , centerY
         ] none
+    MetaUpgrade ->
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/mirror_of_darkness.png"
+        , width (px (scaled 204))
+        , height (px (scaled 209))
+        , centerX
+        , centerY
+        ] none
+    Tray ->
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/tray.png"
+        , width (px (scaled 187))
+        , height (px (scaled 186))
+        , centerX
+        , centerY
+        ] none
+
 
 displayReset : Element Msg
 displayReset =

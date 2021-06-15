@@ -212,7 +212,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Poseidon
+    , boonType = BasicBoon Hermes
     }
   , { icon = "GUI/Screens/WeaponEnchantmentIcons/shield_enchantment_3.png"
     , trait = "ShieldLoadAmmoTrait"
@@ -222,7 +222,27 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Poseidon
+    , boonType = BasicBoon Hermes
+    }
+  , { icon = "GUI/Screens/MirrorIcons/infernal soul.png"
+    , trait = "AmmoMetaUpgrade"
+    , name = "Infernal Soul"
+    , slot = Just "Soul"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Hermes
+    }
+  , { icon = "GUI/Screens/MirrorBIcons/Stygian_Soul.png"
+    , trait = "ReloadAmmoMetaUpgrade"
+    , name = "Stygian Soul"
+    , slot = Just "Soul"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Hermes
     }
   ]
 
@@ -413,11 +433,11 @@ boonExcludedByRequirements excludedTraits trait =
       else
         False
 
-traitStatus : Set TraitId -> Traits -> Dict TraitId BoonStatus
-traitStatus activeTraits traits =
+traitStatus : Set TraitId -> Maybe String -> Traits -> Dict TraitId BoonStatus
+traitStatus activeTraits metaUpgrade traits =
   let
     activeSlots = calculateActiveSlots activeTraits traits
-    excludedTraits = calculateExcludedTraits activeTraits activeSlots traits
+    excludedTraits = calculateExcludedTraits activeTraits activeSlots metaUpgrade traits
   in
   allTraits traits
     |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots excludedTraits trait))
@@ -482,8 +502,8 @@ calculateActiveSlots activeTraits (Traits {gods}) =
     |> List.filterMap .slot
     |> Set.fromList
 
-calculateExcludedTraits : Set TraitId -> Set SlotId -> Traits -> Set TraitId
-calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos} as traits) =
+calculateExcludedTraits : Set TraitId -> Set SlotId -> Maybe String -> Traits -> Set TraitId
+calculateExcludedTraits activeTraits activeSlots metaUpgrade (Traits {gods, duos} as traits) =
   let
     basics = gods |> List.concatMap godTraits
     all = allTraits traits
@@ -491,6 +511,7 @@ calculateExcludedTraits activeTraits activeSlots (Traits {gods, duos} as traits)
   (Set.diff (Set.fromList ["ShieldLoadAmmoTrait", "BowLoadAmmoTrait"]) activeTraits)
     |> Set.union (calculateExcludedSlotTraits activeTraits activeSlots gods)
     |> Set.union (calculateExcludedIncompatibleTraits activeTraits all)
+    |> Set.union (calculateExcludedMetaUpgradeTraits metaUpgrade all)
     |> calculateExcludedDerivedTraits basics -- first requirments
     |> calculateExcludedDerivedTraits basics -- legendary
     |> calculateExcludedDerivedTraits duos -- duos
@@ -509,6 +530,21 @@ calculateExcludedIncompatibleTraits activeTraits traits =
   traits
     |> List.filter (\{trait} -> not <| Set.member trait activeTraits)
     |> List.filter (\{requiredFalseTraits} -> Set.intersect activeTraits requiredFalseTraits |> Set.isEmpty |> not)
+    |> List.map .trait
+    |> Set.fromList
+
+calculateExcludedMetaUpgradeTraits : Maybe String -> List Trait -> Set TraitId
+calculateExcludedMetaUpgradeTraits metaUpgrade traits =
+  traits
+    |> List.filter (\{requiredMetaUpgradeSelected} ->
+      case requiredMetaUpgradeSelected of
+        Just req ->
+          case metaUpgrade of
+            Just meta -> meta /= req
+            Nothing -> True
+        Nothing ->
+          False
+      )
     |> List.map .trait
     |> Set.fromList
 

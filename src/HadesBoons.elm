@@ -46,6 +46,7 @@ type alias Model =
   , activeBasicGroups : List (Set GroupId)
   , activeDuoGroups : Set GroupId
   , activeSlots : Set SlotId
+  , metaUpgrade : Maybe String
   , boonStatus : Dict TraitId BoonStatus
   , currentPrimaryMenu : Maybe SlotId
   , focusGod : Maybe God
@@ -78,6 +79,7 @@ initialModel flags location key =
   , activeBasicGroups = []
   , activeDuoGroups = Set.empty
   , activeSlots = Set.empty
+  , metaUpgrade = Just "AmmoMetaUpgrade"
   , boonStatus = Dict.empty
   , currentPrimaryMenu = Nothing
   , focusGod = Nothing
@@ -215,6 +217,11 @@ update msg model =
             |> List.map .trait
             |> Set.fromList
           )
+        , metaUpgrade =
+          if slot == "Soul" then
+            Nothing
+          else
+            model.metaUpgrade
         }
           |> updateDerivedStatus
       , Cmd.none
@@ -252,6 +259,14 @@ update msg model =
           )
         }
           |> selectBoon id
+      , Cmd.none
+      )
+    UI (View.SelectSoul id) ->
+      ( { model
+        | currentPrimaryMenu = Nothing
+        , metaUpgrade = Just id
+        }
+          |> updateDerivedStatus
       , Cmd.none
       )
     UI (View.SelectWeapon id) ->
@@ -302,7 +317,7 @@ updateDerivedStatus model =
   | activeBasicGroups = Traits.calculateActiveLayoutGroups model.activeTraits gods
   , activeDuoGroups = Traits.calculateActiveDuoSets gods model.activeTraits (Traits.duoBoons model.traits)
   , activeSlots = activeSlots
-  , boonStatus = Traits.traitStatus model.activeTraits model.traits
+  , boonStatus = Traits.traitStatus model.activeTraits model.metaUpgrade model.traits
   }
 
 updateChartMetrics : Model -> Model

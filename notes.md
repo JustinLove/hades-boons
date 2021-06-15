@@ -21,6 +21,7 @@
   - poseidon - area asymetry
   - ares - maybe flip pomel?
   - incompatible boons?
+  - souls
 - x hermes angle
 - x full view
 - x footer misaligned
@@ -32,7 +33,7 @@
 - x need trait icons on side menu
 - x lock icons are smaller on weapon aspects
 - x hit detection issue with icon second column
-- souls
+- x souls
 - hades keepsake
 - any/some casts - prereqs?, design issues
 - line formatting
