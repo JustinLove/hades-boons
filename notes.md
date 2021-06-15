@@ -31,8 +31,10 @@
 - x chrome graphic size
 - x need trait icons on side menu
 - x lock icons are smaller on weapon aspects
-- any/some casts - prereqs?, design issues
+- x hit detection issue with icon second column
+- souls
 - hades keepsake
+- any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
 - text display when small

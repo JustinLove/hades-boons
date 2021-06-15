@@ -47,3 +47,17 @@ polyline, path {
 .light .icon-twitch { color: #e2dbf0; }
 .light a:link, .light a:visited { color: #e2dbf0; }
 .light a:hover, .light a:active { color: rgb(218, 216, 222); }
+
+.boon-column,
+.boon-column .nb.bh,
+.boon-column .nb.bh > * {
+  pointer-events: none;
+}
+
+.boon-column .focusable {
+  pointer-events: auto;
+}
+
+.s.xxboon-column div div {
+  pointer-events: initial;
+}

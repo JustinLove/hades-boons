@@ -141,12 +141,12 @@ displaySlotSelect model =
         , left = 1
         }
       ]
-      [ slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png" "Attack Slot" "Melee"
-      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png" "Special Slot" "Secondary"
-      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png" "Cast Slot" "Ranged"
-      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png" "Dash Slot" "Rush"
-      , slotIcon model scaled "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png" "Call Slot" "Shout"
-      , slotIcon model scaled "" "Keepsake" "Keepsake"
+      [ slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png") "Attack Slot" "Melee"
+      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png") "Special Slot" "Secondary"
+      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png") "Cast Slot" "Ranged"
+      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png") "Dash Slot" "Rush"
+      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png") "Call Slot" "Shout"
+      , slotIcon model scaled Nothing "Keepsake" "Keepsake"
       ]
     , column
       [ height (px (scaled 1188))
@@ -156,10 +156,11 @@ displaySlotSelect model =
         { top = (scaled 120)
         , right = 0
         , bottom = 0
-        , left = 1
+        , left = 0
         }
+      , htmlAttribute <| Html.Attributes.class "boon-column"
       ]
-      [ slotIcon model scaled "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png" "Weapon" "Weapon"
+      [ slotIcon model scaled (Just "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png") "Weapon" "Weapon"
       ]
     ]
 
@@ -174,7 +175,7 @@ primaryBoonBacking scaled =
     none
 
 
-slotIcon model scaled path desc slot =
+slotIcon model scaled mpath desc slot =
   let
     inSlot =
       model.traits
@@ -194,9 +195,9 @@ slotIcon model scaled path desc slot =
     ]
     (case inSlot of
       Just boon ->
-        (boonIcon (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Common) boon.icon boon.name)
+        (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Common) (Just boon.icon) boon.name)
       Nothing ->
-        (boonIcon (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) path desc)
+        (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) mpath desc)
     )
 
 slotMenu model scaled slot =
@@ -227,7 +228,7 @@ keepsakeMenu model scaled =
     ]
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
-      |> List.map (\boon -> boonIcon (SelectKeepsake boon.trait) scaled Keepsake (boon.icon) (boon.name))
+      |> List.map (\boon -> boonIconButton (SelectKeepsake boon.trait) scaled Keepsake (Just boon.icon) (boon.name))
     )
 
 weaponMenu model scaled =
@@ -235,7 +236,7 @@ weaponMenu model scaled =
     [ centerY
     ]
     (Traits.miscBoons
-      |> List.map (\boon -> boonIcon (SelectWeapon boon.trait) scaled Common (boon.icon) (boon.name))
+      |> List.map (\boon -> boonIconButton (SelectWeapon boon.trait) scaled Common (Just boon.icon) (boon.name))
     )
 
 boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Msg
@@ -244,31 +245,44 @@ boonSelectButton scaled slot god boon =
     [ inFront
       (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
-    (boonIcon (SelectPrimary slot god) scaled Common boon.icon boon.name)
+    (boonIconButton (SelectPrimary slot god) scaled Common (Just boon.icon) boon.name)
 
-boonIcon msg scaled frame path desc =
-  Input.button
+boonIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
+boonIconButton msg scaled frame mpath desc =
+  el
     [ width (px (scaled 201))
     , height (px (scaled 187))
-    , centerX
+    , padding (scaled -100)
     , behindContent (displayFrame scaled frame)
+    , behindContent (boonIcon scaled mpath desc)
     ]
-    { onPress = Just msg
-    , label =
-      if path == "" then
-        none
-      else
-        (image
-          [ width (px (scaled 150))
-          , centerX
-          , centerY
-          , moveDown ((scaled 4) |> toFloat)
-          ]
-          { src = path
-          , description = desc
-          }
-        )
-    }
+    (Input.button
+      [ Border.width (scaled 80)
+      , Border.rounded (scaled 80)
+      , Border.color (rgba 1 0 0 0)
+      , centerX
+      , centerY
+      ]
+      { onPress = Just msg
+      , label = none
+      }
+    )
+
+boonIcon : (Float -> Int) -> Maybe String -> String -> Element msg
+boonIcon scaled mpath desc =
+  case mpath of
+    Just path ->
+      image
+        [ width (px (scaled 150))
+        , centerX
+        , centerY
+        , moveDown ((scaled 4) |> toFloat)
+        ]
+        { src = path
+        , description = desc
+        }
+    Nothing ->
+      none
 
 displayFrame : (Float -> Int) -> Frame -> Element msg
 displayFrame scaled frame = 
