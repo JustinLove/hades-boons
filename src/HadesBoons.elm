@@ -310,14 +310,20 @@ selectBoon id model =
 updateDerivedStatus : Model -> Model
 updateDerivedStatus model =
   let
+    activeTraits =
+      if Set.member "HadesShoutKeepsake" model.activeTraits then
+        Set.insert "HadesShoutTrait" model.activeTraits
+      else
+        Set.remove "HadesShoutTrait" model.activeTraits
     gods = Traits.allGods model.traits
-    activeSlots = Traits.calculateActiveSlots model.activeTraits model.traits
+    activeSlots = Traits.calculateActiveSlots activeTraits model.traits
   in
   { model
-  | activeBasicGroups = Traits.calculateActiveLayoutGroups model.activeTraits gods
-  , activeDuoGroups = Traits.calculateActiveDuoSets gods model.activeTraits (Traits.duoBoons model.traits)
+  | activeTraits = activeTraits
+  , activeBasicGroups = Traits.calculateActiveLayoutGroups activeTraits gods
+  , activeDuoGroups = Traits.calculateActiveDuoSets gods activeTraits (Traits.duoBoons model.traits)
   , activeSlots = activeSlots
-  , boonStatus = Traits.traitStatus model.activeTraits model.metaUpgrade model.traits
+  , boonStatus = Traits.traitStatus activeTraits model.metaUpgrade model.traits
   }
 
 updateChartMetrics : Model -> Model

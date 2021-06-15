@@ -244,6 +244,26 @@ miscBoons =
     , requirements = None
     , boonType = BasicBoon Hermes
     }
+  , { icon = "GUI/Screens/AwardMenu/badge_23.png"
+    , trait = "HadesShoutKeepsake"
+    , name = "Sigil of the Dead"
+    , slot = Just "Keepsake"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Hermes
+    }
+  , { icon = "GUI/Screens/BoonIcons/Hades_01_Large.png"
+    , trait = "HadesShoutTrait"
+    , name = "Hades Aid"
+    , slot = Just "Shout"
+    , requiredSlottedTrait = Nothing
+    , requiredMetaUpgradeSelected = Nothing
+    , requiredFalseTraits = Set.empty
+    , requirements = None
+    , boonType = BasicBoon Hermes
+    }
   ]
 
 tagLinkedBoons : List GodData -> List GodData
@@ -498,6 +518,7 @@ calculateActiveSlots : Set TraitId -> Traits -> Set SlotId
 calculateActiveSlots activeTraits (Traits {gods}) =
   gods
     |> List.concatMap godTraits
+    |> List.append miscBoons
     |> List.filter (\{trait} -> Set.member trait activeTraits)
     |> List.filterMap .slot
     |> Set.fromList

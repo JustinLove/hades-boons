@@ -34,7 +34,9 @@
 - x lock icons are smaller on weapon aspects
 - x hit detection issue with icon second column
 - x souls
-- hades keepsake
+- x hades keepsake
+  - locked if another aid selected
+- keepsake size
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
