@@ -132,12 +132,12 @@ boonChart attributes model =
       --|> outlined (solid 0.01 (uniform Color.white))
   [ metrics.duoBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (duoBoonSize model.zoom))) |> stack
   , basicBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (basicBoonSize model.zoom))) |> stack
-  , metrics.duoConnectors |> List.map (displayDuoConnector model.activeDuoGroups) |> stack
   , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons |> stack)
       model.activeBasicGroups
       basicConnectors
       |> stack
   , displayGods metrics |> stack
+  , metrics.duoConnectors |> List.map (displayDuoConnector model.activeDuoGroups) |> stack
   , rectangle 1 1
       |> filled (uniform Color.black)
       --|> styled (uniform Color.black, dot 0.001 (uniform Color.white))
@@ -290,7 +290,10 @@ displayGod godMetrics =
       |> rendered
       |> scale 0.001
   , circle 0.5
-      |> outlined (solid 0.01 (uniform (Color.rgb 0.05 0.05 0.05)))
+      |> styled
+        ( uniform (Color.rgba 0.0 0.0 0.0 0.7)
+        , solid 0.01 (uniform (Color.rgb 0.05 0.05 0.05))
+        )
   ]
     |> stack
     |> Collage.Layout.name (godMetrics.name)

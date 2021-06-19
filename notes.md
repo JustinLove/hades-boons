@@ -50,7 +50,7 @@
 - text display when small
 - slot menu scaling for window width
 - where does hermes go?
-  - duo lines passing behind
+  - x duo lines passing behind
 - keepsake display - mask wrong shape
 - keepsake derived exclusions
 - save calculated metrics
