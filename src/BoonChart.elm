@@ -61,6 +61,7 @@ type alias Connector =
   { shape : ConnectorShape
   , link : Maybe TraitId
   , group : String
+  , color : Color
   }
 
 type ConnectorShape
@@ -284,12 +285,12 @@ displayGods metrics =
 
 displayGod : GodMetrics -> Collage msg
 displayGod godMetrics =
-  [ Text.fromString (godMetrics.name)
+  [ {-Text.fromString (godMetrics.name)
       |> Text.color (godMetrics.color)
       |> Text.size 200
       |> rendered
       |> scale 0.001
-  , circle 0.5
+  , -}circle 0.5
       |> styled
         ( uniform (Color.rgba 0.0 0.0 0.0 0.7)
         , solid 0.01 (uniform (Color.rgb 0.05 0.05 0.05))
@@ -357,6 +358,7 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
         { shape = mapShape shape
         , link = link
         , group = group
+        , color = Traits.dataLootColor data
         }
       )
       |> List.filter (\{shape} -> shape /= Tag)
@@ -472,25 +474,27 @@ displayBoonTrait boonStatus boon =
     |> shift boon.location
 
 displayBoonConnector : Dict TraitId BoonStatus -> Set GroupId -> Connector -> Collage msg
-displayBoonConnector boonStatus activeGroups {shape, link, group} =
+displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
   let
-    (thickness, color) =
+    bright = uniform color
+    dark = uniform (darken color)
+    (thickness, col) =
       if Set.member group activeGroups then
         case link of
           Just id ->
             if Dict.get id boonStatus == Just Active || Set.member id activeGroups then
-              (0.004, (uniform Color.white))
+              (0.004, bright)
             else
-              (0.001, (uniform Color.charcoal))
+              (0.001, dark)
           Nothing ->
-            (0.004, (uniform Color.white))
+            (0.004, bright)
       else
         case link of
           Just id ->
-            (0.001, (uniform Color.charcoal))
+            (0.001, dark)
           Nothing ->
-            (0.002, (uniform Color.charcoal))
-    lineStyle = solid thickness color
+            (0.002, dark)
+    lineStyle = solid thickness col
   in
   case shape of
     Arc arcInfo ->
@@ -508,7 +512,7 @@ displayBoonConnector boonStatus activeGroups {shape, link, group} =
         |> List.foldr joinCurvePoints []
         |> cubicCurve
         |> close
-        |> filled color
+        |> filled col
     Circle center radius ->
       circle radius
         |> outlined lineStyle
@@ -912,3 +916,10 @@ clamp lower upper x =
   x
     |> atLeast lower
     |> atMost upper
+
+darken : Color -> Color
+darken color =
+  color
+    |> Color.toHsla
+    |> (\hsla -> {hsla | lightness = hsla.lightness * 0.4})
+    |> Color.fromHsla

@@ -48,6 +48,7 @@
 - line formatting
   - zoom relative size?
 - text display when small
+- god icon backgrounds
 - slot menu scaling for window width
 - where does hermes go?
   - x duo lines passing behind
