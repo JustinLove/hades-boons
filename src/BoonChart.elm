@@ -128,11 +128,13 @@ boonChart attributes model =
     metrics = model.metrics
     basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
     basicConnectors = metrics.gods |> Array.toList |> List.map .connectors
+    duoSize = duoBoonSize model.zoom
+    basicSize = basicBoonSize model.zoom
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ metrics.duoBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (duoBoonSize model.zoom))) |> stack
-  , basicBoons |> List.map ((displayBoonTrait model.boonStatus) >> (scale (basicBoonSize model.zoom))) |> stack
+  [ metrics.duoBoons |> List.map (displayBoonTrait model.zoom duoSize model.boonStatus) |> stack
+  , basicBoons |> List.map (displayBoonTrait model.zoom basicSize model.boonStatus) |> stack
   , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons |> stack)
       model.activeBasicGroups
       basicConnectors
@@ -431,8 +433,8 @@ isSkipOne metrics trait =
         SkipTwo -> False
         Opposite -> False
 
-displayBoonTrait : Dict TraitId BoonStatus -> Boon -> Collage msg
-displayBoonTrait boonStatus boon =
+displayBoonTrait : Float -> Float -> Dict TraitId BoonStatus -> Boon -> Collage msg
+displayBoonTrait zoom size boonStatus boon =
   let
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
@@ -447,18 +449,24 @@ displayBoonTrait boonStatus boon =
         Available -> 0.5
         Excluded -> 0.1
         Unavailable -> 0.1
+    textLine = \text sz ->
+      let
+        font = chartSize * size * zoom * sz
+        f = (font - 6.0) / 8.0 |> atMost 1.0
+        c = darken f color
+      in
+      if font > 6 then
+        Text.fromString text
+          |> Text.color c
+          |> Text.size 100
+          |> rendered
+          |> scale (sz * 0.01)
+      else
+        group []
   in
-  [ Text.fromString boon.name
-      |> Text.color color
-      |> Text.size 200
-      |> rendered
-      |> scale 0.001
+  [ textLine boon.name 0.2
       |> shiftY -0.5
-  , Text.fromString boon.id
-      |> Text.color color
-      |> Text.size 100
-      |> rendered
-      |> scale 0.001
+  , textLine boon.id 0.1
       |> shiftY -0.65
   , if status == Excluded then
       image (0.7, 0.7) "GUI/LockIcon/LockIcon0001.png"
@@ -472,12 +480,13 @@ displayBoonTrait boonStatus boon =
   ]
     |> stack
     |> shift boon.location
+    |> scale size
 
 displayBoonConnector : Dict TraitId BoonStatus -> Set GroupId -> Connector -> Collage msg
 displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
   let
     bright = uniform color
-    dark = uniform (darken color)
+    dark = uniform (darken 0.4 color)
     (thickness, col) =
       if Set.member group activeGroups then
         case link of
@@ -917,9 +926,9 @@ clamp lower upper x =
     |> atLeast lower
     |> atMost upper
 
-darken : Color -> Color
-darken color =
+darken : Float -> Color -> Color
+darken by color =
   color
     |> Color.toHsla
-    |> (\hsla -> {hsla | lightness = hsla.lightness * 0.4})
+    |> (\hsla -> {hsla | lightness = hsla.lightness * by})
     |> Color.fromHsla

@@ -44,10 +44,10 @@
 - x special weapons
 - x mirror - only soul?
 - x fix colors
+- x text display when small
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
-- text display when small
 - god icon backgrounds
 - slot menu scaling for window width
 - where does hermes go?

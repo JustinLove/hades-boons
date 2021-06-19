@@ -57,7 +57,7 @@ view model =
         , width fill
         , clip
         , inFront displayFooter
-        --, inFront (model.zoom |> String.fromFloat |> text)
+        , inFront (model.zoom |> String.fromFloat |> text)
         , inFront (displayGodSelect model)
         , inFront (displaySlotSelect model)
         , inFront displayReset
