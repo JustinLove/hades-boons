@@ -207,6 +207,7 @@ loadPreprocessedGodsAndDuoBoons basicGods duos =
     , misc = miscBoons
     }
 
+-- see also: Traits.Decode.trinkets
 miscBoons : List Trait
 miscBoons =
   [ { icon = "GUI/Screens/WeaponEnchantmentIcons/bow_echantment_2.png"

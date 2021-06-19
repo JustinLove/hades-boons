@@ -40,7 +40,7 @@
 - x keepsake size
 - x hades god in enum?
 - x not-a-god in enum?
-- built-in keepsakes move to misc?
+- x built-in keepsakes move to misc?
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?

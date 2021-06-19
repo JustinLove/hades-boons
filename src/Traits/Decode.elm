@@ -39,6 +39,7 @@ dataTraits godTag =
     (field "Traits" (list (trait godTag)))
     (field "LinkedUpgrades" (list (trait godTag)))
 
+-- see also: Traits.miscBoons
 trinkets : God -> List Trait
 trinkets godTag =
   case godTag of
