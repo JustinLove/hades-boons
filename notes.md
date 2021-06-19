@@ -35,8 +35,8 @@
 - x hit detection issue with icon second column
 - x souls
 - x hades keepsake
-  - locked if another aid selected
-- removing things from slot menus
+  - x locked if another aid selected
+- x removing things from slot menus
 - keepsake size
 - hades god in enum?
 - not-a-god in enum?

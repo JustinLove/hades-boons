@@ -250,7 +250,16 @@ miscBoons =
     , slot = Just "Keepsake"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
-    , requiredFalseTraits = Set.empty
+    , requiredFalseTraits = Set.fromList
+      [ "AphroditeShoutTrait"
+      , "AresShoutTrait"
+      , "DemeterShoutTrait"
+      , "DionysusShoutTrait"
+      , "PoseidonShoutTrait"
+      , "AthenaShoutTrait"
+      , "ArtemisShoutTrait"
+      , "ZeusShoutTrait"
+      ]
     , requirements = None
     , boonType = BasicBoon Hermes
     }

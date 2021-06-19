@@ -144,12 +144,12 @@ displaySlotSelect model =
         , left = 1
         }
       ]
-      [ slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png") "Attack Slot" "Melee"
-      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png") "Special Slot" "Secondary"
-      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png") "Cast Slot" "Ranged"
-      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png") "Dash Slot" "Rush"
-      , slotIcon model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png") "Call Slot" "Shout"
-      , slotIcon model scaled Nothing "Keepsake" "Keepsake"
+      [ slotTrayButton model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png") "Attack Slot" "Melee"
+      , slotTrayButton model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png") "Special Slot" "Secondary"
+      , slotTrayButton model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png") "Cast Slot" "Ranged"
+      , slotTrayButton model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png") "Dash Slot" "Rush"
+      , slotTrayButton model scaled (Just "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png") "Call Slot" "Shout"
+      , keepsakeTrayButton model scaled
       ]
     , column
       [ height (px (scaled 1188))
@@ -163,8 +163,8 @@ displaySlotSelect model =
         }
       , htmlAttribute <| Html.Attributes.class "boon-column"
       ]
-      [ slotIcon model scaled (Just "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png") "Weapon" "Weapon"
-      , metaUpgradeIcon model scaled
+      [ slotTrayButton model scaled (Just "GUI/Screens/WeaponEnchantmentIcons/sword_base_icon.png") "Weapon" "Weapon"
+      , metaTrayButton model scaled
       ]
     ]
 
@@ -178,7 +178,7 @@ primaryBoonBacking scaled =
     ]
     none
 
-slotIcon model scaled mpath desc slot =
+slotTrayButton model scaled mpath desc slot =
   let
     inSlot =
       model.traits
@@ -189,7 +189,6 @@ slotIcon model scaled mpath desc slot =
   el
     [ if model.currentPrimaryMenu == Just slot then
         case slot of
-          "Keepsake" -> onRight (keepsakeMenu model scaled)
           "Weapon" -> onRight (weaponMenu model scaled)
           _ -> onRight (slotMenu model scaled slot)
       else
@@ -203,7 +202,29 @@ slotIcon model scaled mpath desc slot =
         (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) mpath desc)
     )
 
-metaUpgradeIcon model scaled =
+keepsakeTrayButton model scaled =
+  let
+    inSlot =
+      model.traits
+        |> Traits.boonsForSlot "Keepsake"
+        |> List.filter (\{trait} -> Set.member trait model.activeTraits)
+        |> List.head
+  in
+  el
+    [ if model.currentPrimaryMenu == Just "Keepsake" then
+        onRight (keepsakeMenu model scaled)
+      else
+        padding 0
+    , width (px (scaled 200))
+    ]
+    (case inSlot of
+      Just boon ->
+        (keepsakeIconButton (SelectSlot "Keepsake") scaled (Just boon.icon) boon.name Active)
+      Nothing ->
+        (keepsakeIconButton (SelectSlot "Keepsake") scaled Nothing "Keepsake" Active)
+    )
+
+metaTrayButton model scaled =
   let
     inSlot =
       Traits.miscBoons
@@ -253,7 +274,7 @@ keepsakeMenu model scaled =
     ]
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
-      |> List.map (\boon -> boonIconButton (SelectKeepsake boon.trait) scaled Keepsake (Just boon.icon) (boon.name))
+      |> List.map (\boon -> keepsakeIconButton (SelectKeepsake boon.trait) scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded) |> Debug.log "status"))
     )
 
 soulMenu model scaled =
@@ -303,6 +324,42 @@ boonIconButton msg scaled frame mpath desc =
       }
     )
 
+keepsakeIconButton : msg -> (Float -> Int) -> Maybe String -> String -> BoonStatus -> Element msg
+keepsakeIconButton msg scaled mpath desc status =
+  el
+    [ width (px (scaled 201))
+    , height (px (scaled 187))
+    , padding (scaled -100)
+    , behindContent (displayFrame scaled Keepsake)
+    , behindContent
+      (el
+        [ width fill
+        , height fill
+        , if status == Excluded then alpha 0.5 else alpha 1
+        ]
+        (boonIcon scaled mpath desc)
+      )
+    , if status == Excluded then
+        inFront (lockedIcon scaled)
+      else
+        spacing 0
+    ]
+    (if status == Excluded then
+      none
+    else
+      (Input.button
+        [ Border.width (scaled 80)
+        , Border.rounded (scaled 80)
+        , Border.color (rgba 1 0 0 0)
+        , centerX
+        , centerY
+        ]
+        { onPress = Just msg
+        , label = none
+        }
+      )
+    )
+
 metaIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
 metaIconButton msg scaled frame mpath desc =
   el
@@ -339,6 +396,18 @@ boonIcon scaled mpath desc =
         }
     Nothing ->
       none
+
+lockedIcon : (Float -> Int) -> Element msg
+lockedIcon scaled =
+  image
+    [ width (px (scaled 120))
+    , centerX
+    , centerY
+    , moveDown ((scaled 4) |> toFloat)
+    ]
+    { src = "GUI/LockIcon/LockIcon0001.png"
+    , description = "Locked"
+    }
 
 metaIcon : (Float -> Int) -> Maybe String -> String -> Element msg
 metaIcon scaled mpath desc =
