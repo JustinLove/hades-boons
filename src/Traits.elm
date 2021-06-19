@@ -55,7 +55,10 @@ empty : Traits
 empty = Traits {gods = [], duos = [], misc = []}
 
 type God
-  = Hermes
+  = Hades
+  | Charon
+  | Nyx
+  | Hermes
   | Aphrodite
   | Ares
   | Demeter
@@ -130,6 +133,9 @@ dataLayout (GodData data) = data.layout
 godName : God -> String
 godName god =
   case god of
+    Charon -> "Charon"
+    Nyx -> "Nyx"
+    Hades -> "Hades"
     Hermes -> "Hermes"
     Aphrodite -> "Aphrodite"
     Ares -> "Ares"
@@ -139,7 +145,6 @@ godName god =
     Athena -> "Athena"
     Artemis -> "Artemis"
     Zeus -> "Zeus"
-
 
 godIcon : God -> String
 godIcon god =
@@ -212,7 +217,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Charon
     }
   , { icon = "GUI/Screens/WeaponEnchantmentIcons/shield_enchantment_3.png"
     , trait = "ShieldLoadAmmoTrait"
@@ -222,7 +227,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Charon
     }
   , { icon = "GUI/Screens/MirrorIcons/infernal soul.png"
     , trait = "AmmoMetaUpgrade"
@@ -232,7 +237,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Nyx
     }
   , { icon = "GUI/Screens/MirrorBIcons/Stygian_Soul.png"
     , trait = "ReloadAmmoMetaUpgrade"
@@ -242,7 +247,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Nyx
     }
   , { icon = "GUI/Screens/AwardMenu/badge_23.png"
     , trait = "HadesShoutKeepsake"
@@ -261,7 +266,7 @@ miscBoons =
       , "ZeusShoutTrait"
       ]
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Hades
     }
   , { icon = "GUI/Screens/BoonIcons/Hades_01_Large.png"
     , trait = "HadesShoutTrait"
@@ -271,7 +276,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hermes
+    , boonType = BasicBoon Hades
     }
   ]
 

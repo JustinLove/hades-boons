@@ -857,6 +857,9 @@ godAdjacency count a b =
 godIndex : God -> Int
 godIndex who =
   case who of
+    Charon -> 0
+    Nyx -> 0
+    Hades -> 0
     Hermes -> 0
     Aphrodite -> 1
     Ares -> 2

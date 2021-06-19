@@ -38,8 +38,8 @@
   - x locked if another aid selected
 - x removing things from slot menus
 - x keepsake size
-- hades god in enum?
-- not-a-god in enum?
+- x hades god in enum?
+- x not-a-god in enum?
 - built-in keepsakes move to misc?
 - any/some casts - prereqs?, design issues
 - line formatting
