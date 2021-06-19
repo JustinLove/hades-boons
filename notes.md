@@ -37,7 +37,7 @@
 - x hades keepsake
   - x locked if another aid selected
 - x removing things from slot menus
-- keepsake size
+- x keepsake size
 - hades god in enum?
 - not-a-god in enum?
 - built-in keepsakes move to misc?

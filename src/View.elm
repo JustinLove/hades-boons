@@ -326,6 +326,9 @@ boonIconButton msg scaled frame mpath desc =
 
 keepsakeIconButton : msg -> (Float -> Int) -> Maybe String -> String -> BoonStatus -> Element msg
 keepsakeIconButton msg scaled mpath desc status =
+  let
+    keepsakeScale = \f -> scaled (f * 0.8)
+  in
   el
     [ width (px (scaled 201))
     , height (px (scaled 187))
@@ -337,10 +340,10 @@ keepsakeIconButton msg scaled mpath desc status =
         , height fill
         , if status == Excluded then alpha 0.5 else alpha 1
         ]
-        (boonIcon scaled mpath desc)
+        (boonIcon keepsakeScale mpath desc)
       )
     , if status == Excluded then
-        inFront (lockedIcon scaled)
+        inFront (lockedIcon keepsakeScale)
       else
         spacing 0
     ]
