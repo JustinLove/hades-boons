@@ -226,7 +226,7 @@ update msg model =
           |> updateDerivedStatus
       , Cmd.none
       )
-    UI (View.SelectPrimary slot god) ->
+    UI (View.SelectPrimary id slot) ->
       let
         closed =
           { model
@@ -239,13 +239,7 @@ update msg model =
             )
           }
       in
-      ( model.traits
-        |> Traits.boonsOf god
-        |> List.filter (Traits.isSlot slot)
-        |> List.map (.trait)
-        |> List.head
-        |> Maybe.map (\id -> selectBoon id closed)
-        |> Maybe.withDefault closed
+      ( selectBoon id closed
       , Cmd.none
       )
     UI (View.SelectKeepsake id) ->

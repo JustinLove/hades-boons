@@ -27,7 +27,7 @@ type Msg
   | SelectGod God
   | ViewAll
   | SelectSlot SlotId
-  | SelectPrimary SlotId God
+  | SelectPrimary TraitId SlotId
   | SelectKeepsake TraitId
   | SelectSoul TraitId
   | SelectWeapon TraitId
@@ -280,7 +280,7 @@ boonSelectButton scaled slot god boon =
     [ inFront
       (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
-    (boonIconButton (SelectPrimary slot god) scaled Common (Just boon.icon) boon.name)
+    (boonIconButton (SelectPrimary boon.trait slot) scaled Common (Just boon.icon) boon.name)
 
 boonIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
 boonIconButton msg scaled frame mpath desc =

@@ -36,7 +36,11 @@
 - x souls
 - x hades keepsake
   - locked if another aid selected
+- removing things from slot menus
 - keepsake size
+- hades god in enum?
+- not-a-god in enum?
+- built-in keepsakes move to misc?
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
