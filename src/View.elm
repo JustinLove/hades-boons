@@ -461,6 +461,7 @@ displayFrame scaled frame =
         [ Background.image "GUI/Screens/BoonIconFrames/mirror_of_darkness.png"
         , width (px (scaled 204))
         , height (px (scaled 209))
+        , moveUp (scaled 4 |> toFloat)
         , centerX
         , centerY
         ] none
