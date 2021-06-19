@@ -1,6 +1,5 @@
 module Traits.EncodeElm exposing (..)
 
-import Color
 import Layout.EncodeElm
 import Traits exposing (..)
 
@@ -29,8 +28,6 @@ godDataRecord : GodData -> Expression
 godDataRecord data =
   record
     [ ("god", dataGod data |> god)
-    , ("lootColor", dataLootColor data |> color)
-    , ("color", dataColor data |> color)
     , ("traits", basicBoons data |> List.map trait |> list)
     , ("layout", dataLayout data |> Layout.EncodeElm.layout)
     ]
@@ -38,20 +35,6 @@ godDataRecord data =
 god : God -> Expression
 god g =
   g |> godName |> val
-
-color : Color.Color -> Expression
-color c = 
-  (apply [(fun "Color.fromRgba"), colorRecord c])
-
-colorRecord : Color.Color -> Expression
-colorRecord c =
-  let rgba = Color.toRgba c in
-  record
-    [ ("red", rgba.red |> float)
-    , ("green", rgba.green |> float)
-    , ("blue", rgba.blue |> float)
-    , ("alpha", rgba.alpha |> float)
-    ]
 
 trait : Trait -> Expression
 trait t =

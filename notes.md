@@ -41,17 +41,17 @@
 - x hades god in enum?
 - x not-a-god in enum?
 - x built-in keepsakes move to misc?
+- x special weapons
+- x mirror - only soul?
+- x fix colors
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
 - text display when small
 - slot menu scaling for window width
-- fix colors
 - where does hermes go?
   - duo lines passing behind
 - keepsake display - mask wrong shape
 - keepsake derived exclusions
-- special weapons
-- mirror - only soul?
 - save calculated metrics
 - rotation outside metrics?

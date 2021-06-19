@@ -3,7 +3,6 @@ module Traits.Decode exposing (traits)
 import Layout
 import Traits exposing (..)
 
-import Color exposing (Color)
 import Json.Decode exposing (..)
 import Set exposing (Set)
 
@@ -20,10 +19,8 @@ godDataRecord : Decoder GodDataRecord
 godDataRecord =
   (field "Name" god)
     |> andThen (\godTag ->
-      map5 GodDataRecord
+      map3 GodDataRecord
         (succeed godTag)
-        (field "LootColor" color)
-        (field "Color" color)
         (allTraits godTag)
         (succeed Layout.empty)
       )
@@ -115,10 +112,3 @@ requirements =
 set : Decoder comparable -> Decoder (Set comparable)
 set decoder =
   list decoder |> map Set.fromList
-
-color : Decoder Color
-color =
-  map3 Color.rgb255
-    (index 0 int)
-    (index 1 int)
-    (index 2 int)

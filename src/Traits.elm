@@ -18,7 +18,6 @@ module Traits exposing
   , dataGod
   , dataName
   , dataLootColor
-  , dataColor
   , dataLayout
   , godName
   , godIcon
@@ -76,8 +75,6 @@ type GodData = GodData GodDataRecord
 
 type alias GodDataRecord =
   { god : God
-  , lootColor : Color
-  , color : Color
   , traits : List Trait
   , layout : Layout
   }
@@ -122,10 +119,7 @@ dataName : GodData -> String
 dataName (GodData data) = godName data.god
 
 dataLootColor : GodData -> Color
-dataLootColor (GodData data) = data.lootColor
-
-dataColor : GodData -> Color
-dataColor (GodData data) = data.color
+dataLootColor (GodData data) = godColor data.god
 
 dataLayout : GodData -> Layout
 dataLayout (GodData data) = data.layout
@@ -145,6 +139,82 @@ godName god =
     Athena -> "Athena"
     Artemis -> "Artemis"
     Zeus -> "Zeus"
+
+godColor : God -> Color
+godColor god =
+  case god of
+    Charon ->
+      Color.fromRgba
+        { red = 0.4
+        , green = 0
+        , blue = 0.706
+        , alpha = 1
+        }
+    Nyx ->
+      Color.fromRgba
+        { red = 0.4
+        , green = 0
+        , blue = 0.706
+        , alpha = 1
+        }
+    Hades ->
+      Color.fromRgba
+        { red = 0.776
+        , green = 0
+        , blue = 0
+        , alpha = 1
+        }
+    Hermes ->
+      Color.fromRgba
+        { red = 1
+        , green = 0.35294117647058826
+        , blue = 0
+        , alpha = 1
+        }
+    Aphrodite ->
+      Color.fromRgba
+        { red = 1
+        , green = 0.19607843137254902
+        , blue = 0.9411764705882353
+        , alpha = 1
+        }
+    Ares ->
+      Color.fromRgba
+        { red = 1, green = 0.0784313725490196, blue = 0, alpha = 1 }
+    Demeter ->
+      Color.fromRgba
+        { red = 0.631
+        , green = 0.702
+        , blue = 1
+        , alpha = 1
+        }
+    Dionysus ->
+      Color.fromRgba
+        { red = 0.7843137254901961, green = 0, blue = 1, alpha = 1 }
+    Poseidon ->
+      Color.fromRgba
+        { red = 0, green = 0.7843137254901961, blue = 1, alpha = 1 }
+    Athena ->
+      Color.fromRgba
+        { red = 0.733
+        , green = 0.69
+        , blue = 0.373
+        , alpha = 1
+        }
+    Artemis ->
+      Color.fromRgba
+        { red = 0.43137254901960786
+        , green = 1
+        , blue = 0
+        , alpha = 1
+        }
+    Zeus ->
+      Color.fromRgba
+        { red = 1
+        , green = 1
+        , blue = 0.25098039215686274
+        , alpha = 1
+        }
 
 godIcon : God -> String
 godIcon god =
