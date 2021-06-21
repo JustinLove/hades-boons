@@ -1,7 +1,8 @@
 module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
-import BoonChart.Svg as BoonChart
+import BoonChart.Svg
+import BoonChart.Canvas
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
 import Dict
@@ -41,7 +42,7 @@ type Frame
   | MetaUpgrade
   | Tray
 
-chartSize = 4069
+chartSize = 4096
 
 document tagger model =
   { title = "Hades Boons"
@@ -63,7 +64,7 @@ view model =
       , inFront (displaySlotSelect model)
       , inFront displayReset
       ]
-      [ BoonChart.boonChart
+      [ BoonChart.Svg.boonChart
         [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
@@ -77,11 +78,11 @@ view model =
         , onMouseUp = OnMouseUp
         , onWheel = OnWheel
         , drag = model.drag
-        , offset = model.offset
+        , offset = model.offset |> Debug.log "offset"
         , zoom = model.zoom
         , size = chartSize
         } |> html
-      , BoonChart.boonChart
+      , BoonChart.Canvas.boonChart
         [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
@@ -97,7 +98,8 @@ view model =
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom
-        , size = chartSize
+        , width = model.windowWidth//2
+        , height = model.windowHeight
         } |> html
       ]
 
