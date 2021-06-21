@@ -56,3 +56,4 @@
 - keepsake derived exclusions
 - save calculated metrics
 - rotation outside metrics?
+- live update centering

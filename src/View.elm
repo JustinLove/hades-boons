@@ -1,6 +1,7 @@
 module View exposing (Msg(..), document, view, chartSize)
 
 import BoonChart
+import BoonChart.Svg as BoonChart
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
 import Dict
@@ -52,18 +53,36 @@ view model =
     [ htmlAttribute <| Html.Attributes.class "dark"
     , htmlAttribute <| Html.Attributes.id "top"
     ] <|
-    column
+    row
       [ height fill
-        , width fill
-        , clip
-        , inFront displayFooter
-        , inFront (model.zoom |> String.fromFloat |> text)
-        , inFront (displayGodSelect model)
-        , inFront (displaySlotSelect model)
-        , inFront displayReset
+      , width fill
+      , clip
+      , inFront displayFooter
+      , inFront (model.zoom |> String.fromFloat |> text)
+      , inFront (displayGodSelect model)
+      , inFront (displaySlotSelect model)
+      , inFront displayReset
       ]
       [ BoonChart.boonChart
-        [ Html.Attributes.style "width" "100vw"
+        [ Html.Attributes.style "width" "50vw"
+        , Html.Attributes.style "height" "100vh"
+        , Html.Attributes.id "graph"
+        ]
+        { metrics = model.chartMetrics
+        , activeBasicGroups = model.activeBasicGroups
+        , activeDuoGroups = model.activeDuoGroups
+        , boonStatus = model.boonStatus
+        , onMouseMove = OnMouseMove
+        , onMouseDown = OnMouseDown
+        , onMouseUp = OnMouseUp
+        , onWheel = OnWheel
+        , drag = model.drag
+        , offset = model.offset
+        , zoom = model.zoom
+        , size = chartSize
+        } |> html
+      , BoonChart.boonChart
+        [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
         ]

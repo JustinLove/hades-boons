@@ -1,6 +1,7 @@
 module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
+import BoonChart.Svg as BoonChart
 import Dxf.Decode
 import Geometry exposing (Point, tau)
 import Layout exposing (Layout, GroupId)
@@ -340,15 +341,17 @@ focusOn god model =
 focusView : Point -> Float -> Float -> Model -> Model
 focusView center diameter rotation model =
   let
+    subWindowWidth = model.windowWidth//2
+    subWindowHeight = model.windowHeight
     size = diameter * View.chartSize
-    widthScale = (toFloat model.windowWidth-80-16) / size
-    heightScale = (toFloat model.windowHeight-40-16) / size
+    widthScale = (toFloat subWindowWidth-80-16) / size
+    heightScale = (toFloat subWindowHeight-40-16) / size
     zoom = min widthScale heightScale
     offset = center
       |> Geometry.add (-0.5,-0.5)
       |> Geometry.scale View.chartSize
       |> Geometry.scale zoom
-      |> Geometry.add ((toFloat model.windowWidth+80)/2, (toFloat model.windowHeight+40)/2)
+      |> Geometry.add ((toFloat subWindowWidth+80)/2, (toFloat subWindowHeight+40)/2)
   in
   { model
   | rotation = rotation
