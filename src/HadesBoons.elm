@@ -286,10 +286,15 @@ update msg model =
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
   point
-    |> Geometry.add (Geometry.scale -1 model.offset)
-    |> Geometry.scale (1/View.chartSize)
-    |> Geometry.scale (1/model.zoom)
+    |> screenToChart model
     |> BoonChart.hitChart model.chartMetrics model.zoom
+
+screenToChart : Viewable model -> Point -> Point
+screenToChart model point =
+  point
+    |> Geometry.add (Geometry.scale -1 model.offset)
+    |> Geometry.scale (1/(View.chartDiameter model.windowWidth model.windowHeight))
+    |> Geometry.scale (1/model.zoom)
 
 selectBoon : TraitId -> Model -> Model
 selectBoon id model =
@@ -328,7 +333,7 @@ updateChartMetrics model =
 focusOn : God -> Model -> Model
 focusOn god model =
   let
-    rotation = BoonChart.focusAngleOf model.chartMetrics god |> Debug.log "rotation"
+    rotation = BoonChart.focusAngleOf model.chartMetrics god
     chartMetrics = BoonChart.calculateMetrics model.traits rotation
     center = BoonChart.focusPositionOf chartMetrics god
   in
@@ -338,20 +343,24 @@ focusOn god model =
   }
     |> focusView center chartMetrics.adjacentDistance rotation
 
-focusView : Point -> Float -> Float -> Model -> Model
+type alias Viewable r =
+  { r
+  | windowWidth : Int
+  , windowHeight : Int
+  , rotation : Float
+  , offset : Point
+  , zoom : Float
+  }
+
+focusView : Point -> Float -> Float -> Viewable model -> Viewable model
 focusView center diameter rotation model =
   let
-    subWindowWidth = model.windowWidth//2
-    subWindowHeight = model.windowHeight
-    size = diameter * View.chartSize
-    widthScale = (toFloat subWindowWidth-80-16) / size
-    heightScale = (toFloat subWindowHeight-40-16) / size
-    zoom = min widthScale heightScale
+    zoom = 1/diameter
     offset = center
       |> Geometry.add (-0.5,-0.5)
-      |> Geometry.scale View.chartSize
+      |> Geometry.scale (View.chartDiameter model.windowWidth model.windowHeight)
       |> Geometry.scale zoom
-      |> Geometry.add ((toFloat subWindowWidth+80)/2, (toFloat subWindowHeight+40)/2)
+      |> Geometry.add (View.chartCenter model.windowWidth model.windowHeight)
   in
   { model
   | rotation = rotation

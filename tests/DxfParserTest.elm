@@ -90,7 +90,7 @@ suite =
       , parses value "  0\nENDBLK\n" (EntityType BlockEnd)
       , parses value "  0\nSOLID\n" (EntityType Solid)
       , parses value "  0\nLINE\n" (EntityType LineEntity)
-      , parses value "  0\nPOINT\n" (EntityType Point)
+      , parses value "  0\nPOINT\n" (EntityType PointEntity)
       , parses value "  0\nVIEWPORT\n" (EntityType Viewport)
       , parses value "  0\nSUN\n" (EntityType Sun)
       , parses value "  0\nDICTIONARY\n" (EntityType Dictionary)

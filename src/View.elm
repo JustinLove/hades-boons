@@ -1,4 +1,4 @@
-module View exposing (Msg(..), document, view, chartSize)
+module View exposing (Msg(..), document, view, chartDiameter, chartCenter)
 
 import BoonChart
 import BoonChart.Svg
@@ -42,7 +42,20 @@ type Frame
   | MetaUpgrade
   | Tray
 
-chartSize = 4096
+chartDiameter : Int -> Int -> Float
+chartDiameter width height =
+  let
+    displayWidth = ((width//1)-80-16)
+    displayHeight = (height-40-16)
+  in
+    min displayWidth displayHeight
+      |> toFloat
+
+chartCenter : Int -> Int -> Point
+chartCenter width height =
+  ( (toFloat (width//1)+80)/2
+  , (toFloat height+40)/2
+  )
 
 document tagger model =
   { title = "Hades Boons"
@@ -59,13 +72,14 @@ view model =
       , width fill
       , clip
       , inFront displayFooter
-      , inFront (model.zoom |> String.fromFloat |> text)
+      , inFront (model.zoom |> printFloat |> text)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront displayReset
+      , inFront (displayWindowPoints [model.offset])
       ]
       [ BoonChart.Svg.boonChart
-        [ Html.Attributes.style "width" "50vw"
+        [ Html.Attributes.style "width" "100vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
         ]
@@ -78,11 +92,11 @@ view model =
         , onMouseUp = OnMouseUp
         , onWheel = OnWheel
         , drag = model.drag
-        , offset = model.offset |> Debug.log "offset"
+        , offset = model.offset
         , zoom = model.zoom
-        , size = chartSize
+        , diameter = chartDiameter model.windowWidth model.windowHeight
         } |> html
-      , BoonChart.Canvas.boonChart
+      {-, BoonChart.Canvas.boonChart
         [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
@@ -100,7 +114,7 @@ view model =
         , zoom = model.zoom
         , width = model.windowWidth//2
         , height = model.windowHeight
-        } |> html
+        } |> html -}
       ]
 
 displayGodSelect model =
@@ -537,6 +551,38 @@ icon name =
   svg [ Svg.Attributes.class ("icon icon-"++name) ]
     [ use [ xlinkHref ("symbol-defs.svg#icon-"++name) ] [] ]
   |> html
+
+displayWindowPoints : List Point -> Element msg
+displayWindowPoints points =
+  row
+    (List.append
+      [ alignLeft
+      , alignTop
+      ]
+      (List.map (displayWindowPoint >> inFront) points)
+    )
+    []
+
+displayWindowPoint : Point -> Element msg
+displayWindowPoint (x,y) =
+  row
+    [ moveRight x
+    , moveDown y
+    ]
+    [ el
+      [ width (px 5)
+      , height (px 5)
+      , Background.color (rgb 1 1 1)
+      ] none
+    , text ((printFloat x) ++ "," ++ (printFloat y))
+    ]
+
+printFloat : Float -> String
+printFloat x =
+  (x * 100)
+    |> truncate
+    |> (\y -> (toFloat y) / 100)
+    |> String.fromFloat
 
 atMost : number -> number -> number
 atMost = min

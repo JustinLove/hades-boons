@@ -48,40 +48,40 @@ suite =
       ]
     , describe "decoding entities"
       [ test "entity" <| \_ ->
-        entity Point point [(0, EntityType Point), (10, X 0), (20, Y 0)]
+        entity PointEntity point [(0, EntityType PointEntity), (10, X 0), (20, Y 0)]
           |> Expect.equal (Ok (0,0))
       , test "single entities" <| \_ ->
-        entitiesStep Point point [] [(0, EntityType Point), (10, X 0), (20, Y 0)]
+        entitiesStep PointEntity point [] [(0, EntityType PointEntity), (10, X 0), (20, Y 0)]
           |> Expect.equal (Ok [(0,0)])
       , test "consecutive entities" <| \_ ->
-        entitiesStep Point point []
-          [ (0, EntityType Point), (10, X 0), (20, Y 0)
-          , (0, EntityType Point), (10, X 1), (20, Y 1)
+        entitiesStep PointEntity point []
+          [ (0, EntityType PointEntity), (10, X 0), (20, Y 0)
+          , (0, EntityType PointEntity), (10, X 1), (20, Y 1)
           ]
           |> Expect.equal (Ok [(0,0), (1,1)])
       , test "mixed entities" <| \_ ->
-        entitiesStep Point point []
-          [ (0, EntityType Point), (10, X 0), (20, Y 0)
+        entitiesStep PointEntity point []
+          [ (0, EntityType PointEntity), (10, X 0), (20, Y 0)
           , (0, EntityType LineEntity), (10, X 2), (20, Y 2)
-          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          , (0, EntityType PointEntity), (10, X 1), (20, Y 1)
           ]
           |> Expect.equal (Ok [(0,0), (1,1)])
       , test "advance" <| \_ ->
-        entities Point point
+        entities PointEntity point
           [ (0, EntityType SectionStart), (2, Name "HEADER")
-          , (0, EntityType Point), (10, X 3), (20, Y 3)
+          , (0, EntityType PointEntity), (10, X 3), (20, Y 3)
           , (0, EntityType SectionStart), (2, Name "ENTITIES")
-          , (0, EntityType Point), (10, X 0), (20, Y 0)
+          , (0, EntityType PointEntity), (10, X 0), (20, Y 0)
           , (0, EntityType LineEntity), (10, X 2), (20, Y 2)
-          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          , (0, EntityType PointEntity), (10, X 1), (20, Y 1)
           , (0, EntityType SectionEnd)
-          , (0, EntityType Point), (10, X 4), (20, Y 4)
+          , (0, EntityType PointEntity), (10, X 4), (20, Y 4)
           ]
           |> Expect.equal (Ok [(0,0), (1,1)])
       , test "polylines" <| \_ ->
         every 10 point
           [ (0, EntityType LWPolyLineEntity), (10, X 0), (20, Y 0), (10, X 10), (20, Y 20)
-          , (0, EntityType Point), (10, X 1), (20, Y 1)
+          , (0, EntityType PointEntity), (10, X 1), (20, Y 1)
           ]
           |> Expect.equal (Ok [(0,0), (10,20)])
       ]
@@ -99,7 +99,7 @@ type alias Boon =
 
 boons : Decoder (List Boon)
 boons =
-  entities Point boon
+  entities PointEntity boon
 
 boon : Decoder Boon
 boon =

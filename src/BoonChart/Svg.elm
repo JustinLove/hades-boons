@@ -31,7 +31,7 @@ type alias BoonChart msg =
   , drag : DragMode
   , offset : Point
   , zoom : Float
-  , size : Float
+  , diameter : Float
   }
 
 tau = pi*2
@@ -47,8 +47,8 @@ boonChart attributes model =
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ metrics.duoBoons |> List.map (displayBoonTrait model.zoom model.size duoSize model.boonStatus) |> stack
-  , basicBoons |> List.map (displayBoonTrait model.zoom model.size basicSize model.boonStatus) |> stack
+  [ metrics.duoBoons |> List.map (displayBoonTrait model.zoom duoSize model.boonStatus) |> stack
+  , basicBoons |> List.map (displayBoonTrait model.zoom basicSize model.boonStatus) |> stack
   , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons |> stack)
       model.activeBasicGroups
       basicConnectors
@@ -65,9 +65,9 @@ boonChart attributes model =
     |> align topLeft
     |> List.singleton
     |> group
-    |> scale model.size
     --|> debug
     |> shift (flip model.offset)
+    |> scale model.diameter
     |> scale model.zoom
     |> when (model.drag == Released) (Events.onMouseDown model.onMouseDown)
     |> when (model.drag /= Released) (Events.onMouseUp model.onMouseUp)
@@ -109,8 +109,8 @@ displayGod godMetrics =
     |> stack
     |> Collage.Layout.name (godMetrics.name)
 
-displayBoonTrait : Float -> Float -> Float -> Dict TraitId BoonStatus -> Boon -> Collage msg
-displayBoonTrait zoom chartSize size boonStatus boon =
+displayBoonTrait : Float -> Float -> Dict TraitId BoonStatus -> Boon -> Collage msg
+displayBoonTrait zoom size boonStatus boon =
   let
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
@@ -127,7 +127,7 @@ displayBoonTrait zoom chartSize size boonStatus boon =
         Unavailable -> 0.1
     textLine = \text sz ->
       let
-        font = chartSize * size * zoom * sz
+        font = size * zoom * sz
         f = (font - 6.0) / 8.0 |> atMost 1.0
         c = darken f color
       in
