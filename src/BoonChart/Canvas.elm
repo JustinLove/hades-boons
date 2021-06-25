@@ -6,9 +6,10 @@ import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), 
 import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
 import MouseWheel
 
+import Array exposing (Array)
 import Canvas exposing (..)
 import Canvas.Settings exposing (..)
-import Canvas.Settings.Advanced exposing (..)
+import Canvas.Settings.Advanced as Canvas
 import Canvas.Settings.Line exposing (..)
 import Canvas.Settings.Text exposing (..)
 import Color exposing (Color)
@@ -41,7 +42,12 @@ type alias BoonChart msg =
 boonChart : List (Html.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes model =
   let
+    metrics = model.metrics
     size = model.diameter * model.zoom
+    basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
+    basicConnectors = metrics.gods |> Array.toList |> List.map .connectors
+    duoSize = duoBoonSize model.zoom
+    basicSize = basicBoonSize model.zoom
   in
   Canvas.toHtml
     (model.width, model.height)
@@ -58,9 +64,9 @@ boonChart attributes model =
     , shapes [ fill Color.white ] [ circle model.offset 4 ]
     , group
       [ transform
-        [ translate (pointX model.offset) (pointY model.offset)
-        , scale size size
-        , translate 0.5 0.5
+        [ translate (flip model.offset)
+        , scale size
+        , translate (0.5, -0.5)
         ]
       ]
       [ shapes
@@ -68,12 +74,48 @@ boonChart attributes model =
         , lineWidth 0.01
         ]
         [ circle (0, 0) 0.5 ]
+      , displayGods metrics |> group []
       ]
     ]
 
 when : Bool -> Html.Attribute msg -> Html.Attribute msg
 when test att =
   if test then att else Html.Attributes.class ""
+
+flip : Point -> Point
+flip (x, y) = (x, -y)
+
+displayGods : ChartMetrics -> List Renderable
+displayGods metrics =
+  metrics.gods
+    |> Array.toList
+    |> List.map (\godMetrics ->
+      displayGod godMetrics
+        |> group
+          [ transform
+            [ translate godMetrics.center
+            , rotate godMetrics.angle
+            , scale metrics.adjacentDistance
+            ]
+          ]
+    )
+
+displayGod : GodMetrics -> List Renderable
+displayGod godMetrics =
+  [ shapes
+    [ fill (Color.rgba 0.0 0.0 0.0 0.7)
+    , stroke (Color.rgb 0.05 0.05 0.05)
+    , lineWidth 0.01
+    ]
+    [ circle (0,0) 0.5 ]
+  , text
+    [ fill godMetrics.color
+    , font { size = 200, family = "sans-serif" }
+    , align Center
+    , transform [ scale 0.001 ]
+    ]
+    (0, 0) godMetrics.name
+  ]
 
 pointX : Point -> Float
 pointX (x,_) = x
@@ -89,3 +131,8 @@ clientDecoder =
   Decode.map2 Tuple.pair
     (Decode.field "clientX" Decode.float)
     (Decode.field "clientY" Decode.float)
+
+transform = Canvas.transform
+translate (x,y) = Canvas.translate x -y
+rotate r = Canvas.rotate -r
+scale s = Canvas.scale s s
