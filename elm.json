@@ -2,6 +2,7 @@
     "type": "application",
     "source-directories": [
         "../elm-collage/src",
+        "../elm-canvas/src",
         "generated",
         "src"
     ],
@@ -18,7 +19,6 @@
             "elm/svg": "1.0.1",
             "elm/url": "1.0.0",
             "jinjor/elm-xml-parser": "2.0.0",
-            "joakin/elm-canvas": "4.3.0",
             "mdgriffith/elm-ui": "1.1.8",
             "the-sett/elm-syntax-dsl": "5.2.1",
             "ymtszw/elm-xml-decode": "3.2.1"

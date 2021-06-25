@@ -45,7 +45,7 @@ type Frame
 chartDiameter : Int -> Int -> Float
 chartDiameter width height =
   let
-    displayWidth = ((width//1)-80-16)
+    displayWidth = ((width//2)-80-16)
     displayHeight = (height-40-16)
   in
     min displayWidth displayHeight
@@ -53,7 +53,7 @@ chartDiameter width height =
 
 chartCenter : Int -> Int -> Point
 chartCenter width height =
-  ( (toFloat (width//1)+80)/2
+  ( (toFloat (width//2)+80)/2
   , (toFloat height+40)/2
   )
 
@@ -79,7 +79,7 @@ view model =
       , inFront (displayWindowPoints [model.offset])
       ]
       [ BoonChart.Svg.boonChart
-        [ Html.Attributes.style "width" "100vw"
+        [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
         ]
@@ -96,7 +96,7 @@ view model =
         , zoom = model.zoom
         , diameter = chartDiameter model.windowWidth model.windowHeight
         } |> html
-      {-, BoonChart.Canvas.boonChart
+      , BoonChart.Canvas.boonChart
         [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
@@ -112,9 +112,10 @@ view model =
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom
+        , diameter = chartDiameter model.windowWidth model.windowHeight
         , width = model.windowWidth//2
         , height = model.windowHeight
-        } |> html -}
+        } |> html
       ]
 
 displayGodSelect model =
