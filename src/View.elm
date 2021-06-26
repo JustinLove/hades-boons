@@ -47,7 +47,7 @@ type Frame
 chartDiameter : Int -> Int -> Float
 chartDiameter width height =
   let
-    displayWidth = ((width//2)-80-16)
+    displayWidth = ((width//1)-80-16)
     displayHeight = (height-40-16)
   in
     min displayWidth displayHeight
@@ -55,7 +55,7 @@ chartDiameter width height =
 
 chartCenter : Int -> Int -> Point
 chartCenter width height =
-  ( (toFloat (width//2)+80)/2
+  ( (toFloat (width//1)+80)/2
   , (toFloat height+40)/2
   )
 
@@ -74,13 +74,13 @@ view model =
       , width fill
       , clip
       , inFront displayFooter
-      , inFront (model.zoom |> printFloat |> text)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront displayReset
-      , inFront (displayWindowPoints [model.offset])
+      --, inFront (model.zoom |> printFloat |> text)
+      --, inFront (displayWindowPoints [model.offset])
       ]
-      [ BoonChart.Svg.boonChart
+      [ {-BoonChart.Svg.boonChart
         [ Html.Attributes.style "width" "50vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
@@ -98,8 +98,8 @@ view model =
         , zoom = model.zoom
         , diameter = chartDiameter model.windowWidth model.windowHeight
         } |> html
-      , BoonChart.Canvas.boonChart
-        [ Html.Attributes.style "width" "50vw"
+      , -}BoonChart.Canvas.boonChart
+        [ Html.Attributes.style "width" "100vw"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.id "graph"
         ]
@@ -116,7 +116,7 @@ view model =
         , offset = model.offset
         , zoom = model.zoom
         , diameter = chartDiameter model.windowWidth model.windowHeight
-        , width = model.windowWidth//2
+        , width = model.windowWidth//1
         , height = model.windowHeight
         , textures = model.canvasTextures
         } |> html
@@ -578,6 +578,7 @@ displayWindowPoint (x,y) =
       [ width (px 5)
       , height (px 5)
       , Background.color (rgb 1 1 1)
+      , alignTop
       ] none
     , text ((printFloat x) ++ "," ++ (printFloat y))
     ]

@@ -74,7 +74,7 @@ boonChart attributes model =
       ] 
     )
     [ clear (0, 0) (model.width |> toFloat) (model.height |> toFloat)
-    , shapes [ fill Color.white ] [ circle model.offset 4 ]
+    --, shapes [ fill Color.white ] [ circle model.offset 4 ]
     , group
       [ transform
         [ translate (flip model.offset)
