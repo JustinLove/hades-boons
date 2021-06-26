@@ -358,7 +358,7 @@ curvePointsFromEllipticAngles {center, majorAxis, minorRatio, fromAngle, toAngle
     midAngle = Geometry.modAngle workAngle
     midPoint = ellipsePoint midAngle
     endA = ellipsePoint startAngle
-    endB = ellipsePoint endAngle
+    --endB = ellipsePoint endAngle
     ellipsePoints = \from to ->
       let
         step = to - from

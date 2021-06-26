@@ -85,6 +85,10 @@ boonChart attributes model =
       (List.concat
         [ metrics.duoConnectors |> List.concatMap (displayDuoConnector model.activeDuoGroups)
         , displayGods metrics
+        , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons)
+            model.activeBasicGroups
+            basicConnectors
+            |> List.concat
         , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
         , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.textures model.boonStatus)
         --, [ shapes [ stroke Color.white , lineWidth 0.01 ] [ circle (0, 0) 0.5 ] ]
@@ -122,13 +126,14 @@ displayGod godMetrics =
     , lineWidth 0.01
     ]
     [ circle (0,0) 0.5 ]
-  , text
+  {-, text
     [ fill godMetrics.color
     , font { size = 200, family = "sans-serif" }
     , align Center
     , transform [ scale 0.001 ]
     ]
     (0, 0) godMetrics.name
+    -}
   ]
 
 displayBoonTrait : Float -> Float -> Dict String Canvas.Texture -> Dict TraitId BoonStatus -> Boon -> Renderable
@@ -192,6 +197,87 @@ displayBoonTrait displayDiameter size textures boonStatus boon =
         ]
       ]
 
+displayBoonConnector : Dict TraitId BoonStatus -> Set GroupId -> Connector -> Renderable
+displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
+  let
+    bright = color
+    dark = darken 0.4 color
+    (thickness, col) =
+      if Set.member group activeGroups then
+        case link of
+          Just id ->
+            if Dict.get id boonStatus == Just Active || Set.member id activeGroups then
+              (0.004, bright)
+            else
+              (0.001, dark)
+          Nothing ->
+            (0.004, bright)
+      else
+        case link of
+          Just id ->
+            (0.001, dark)
+          Nothing ->
+            (0.002, dark)
+    lineStyle =
+      [ lineWidth thickness
+      , stroke col
+      ]
+  in
+  case shape of
+    Arc arcInfo ->
+      shapes
+        lineStyle
+        [ arc (flip arcInfo.center) arcInfo.radius
+          { startAngle = -arcInfo.fromAngle
+          , endAngle = -arcInfo.toAngle
+          , clockwise = arcInfo.winding == Clockwise
+          }
+        ]
+    Area boundaries ->
+      let
+        segments = boundaries
+          |> List.map (\bound ->
+            case bound of
+              BoundaryArc arc ->
+                pathFromAngles arc
+                --((flip arc.center), [lineTo (flip arc.center)])
+              BoundaryLine a b ->
+                ((flip a), [lineTo (flip b)])
+            )
+      in
+        case segments of
+          first :: _ ->
+            shapes
+              [ fill col ]
+              [ path
+                (Tuple.first first)
+                (List.concatMap Tuple.second segments)
+              ]
+          _ ->
+            Canvas.group [] []
+    Circle center radius ->
+      shapes
+        lineStyle
+        [ circle (flip center) radius ]
+    EllipticArc arcInfo ->
+      shapes
+        lineStyle
+        [pathFromEllipticAngles arcInfo]
+    Line a b ->
+      shapes
+        lineStyle
+        [ path (flip a) [lineTo (flip b)] ]
+    PolyLine points ->
+      case points of
+        first :: rest ->
+          shapes
+            lineStyle
+            [ path (flip first) (List.map (flip >> lineTo) rest) ]
+        _ ->
+          Canvas.group [] []
+    Tag ->
+      Canvas.group [] []
+
 image : Dict String Canvas.Texture -> Float -> String -> Renderable
 image textures size key =
   Dict.get key textures
@@ -253,8 +339,8 @@ duoDash which activeGroups group godColor =
     , stroke color
     ]
 
-curvePoints : Point -> Point -> Point -> List Point
-curvePoints (xc,yc) (x1,y1) (x4,y4) =
+curvePath : Point -> Point -> Point -> PathSegment
+curvePath (xc,yc) (x1,y1) (x4,y4) =
   let
     -- https://stackoverflow.com/a/44829356/30203
     ax = x1 - xc
@@ -270,19 +356,111 @@ curvePoints (xc,yc) (x1,y1) (x4,y4) =
     x3 = xc + bx + k2 * by
     y3 = yc + by - k2 * bx
   in
-  [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+  bezierCurveTo (x2,-y2) (x3,-y3) (x4,-y4)
+
+pathFromAngles : ArcType -> (Point, List PathSegment)
+pathFromAngles {center, radius, fromAngle, toAngle, winding} =
+  let
+    oddAngle = abs (toAngle - fromAngle)
+    angle =
+      if oddAngle > pi then
+        tau - oddAngle
+      else
+        oddAngle
+    (startAngle, workAngle, endAngle) =
+      case winding of
+        Counterclockwise ->
+          (fromAngle, fromAngle + angle / 2, toAngle)
+        Clockwise ->
+          (tau - fromAngle, tau - (fromAngle + angle / 2), tau - toAngle)
+    midAngle =
+      if workAngle > tau then
+        workAngle - tau
+      else
+        workAngle
+    midPoint = center |> Geometry.add (Geometry.rotate midAngle (radius, 0))
+    endA = center |> Geometry.add (Geometry.rotate startAngle (radius, 0))
+    endB = center |> Geometry.add (Geometry.rotate endAngle (radius, 0))
+  in
+    if angle > tau/4 then
+      (endA,
+        [ (curvePath center endA midPoint)
+        , (curvePath center midPoint endB)
+        ]
+      )
+    else
+      (endA, [curvePath center endA endB])
+
+{- Adapted from https://www.blog.akhil.cc/ellipse
+However, that page appears to use a y inverse coordinate system, and the tanget formula is incorrect. It references
+  http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+Which has the correct tangent formula and appears to use same y polarity
+-}
+pathFromEllipticAngles : EllipticArcType -> Shape
+pathFromEllipticAngles {center, majorAxis, minorRatio, fromAngle, toAngle} =
+  let
+    (cosT, sinT) = majorAxis |> Geometry.normalize
+    semiMajor = Geometry.length majorAxis
+    semiMinor = semiMajor * minorRatio
+    ellipsePoint = \n ->
+      let
+        cosN = cos n
+        sinN = sin n
+        a = semiMajor
+        b = semiMinor
+      in
+        ( a * cosN * cosT - b * sinN * sinT
+        , a * cosN * sinT + b * sinN * cosT
+        )
+          |> Geometry.add center
+    tangent = \n ->
+      let
+        cosN = cos n
+        sinN = sin n
+        a = semiMajor
+        b = semiMinor
+      in
+        ( -a * sinN * cosT - b * cosN * sinT
+        , -a * sinN * sinT + b * cosN * cosT
+        )
+    startAngle = fromAngle
+    endAngle = toAngle
+    oddAngle = abs (toAngle - fromAngle)
+    angle =
+      if oddAngle > pi then
+        tau - oddAngle
+      else
+        oddAngle
+    workAngle = fromAngle + oddAngle / 2
+    midAngle = Geometry.modAngle workAngle
+    midPoint = ellipsePoint midAngle
+    endA = ellipsePoint startAngle
+    --endB = ellipsePoint endAngle
+    ellipsePath = \from to ->
+      let
+        step = to - from
+        at = tan (step/2)
+        a = (sin step) * ((sqrt (4 + 3*at*at)-1)/3)
+        p1 = ellipsePoint from
+        e1 = tangent from
+        p2 = ellipsePoint to
+        e2 = tangent to
+        q1 = Geometry.scale a e1 |> Geometry.add p1
+        q2 = Geometry.scale -a e2 |> Geometry.add p2
+      in
+        bezierCurveTo (flip q1) (flip q2) (flip p2)
+  in
+    if angle > tau/4 then
+      path (flip endA)
+        [ (ellipsePath startAngle midAngle)
+        , (ellipsePath midAngle endAngle)
+        ]
+    else
+      path (flip endA) [ellipsePath startAngle endAngle]
 
 arcFromPoints : Point -> Point -> Point -> Shape
 arcFromPoints c p1 p2 =
-  cubicCurve (curvePoints c p1 p2)
-
-cubicCurve : List Point -> Shape
-cubicCurve points =
-  case points of
-    p1 :: p2 :: p3 :: p4 :: _ ->
-      path (flip p1) [bezierCurveTo (flip p2) (flip p3) (flip p4)]
-    _ ->
-      path (0,0) []
+  path (flip p1) [curvePath c p1 p2]
 
 pointX : Point -> Float
 pointX (x,_) = x
