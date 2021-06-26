@@ -12,6 +12,7 @@ import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas
 import Canvas.Settings.Line exposing (..)
 import Canvas.Settings.Text exposing (..)
+import Canvas.Texture as Canvas
 import Color exposing (Color)
 import Dict exposing (Dict)
 import Html exposing (Html)
@@ -31,12 +32,14 @@ type alias BoonChart msg =
   , onMouseDown : Point -> msg
   , onMouseUp : Point -> msg
   , onWheel : Point -> Int -> msg
+  , onTexture : String -> Maybe Canvas.Texture -> msg
   , drag : DragMode
   , offset : Point
   , zoom : Float
   , diameter : Float
   , width : Int
   , height : Int
+  , textures : Dict String Canvas.Texture
   }
 
 tau = pi*2
@@ -51,8 +54,16 @@ boonChart attributes model =
     duoSize = duoBoonSize model.zoom
     basicSize = basicBoonSize model.zoom
   in
-  Canvas.toHtml
-    (model.width, model.height)
+  Canvas.toHtmlWith
+    { width = model.width
+    , height = model.height
+    , textures =
+      (List.append basicBoons metrics.duoBoons
+        |> List.map .icon
+        |> (::) "GUI/LockIcon/LockIcon0001.png"
+        |> List.map (\icon -> Canvas.loadFromImageUrl icon (model.onTexture icon))
+      )
+    }
     (List.append
       attributes
       [ MouseWheel.onWheel model.onWheel
@@ -79,8 +90,8 @@ boonChart attributes model =
             [ circle (0, 0) 0.5 ]
           ]
         , displayGods metrics
-        , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.boonStatus)
-        , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.boonStatus)
+        , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
+        , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.textures model.boonStatus)
         ]
       )
     ]
@@ -124,8 +135,8 @@ displayGod godMetrics =
     (0, 0) godMetrics.name
   ]
 
-displayBoonTrait : Float -> Float -> Dict TraitId BoonStatus -> Boon -> Renderable
-displayBoonTrait displayDiameter size boonStatus boon =
+displayBoonTrait : Float -> Float -> Dict String Canvas.Texture -> Dict TraitId BoonStatus -> Boon -> Renderable
+displayBoonTrait displayDiameter size textures boonStatus boon =
   let
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
@@ -160,22 +171,23 @@ displayBoonTrait displayDiameter size boonStatus boon =
         group [] []
     side = (0.47 * (sqrt 2))
   in
-  --[ image (0.9, 0.9) boon.icon
-  [ shapes
-    [ fill (Color.rgba 1 0 0 (1.0 - brightness))
+  [ image textures 0.9 boon.icon
+  , shapes
+    [ fill (Color.rgba 0 0 0 (1.0 - brightness))
     , transform
-      [ translate (-0.5, 0.0)
+      [ translate (-0.47, 0.0)
       , rotate (tau/8)
       ]
     ]
     [ rect (0,0) side side
     ]
   , if status == Excluded then
-      group [] [] --image (0.7, 0.7) "GUI/LockIcon/LockIcon0001.png"
+      image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
     else
       group [] []
   , textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
+  --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]
   ]
     |> group
       [ transform
@@ -183,6 +195,22 @@ displayBoonTrait displayDiameter size boonStatus boon =
         , scale size
         ]
       ]
+
+image : Dict String Canvas.Texture -> Float -> String -> Renderable
+image textures size key =
+  Dict.get key textures
+    |> Maybe.map (\tex ->
+      let {width, height} = Canvas.dimensions tex in
+      texture
+        [ transform
+          [ scale (size/width)
+          , translate (-width/2, height/2)
+          ]
+        ]
+        (0,0)
+        tex
+      )
+    |> Maybe.withDefault (group [] [])
 
 pointX : Point -> Float
 pointX (x,_) = x

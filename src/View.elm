@@ -6,6 +6,7 @@ import BoonChart.Canvas
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
 import Dict
+import Canvas.Texture as Canvas
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -26,6 +27,7 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
+  | TextureLoaded String (Maybe Canvas.Texture)
   | SelectGod God
   | ViewAll
   | SelectSlot SlotId
@@ -109,12 +111,14 @@ view model =
         , onMouseDown = OnMouseDown
         , onMouseUp = OnMouseUp
         , onWheel = OnWheel
+        , onTexture = TextureLoaded
         , drag = model.drag
         , offset = model.offset
         , zoom = model.zoom
         , diameter = chartDiameter model.windowWidth model.windowHeight
         , width = model.windowWidth//2
         , height = model.windowHeight
+        , textures = model.canvasTextures
         } |> html
       ]
 

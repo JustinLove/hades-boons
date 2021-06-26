@@ -18,6 +18,7 @@ import Browser
 import Browser.Dom as Dom
 import Browser.Events
 import Browser.Navigation as Navigation
+import Canvas.Texture as Canvas
 import Dict exposing (Dict)
 import Http
 import Json.Decode as Decode exposing (Value)
@@ -41,6 +42,7 @@ type alias Model =
   , navigationKey : Navigation.Key
   , windowWidth : Int
   , windowHeight : Int
+  , canvasTextures : Dict String Canvas.Texture
   , traits : Traits
   , chartMetrics : BoonChart.ChartMetrics
   , activeTraits : Set TraitId
@@ -73,6 +75,7 @@ initialModel flags location key =
   , navigationKey = key
   , windowWidth = 320
   , windowHeight = 300
+  , canvasTextures = Dict.empty
   --, labelWidths = Dict.empty
   , traits = Traits.empty
   , chartMetrics = BoonChart.calculateMetrics Traits.empty rotation
@@ -201,6 +204,12 @@ update msg model =
         }
       , Cmd.none
       )
+    UI (View.TextureLoaded key mtexture) ->
+      ( { model
+        | canvasTextures =
+          Dict.update key (always mtexture) model.canvasTextures
+        }
+      , Cmd.none)
     UI (View.SelectGod god) ->
       (model |> focusOn god, Cmd.none)
     UI (View.ViewAll) ->
