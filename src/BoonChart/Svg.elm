@@ -44,11 +44,12 @@ boonChart attributes model =
     basicConnectors = metrics.gods |> Array.toList |> List.map .connectors
     duoSize = duoBoonSize model.zoom
     basicSize = basicBoonSize model.zoom
+    displayDiameter = model.zoom * model.diameter
   in
   --[ circle 0.45
       --|> outlined (solid 0.01 (uniform Color.white))
-  [ metrics.duoBoons |> List.map (displayBoonTrait model.zoom duoSize model.boonStatus) |> stack
-  , basicBoons |> List.map (displayBoonTrait model.zoom basicSize model.boonStatus) |> stack
+  [ metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.boonStatus) |> stack
+  , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.boonStatus) |> stack
   , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons |> stack)
       model.activeBasicGroups
       basicConnectors
@@ -110,7 +111,7 @@ displayGod godMetrics =
     |> Collage.Layout.name (godMetrics.name)
 
 displayBoonTrait : Float -> Float -> Dict TraitId BoonStatus -> Boon -> Collage msg
-displayBoonTrait zoom size boonStatus boon =
+displayBoonTrait displayDiameter size boonStatus boon =
   let
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
@@ -127,7 +128,7 @@ displayBoonTrait zoom size boonStatus boon =
         Unavailable -> 0.1
     textLine = \text sz ->
       let
-        font = size * zoom * sz
+        font = size * displayDiameter * sz
         f = (font - 6.0) / 8.0 |> atMost 1.0
         c = darken f color
       in

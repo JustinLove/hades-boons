@@ -499,10 +499,10 @@ hitGod godRadius boonRadius at godMetrics =
     Nothing
 
 duoBoonSize : Float -> Float
-duoBoonSize zoom = (0.02 / zoom |> clamp 0.02 0.08)
+duoBoonSize zoom = (0.3 / zoom |> clamp 0.02 0.08)
 
 basicBoonSize : Float -> Float
-basicBoonSize zoom = (0.02 / zoom |> clamp 0.01 0.02)
+basicBoonSize zoom = (0.3 / zoom |> clamp 0.01 0.02)
 
 pointX : Point -> Float
 pointX (x,_) = x

@@ -39,11 +39,13 @@ type alias BoonChart msg =
   , height : Int
   }
 
+tau = pi*2
+
 boonChart : List (Html.Attribute msg) -> BoonChart msg -> Html msg
 boonChart attributes model =
   let
     metrics = model.metrics
-    size = model.diameter * model.zoom
+    displayDiameter = model.diameter * model.zoom
     basicBoons = metrics.gods |> Array.toList |> List.concatMap .boons
     basicConnectors = metrics.gods |> Array.toList |> List.map .connectors
     duoSize = duoBoonSize model.zoom
@@ -65,17 +67,22 @@ boonChart attributes model =
     , group
       [ transform
         [ translate (flip model.offset)
-        , scale size
+        , scale displayDiameter
         , translate (0.5, -0.5)
         ]
       ]
-      [ shapes
-        [ stroke Color.white
-        , lineWidth 0.01
+      (List.concat
+        [ [ shapes
+            [ stroke Color.white
+            , lineWidth 0.01
+            ]
+            [ circle (0, 0) 0.5 ]
+          ]
+        , displayGods metrics
+        , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.boonStatus)
+        , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.boonStatus)
         ]
-        [ circle (0, 0) 0.5 ]
-      , displayGods metrics |> group []
-      ]
+      )
     ]
 
 when : Bool -> Html.Attribute msg -> Html.Attribute msg
@@ -117,6 +124,66 @@ displayGod godMetrics =
     (0, 0) godMetrics.name
   ]
 
+displayBoonTrait : Float -> Float -> Dict TraitId BoonStatus -> Boon -> Renderable
+displayBoonTrait displayDiameter size boonStatus boon =
+  let
+    status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
+    color =
+      case status of
+        Active -> Color.white
+        Available -> Color.darkGrey
+        Excluded -> Color.charcoal
+        Unavailable -> Color.charcoal
+    brightness =
+      case status of
+        Active -> 1.0
+        Available -> 0.5
+        Excluded -> 0.1
+        Unavailable -> 0.1
+    textLine = \tx sz p ->
+      let
+        fontSize = size * displayDiameter * sz
+        f = (fontSize - 6.0) / 8.0 |> atMost 1.0
+        c = darken f color
+      in
+      if fontSize > 6 then
+        [ text
+          [ fill c
+          , font { size = 100, family = "sans-serif" }
+          , align Center
+          , transform [ scale (sz * 0.01) ]
+          ]
+          (0,0) tx
+        ]
+          |> group [ transform [ translate p ] ]
+      else
+        group [] []
+    side = (0.47 * (sqrt 2))
+  in
+  --[ image (0.9, 0.9) boon.icon
+  [ shapes
+    [ fill (Color.rgba 1 0 0 (1.0 - brightness))
+    , transform
+      [ translate (-0.5, 0.0)
+      , rotate (tau/8)
+      ]
+    ]
+    [ rect (0,0) side side
+    ]
+  , if status == Excluded then
+      group [] [] --image (0.7, 0.7) "GUI/LockIcon/LockIcon0001.png"
+    else
+      group [] []
+  , textLine boon.id 0.1 (0, -0.65)
+  , textLine boon.name 0.2 (0, -0.5)
+  ]
+    |> group
+      [ transform
+        [ translate boon.location
+        , scale size
+        ]
+      ]
+
 pointX : Point -> Float
 pointX (x,_) = x
 
@@ -136,3 +203,16 @@ transform = Canvas.transform
 translate (x,y) = Canvas.translate x -y
 rotate r = Canvas.rotate -r
 scale s = Canvas.scale s s
+
+atLeast : Float -> Float -> Float
+atLeast = max
+
+atMost : Float -> Float -> Float
+atMost = min
+
+darken : Float -> Color -> Color
+darken by color =
+  color
+    |> Color.toHsla
+    |> (\hsla -> {hsla | lightness = hsla.lightness * by})
+    |> Color.fromHsla
