@@ -341,8 +341,6 @@ fartherPoint c1 c2 =
     else
       p2
 
-
-
 layoutBasicConnectorsOf : Float -> Point -> Float -> GodData -> List Connector
 layoutBasicConnectorsOf godRadius origin godAngle data =
   let

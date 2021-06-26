@@ -83,15 +83,11 @@ boonChart attributes model =
         ]
       ]
       (List.concat
-        [ [ shapes
-            [ stroke Color.white
-            , lineWidth 0.01
-            ]
-            [ circle (0, 0) 0.5 ]
-          ]
+        [ metrics.duoConnectors |> List.concatMap (displayDuoConnector model.activeDuoGroups)
         , displayGods metrics
         , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
         , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.textures model.boonStatus)
+        --, [ shapes [ stroke Color.white , lineWidth 0.01 ] [ circle (0, 0) 0.5 ] ]
         ]
       )
     ]
@@ -211,6 +207,82 @@ image textures size key =
         tex
       )
     |> Maybe.withDefault (group [] [])
+
+displayDuoConnector : Set GroupId -> DuoConnector -> List Renderable
+displayDuoConnector activeGroups {shape, groupA, colorA, groupB, colorB} =
+  let
+    lineStyleA = duoDash False activeGroups groupA colorA
+    lineStyleB = duoDash True activeGroups groupB colorB
+  in
+  case shape of
+    Invisible ->
+      []
+    DuoArc arc ->
+      let
+        arcA = arcFromPoints arc.center arc.endA arc.midPoint
+        arcB = arcFromPoints arc.center arc.midPoint arc.endB
+      in
+      [ shapes
+        lineStyleA
+        [ arcA, arcB ]
+      , shapes
+        lineStyleB
+        [ arcA, arcB ]
+      ]
+    DuoLine a b->
+      [ shapes
+        lineStyleA
+        [ path (flip a) [lineTo (flip b)] ]
+      , shapes
+        lineStyleB
+        [ path (flip a) [lineTo (flip b)] ]
+      ]
+
+duoDash : Bool -> Set GroupId -> GroupId -> Color -> List Setting
+duoDash which activeGroups group godColor =
+  let
+    (thickness, color) =
+      if Set.member group activeGroups then
+        (0.004, godColor)
+      else
+        (0.002, Color.charcoal)
+  in
+    [ lineDash [ 0.01, 0.01 ]
+    , lineDashOffset (if which then 0 else 0.01)
+    , lineWidth thickness
+    , stroke color
+    ]
+
+curvePoints : Point -> Point -> Point -> List Point
+curvePoints (xc,yc) (x1,y1) (x4,y4) =
+  let
+    -- https://stackoverflow.com/a/44829356/30203
+    ax = x1 - xc
+    ay = y1 - yc
+    bx = x4 - xc
+    by = y4 - yc
+    q1 = ax * ax + ay * ay
+    q2 = q1 + ax * bx + ay * by
+    k2 = (4/3) * ((sqrt (2 * q1 * q2)) - q2) / (ax * by - ay * bx)
+
+    x2 = xc + ax - k2 * ay
+    y2 = yc + ay + k2 * ax
+    x3 = xc + bx + k2 * by
+    y3 = yc + by - k2 * bx
+  in
+  [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+
+arcFromPoints : Point -> Point -> Point -> Shape
+arcFromPoints c p1 p2 =
+  cubicCurve (curvePoints c p1 p2)
+
+cubicCurve : List Point -> Shape
+cubicCurve points =
+  case points of
+    p1 :: p2 :: p3 :: p4 :: _ ->
+      path (flip p1) [bezierCurveTo (flip p2) (flip p3) (flip p4)]
+    _ ->
+      path (0,0) []
 
 pointX : Point -> Float
 pointX (x,_) = x
