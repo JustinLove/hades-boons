@@ -387,12 +387,7 @@ curvePath (xc,yc) (x1,y1) (x4,y4) =
 pathFromAngles : ArcType -> (Point, List PathSegment)
 pathFromAngles {center, radius, fromAngle, toAngle, winding} =
   let
-    oddAngle = abs (toAngle - fromAngle)
-    angle =
-      if oddAngle > pi then
-        tau - oddAngle
-      else
-        oddAngle
+    angle = abs (toAngle - fromAngle)
     (startAngle, workAngle, endAngle) =
       case winding of
         Counterclockwise ->
@@ -408,7 +403,27 @@ pathFromAngles {center, radius, fromAngle, toAngle, winding} =
     endA = center |> Geometry.add (Geometry.rotate startAngle (radius, 0))
     endB = center |> Geometry.add (Geometry.rotate endAngle (radius, 0))
   in
-    if angle > tau/4 then
+    if angle > tau/2 then
+      let
+        (_, paths1) = 
+          pathFromAngles
+            { center = center
+            , radius = radius
+            , fromAngle = startAngle
+            , toAngle = midAngle
+            , winding = winding
+            }
+        (_, paths2) = 
+          pathFromAngles
+            { center = center
+            , radius = radius
+            , fromAngle = midAngle
+            , toAngle = endAngle
+            , winding = winding
+            }
+      in
+        ((flip endA), List.append paths1 paths2)
+    else if angle > tau/4 then
       (endA,
         [ (curvePath center endA midPoint)
         , (curvePath center midPoint endB)

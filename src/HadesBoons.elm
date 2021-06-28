@@ -398,6 +398,7 @@ focusView center diameter rotation model =
 defaultView : Model -> Model
 defaultView =
   focusView (0, 0) 1 (tau/16)
+    >> updateChartMetrics
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
