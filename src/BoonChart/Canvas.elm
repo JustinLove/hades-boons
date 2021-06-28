@@ -274,7 +274,7 @@ displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
         case segments of
           first :: _ ->
             shapes
-              [ fill col ]
+              [ fill col, Canvas.alpha 0.5 ]
               [ path
                 (Tuple.first first)
                 (List.concatMap Tuple.second segments)
