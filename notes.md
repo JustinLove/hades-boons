@@ -46,10 +46,10 @@
 - x fix colors
 - x text display when small
 - x boundary arc under rotation
+- x god icon backgrounds
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?
-- god icon backgrounds
 - slot menu scaling for window width
 - where does hermes go?
   - x duo lines passing behind

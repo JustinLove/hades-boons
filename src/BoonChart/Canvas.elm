@@ -61,7 +61,12 @@ boonChart attributes model =
       (List.append basicBoons metrics.duoBoons
         |> List.map .icon
         |> (::) "GUI/LockIcon/LockIcon0001.png"
-        |> List.map (\icon -> Canvas.loadFromImageUrl icon (model.onTexture icon))
+        |> List.append (metrics.gods
+          |> Array.toList
+          |> List.map .god
+          |> List.map Traits.godIcon
+          )
+        |> List.map (\path -> Canvas.loadFromImageUrl path (model.onTexture path))
       )
     }
     (List.append
@@ -74,7 +79,7 @@ boonChart attributes model =
       ] 
     )
     [ clear (0, 0) (model.width |> toFloat) (model.height |> toFloat)
-    , displayPoint 1 model.offset
+    --, displayPoint 1 model.offset
     --, shapes [ fill Color.white ] [ circle model.offset 4 ]
     , group
       [ transform
@@ -85,7 +90,7 @@ boonChart attributes model =
       ]
       (List.concat
         [ metrics.duoConnectors |> List.concatMap (displayDuoConnector model.activeDuoGroups)
-        , displayGods metrics
+        , displayGods model.textures model.zoom metrics
         , List.map2 (\active cons -> List.map (displayBoonConnector model.boonStatus active) cons)
             model.activeBasicGroups
             basicConnectors
@@ -130,12 +135,12 @@ when test att =
 flip : Point -> Point
 flip (x, y) = (x, -y)
 
-displayGods : ChartMetrics -> List Renderable
-displayGods metrics =
+displayGods : Dict String Canvas.Texture -> Float -> ChartMetrics -> List Renderable
+displayGods textures zoom metrics =
   metrics.gods
     |> Array.toList
     |> List.map (\godMetrics ->
-      displayGod godMetrics
+      displayGod textures zoom metrics.adjacentDistance godMetrics
         |> group
           [ transform
             [ translate godMetrics.center
@@ -145,14 +150,28 @@ displayGods metrics =
           ]
     )
 
-displayGod : GodMetrics -> List Renderable
-displayGod godMetrics =
+displayGod : Dict String Canvas.Texture -> Float -> Float -> GodMetrics -> List Renderable
+displayGod textures zoom adjacentDistance godMetrics =
   [ shapes
     [ fill (Color.rgba 0.0 0.0 0.0 0.7)
     , stroke (Color.rgb 0.05 0.05 0.05)
     , lineWidth 0.01
     ]
     [ circle (0,0) 0.5 ]
+  , Dict.get (Traits.godIcon godMetrics.god) textures
+    |> Maybe.map (\tex ->
+      let {width, height} = Canvas.dimensions tex in
+      texture
+        [ transform
+          [ scale (godMetrics.scaleFactor/adjacentDistance)
+          , translate (-width/2, height/2)
+          ]
+        , Canvas.alpha (1/(zoom^1.1))
+        ]
+        (0,0)
+        tex
+      )
+    |> Maybe.withDefault (group [] [])
   {-, text
     [ fill godMetrics.color
     , font { size = 200, family = "sans-serif" }
@@ -311,7 +330,7 @@ image textures size key =
       let {width, height} = Canvas.dimensions tex in
       texture
         [ transform
-          [ scale (size/width)
+          [ scale (size/(max width height))
           , translate (-width/2, height/2)
           ]
         ]

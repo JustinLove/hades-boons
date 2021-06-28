@@ -42,6 +42,7 @@ type alias GodMetrics =
   { center : Point
   , angle : Float
   , focusAngle : Float
+  , scaleFactor : Float
   , god : God
   , name : String
   , color : Color
@@ -151,6 +152,8 @@ initialMetrics traits rotation =
       |> List.sortBy (Traits.dataGod >> godIndex)
       |> List.indexedMap (\i data ->
         let
+          layout = Traits.dataLayout data
+          scaleFactor = (adjacentDistance/2)/layout.radius
           focus =
             if i == 0 then angle/2
             else (((toFloat (i-1)) * -angle))
@@ -164,6 +167,7 @@ initialMetrics traits rotation =
           { center = center
           , angle = a
           , focusAngle = focus
+          , scaleFactor = scaleFactor
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
