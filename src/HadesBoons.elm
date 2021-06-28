@@ -35,6 +35,7 @@ type Msg
   | GotLayout God (Result Http.Error Layout)
   | WindowSize (Int, Int)
   | WindowReSize (Int, Int)
+  | Rotate Float
   --| TextSize MeasureText.TextSize
 
 type alias Model =
@@ -70,7 +71,7 @@ main = Browser.application
 
 initialModel : () -> Url -> Navigation.Key -> Model
 initialModel flags location key =
-  let rotation = -tau / 16 in
+  let rotation = tau / 16 in
   { location = location
   , navigationKey = key
   , windowWidth = 320
@@ -170,6 +171,10 @@ update msg model =
     WindowReSize (width, height) ->
       ( {model | windowWidth = width, windowHeight = height}
       , Cmd.none)
+    Rotate dt ->
+      ( focusFollow Poseidon { model | rotation = Geometry.modAngle (model.rotation + (dt/10000)) }
+      , Cmd.none
+      )
     --TextSize {text, width} ->
       --( {model | labelWidths = Dict.insert text (width/100) model.labelWidths}, Cmd.none)
     UI (View.OnMouseMove point) ->
@@ -352,6 +357,18 @@ focusOn god model =
   }
     |> focusView center chartMetrics.adjacentDistance rotation
 
+focusFollow : God -> Model -> Model
+focusFollow god model =
+  let
+    chartMetrics = BoonChart.calculateMetrics model.traits model.rotation
+    center = BoonChart.focusPositionOf chartMetrics god
+  in
+  { model
+  | focusGod = Just god
+  , chartMetrics = chartMetrics
+  }
+    |> focusView center chartMetrics.adjacentDistance model.rotation
+
 type alias Viewable r =
   { r
   | windowWidth : Int
@@ -366,6 +383,7 @@ focusView center diameter rotation model =
   let
     zoom = 1/diameter
     offset = center
+      |> (\(x,y) -> (-x,y))
       |> Geometry.add (-0.5,-0.5)
       |> Geometry.scale (View.chartDiameter model.windowWidth model.windowHeight)
       |> Geometry.scale zoom
@@ -379,8 +397,7 @@ focusView center diameter rotation model =
 
 defaultView : Model -> Model
 defaultView =
-  focusView (0, 0) 1 (-tau/16)
-    >> updateChartMetrics
+  focusView (0, 0) 1 (tau/16)
 
 dragTo : DragMode -> Point -> Point -> Point
 dragTo drag point oldOffset =
@@ -395,6 +412,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
     [ Browser.Events.onResize (\w h -> WindowReSize (w, h))
+    --, Browser.Events.onAnimationFrameDelta Rotate
     --, MeasureText.textSize TextSize
     ]
 

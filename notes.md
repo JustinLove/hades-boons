@@ -45,7 +45,7 @@
 - x mirror - only soul?
 - x fix colors
 - x text display when small
-- boundary arc under rotation
+- x boundary arc under rotation
 - any/some casts - prereqs?, design issues
 - line formatting
   - zoom relative size?

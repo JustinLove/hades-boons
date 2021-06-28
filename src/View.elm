@@ -3,6 +3,7 @@ module View exposing (Msg(..), document, view, chartDiameter, chartCenter)
 import BoonChart
 import BoonChart.Svg
 import BoonChart.Canvas
+import Geometry
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
 import Dict
@@ -78,7 +79,11 @@ view model =
       , inFront (displaySlotSelect model)
       , inFront displayReset
       --, inFront (model.zoom |> printFloat |> text)
-      --, inFront (displayWindowPoints [model.offset])
+      --, inFront (model.rotation |> printFloat |> text)
+      --, inFront (displayWindowPoints
+        --[ model.offset
+        --, chartCenter model.windowWidth model.windowHeight
+        --])
       ]
       [ {-BoonChart.Svg.boonChart
         [ Html.Attributes.style "width" "50vw"
@@ -314,7 +319,7 @@ keepsakeMenu model scaled =
     ]
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
-      |> List.map (\boon -> keepsakeIconButton (SelectKeepsake boon.trait) scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded) |> Debug.log "status"))
+      |> List.map (\boon -> keepsakeIconButton (SelectKeepsake boon.trait) scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)))
     )
 
 soulMenu model scaled =

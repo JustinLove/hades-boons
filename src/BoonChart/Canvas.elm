@@ -74,6 +74,7 @@ boonChart attributes model =
       ] 
     )
     [ clear (0, 0) (model.width |> toFloat) (model.height |> toFloat)
+    , displayPoint 1 model.offset
     --, shapes [ fill Color.white ] [ circle model.offset 4 ]
     , group
       [ transform
@@ -92,9 +93,35 @@ boonChart attributes model =
         , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
         , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.textures model.boonStatus)
         --, [ shapes [ stroke Color.white , lineWidth 0.01 ] [ circle (0, 0) 0.5 ] ]
+        --, metrics.gods
+            --|> Array.toList
+            --|> List.map (\godMetrics ->
+              --displayPoint displayDiameter (flip godMetrics.center)
+            --)
         ]
       )
     ]
+
+displayPoint : Float -> Point -> Renderable
+displayPoint size (x,y) =
+  group
+    []
+    [ shapes [ fill Color.white ] [ circle (x,y) (4/size) ]
+    , text
+      [ fill Color.white
+      , font { size = 24, family = "sans-serif" }
+      , baseLine Top
+      , transform [ scale (1/size) ]
+      ]
+      (x*size,y*size) ((printFloat x) ++ "," ++ (printFloat y))
+    ]
+
+printFloat : Float -> String
+printFloat x =
+  (x * 100)
+    |> truncate
+    |> (\y -> (toFloat y) / 100)
+    |> String.fromFloat
 
 when : Bool -> Html.Attribute msg -> Html.Attribute msg
 when test att =
@@ -240,7 +267,6 @@ displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
             case bound of
               BoundaryArc arc ->
                 pathFromAngles arc
-                --((flip arc.center), [lineTo (flip arc.center)])
               BoundaryLine a b ->
                 ((flip a), [lineTo (flip b)])
             )

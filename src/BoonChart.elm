@@ -156,14 +156,14 @@ initialMetrics traits rotation =
             else (((toFloat (i-1)) * -angle))
           a =
             if i == 0 then 0
-            else (focus + rotation)
+            else (focus - rotation)
           center =
             if i == 0 then (0,0)
             else (0, mainRingRadius) |> Geometry.rotate a
         in
           { center = center
           , angle = a
-          , focusAngle = -focus
+          , focusAngle = focus
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
@@ -383,11 +383,16 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
     mapBoundary shape =
       case shape of
         Layout.BoundaryArc {center, radius, fromAngle, toAngle, winding} ->
+          let
+            a = case winding of
+              Counterclockwise -> godAngle
+              Clockwise -> -godAngle
+          in
           BoundaryArc
             { center = center |> toScale
             , radius = radius * scaleFactor
-            , fromAngle = fromAngle + godAngle
-            , toAngle = toAngle + godAngle
+            , fromAngle = fromAngle + a
+            , toAngle = toAngle + a
             , winding = winding
             }
         Layout.BoundaryLine a b ->
