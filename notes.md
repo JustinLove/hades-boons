@@ -50,12 +50,12 @@
 - x where does hermes go?
   - x duo lines passing behind
 - x required slotted
-  - layout updates
+  - x layout updates
   - visual contrast
 - x some casts
-  - layout updates
+  - x layout updates
 - other prereqs of duos boons
-  - call
+  - call - zeus aphrodite
   - revenge
 - any-two lines
 - line formatting
