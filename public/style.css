@@ -13,8 +13,6 @@ svg.icon {
   fill: currentColor;
 }
 
-#graph { border: dashed red 1px; }
-
 polyline, path {
   pointer-events: none;
 }

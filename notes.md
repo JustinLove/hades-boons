@@ -47,12 +47,13 @@
 - x text display when small
 - x boundary arc under rotation
 - x god icon backgrounds
+- x where does hermes go?
+  - x duo lines passing behind
 - any/some casts - prereqs?, design issues
+- any-two lines
 - line formatting
   - zoom relative size?
 - slot menu scaling for window width
-- where does hermes go?
-  - x duo lines passing behind
 - keepsake display - mask wrong shape
 - keepsake derived exclusions
 - save calculated metrics
