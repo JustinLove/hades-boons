@@ -13,21 +13,6 @@ svg.icon {
   fill: currentColor;
 }
 
-polyline, path {
-  pointer-events: none;
-}
-#Hermes,
-#Aphrodite,
-#Ares,
-#Demeter,
-#Dionysus,
-#Poseidon,
-#Athena,
-#Artemis,
-#Zeus {
-  pointer-events: none;
-}
-
 #top.dark {
   background-color: black;
   color: #e5e3e8;
