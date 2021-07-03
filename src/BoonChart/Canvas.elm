@@ -61,6 +61,8 @@ boonChart attributes model =
       (List.append basicBoons metrics.duoBoons
         |> List.map .icon
         |> (::) "GUI/LockIcon/LockIcon0001.png"
+        |> (::) "GUI/Screens/BoonIconFrames/common.png"
+        |> (::) "GUI/Screens/BoonIconFrames/primary.png"
         |> List.append (metrics.gods
           |> Array.toList
           |> List.map .god
@@ -236,10 +238,15 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
     ]
     [ rect (0,0) side side
     ]
-  , if status == Excluded then
-      image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-    else
-      group [] []
+  , case status of
+      Active ->
+        image textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+      Available ->
+        image textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
+      Excluded -> 
+        image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+      Unavailable ->
+        group [] []
   , textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
   --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]
