@@ -11,9 +11,24 @@ import Dxf.Decode exposing (..)
 layout : Decoder Layout
 layout =
   succeed Layout
-    |> with (entities TextEntity placement)
+    |> with placements
     |> with connections
     |> with layoutRadius
+
+placements : Decoder (List Placement)
+placements =
+  entities TextEntity maybePlacement
+    |> map (List.filterMap identity)
+
+maybePlacement : Decoder (Maybe Placement)
+maybePlacement =
+  inLayer
+    |> andThen (\layer ->
+      if layer == "Duos" then
+        succeed Nothing
+      else
+        map Just placement
+      )
 
 placement : Decoder Placement
 placement =
@@ -156,6 +171,11 @@ winding v =
 removeGuidelines : List Connection -> List Connection
 removeGuidelines list =
   List.filter (\{group} -> group /= "Guidelines" && group /= "LayoutRadius") list
+
+removeDuos : List (Maybe Placement) -> List Placement
+removeDuos list =
+  --List.filter (\{group} -> group /= "Duos") list
+  List.filterMap identity list
 
 layoutRadius : Decoder Float
 layoutRadius =
