@@ -186,8 +186,13 @@ displayGod textures zoom adjacentDistance godMetrics =
   ]
 
 displayBoonTrait : Float -> Float -> Dict String Canvas.Texture -> Dict TraitId BoonStatus -> Boon -> Renderable
-displayBoonTrait displayDiameter size textures boonStatus boon =
+displayBoonTrait displayDiameter boonSize textures boonStatus boon =
   let
+    size =
+      case boon.iconType of
+        Direct -> boonSize
+        Slot -> boonSize * 0.8
+        Reference -> boonSize * 0.5
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
       case status of

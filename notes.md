@@ -51,8 +51,12 @@
   - x duo lines passing behind
 - x required slotted
   - layout updates
-- some casts
+  - visual contrast
+- x some casts
   - layout updates
+- other prereqs of duos boons
+  - call
+  - revenge
 - any-two lines
 - line formatting
   - zoom relative size?

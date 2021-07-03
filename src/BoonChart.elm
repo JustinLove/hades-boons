@@ -1,6 +1,7 @@
 module BoonChart exposing
   ( ArcType
   , Boon
+  , IconType(..)
   , ChartMetrics
   , Connector
   , ConnectorShape(..)
@@ -62,6 +63,7 @@ type alias Boon =
 type IconType
   = Direct
   | Slot
+  | Reference
 
 type alias Connector =
   { shape : ConnectorShape
@@ -177,7 +179,7 @@ initialMetrics traits rotation =
           , god = Traits.dataGod data
           , name = Traits.dataName data
           , color = Traits.dataLootColor data
-          , boons = layoutBasicBoonsOf (adjacentDistance/2) center a data
+          , boons = layoutBasicBoonsOf traits (adjacentDistance/2) center a data
           , connectors = layoutBasicConnectorsOf (adjacentDistance/2) center a data
           }
       )
@@ -421,9 +423,11 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
       )
       |> List.filter (\{shape} -> shape /= Tag)
 
-layoutBasicBoonsOf : Float -> Point -> Float -> GodData -> List Boon
-layoutBasicBoonsOf godRadius center godAngle data =
+layoutBasicBoonsOf : Traits -> Float -> Point -> Float -> GodData -> List Boon
+layoutBasicBoonsOf traits godRadius center godAngle data =
   let
+    allTraits = Traits.allGods traits
+      |> List.concatMap Traits.basicBoons
     layout = Traits.dataLayout data
     scaleFactor = godRadius/layout.radius
     boons = Traits.basicBoons data
@@ -471,6 +475,20 @@ layoutBasicBoonsOf godRadius center godAngle data =
                       }
                   else
                     Nothing
+              )
+            |> (\mboon ->
+              case mboon of
+                Just boon -> Just boon
+                Nothing ->
+                  Traits.findBoon traits id
+                    |> Maybe.map (\trait ->
+                        { name = trait.name
+                        , icon = trait.icon
+                        , id = id
+                        , location = p
+                        , iconType = Reference
+                        }
+                      )
               )
             |> Maybe.withDefault
               { name = id
@@ -559,6 +577,8 @@ hitBoon radius at {location, iconType} =
       Geometry.length (Geometry.sub at location) < radius
     Slot ->
       False
+    Reference ->
+      Geometry.length (Geometry.sub at location) < radius * 0.5
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
 hitGod godRadius boonRadius at godMetrics =

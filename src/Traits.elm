@@ -31,6 +31,7 @@ module Traits exposing
   , boonsOf
   , basicBoons
   , dataBoon
+  , findBoon
   , boonStatus
   , traitStatus
   , addLayout

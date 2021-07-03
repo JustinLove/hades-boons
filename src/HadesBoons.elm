@@ -10,8 +10,8 @@ import Log
 --import MeasureText
 import Traits exposing (TraitId, SlotId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
-import Traits.Generated as Generated
---import Traits.Stub as Generated
+--import Traits.Generated as Generated
+import Traits.Stub as Generated
 import View
 
 import Browser
