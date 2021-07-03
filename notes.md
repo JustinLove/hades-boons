@@ -49,7 +49,10 @@
 - x god icon backgrounds
 - x where does hermes go?
   - x duo lines passing behind
-- any/some casts - prereqs?, design issues
+- x required slotted
+  - layout updates
+- some casts
+  - layout updates
 - any-two lines
 - line formatting
   - zoom relative size?

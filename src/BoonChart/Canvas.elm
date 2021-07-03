@@ -66,6 +66,9 @@ boonChart attributes model =
           |> List.map .god
           |> List.map Traits.godIcon
           )
+        |> List.append (Traits.slots
+          |> List.map Traits.iconForSlot
+          )
         |> List.map (\path -> Canvas.loadFromImageUrl path (model.onTexture path))
       )
     }

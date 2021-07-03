@@ -19,10 +19,11 @@ module BoonChart exposing
 
 import Geometry
 import Layout exposing (GroupId, Boundary(..), Winding(..))
-import Traits exposing (TraitId, Traits, Trait, God(..), GodData, BoonType(..))
+import Traits exposing (TraitId, Traits, Trait, God(..), GodData, BoonType(..), SlotId)
 
 import Array exposing (Array)
 import Color exposing (Color)
+import Set
 
 type alias Point = (Float, Float)
 
@@ -55,7 +56,12 @@ type alias Boon =
   , icon : String
   , id : String
   , location : Point
+  , iconType : IconType
   }
+
+type IconType
+  = Direct
+  | Slot
 
 type alias Connector =
   { shape : ConnectorShape
@@ -200,6 +206,7 @@ layoutDuoBoon metrics trait =
       , icon = trait.icon
       , id = trait.trait
       , location = iconPoint
+      , iconType = Direct
       }
     , { shape = shape
       , groupA = (Traits.godName godA) ++ trait.trait
@@ -420,24 +427,76 @@ layoutBasicBoonsOf godRadius center godAngle data =
     layout = Traits.dataLayout data
     scaleFactor = godRadius/layout.radius
     boons = Traits.basicBoons data
+    missing = Set.diff
+      (List.map .trait boons |> Set.fromList)
+      (List.map .id layout.placements |> Set.fromList)
+    {-_ =
+      if Set.isEmpty missing then
+        missing
+      else
+        Debug.log "missing trait locations" missing
+        -}
     angle = tau / (toFloat (List.length boons))
   in
-    boons
-      |> List.indexedMap (\i trait ->
-        let
-          p = (case Layout.getPlacement layout trait.trait of
-            Just b -> Geometry.scale scaleFactor b
-            Nothing -> (0, 0.05)
-              |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
-            )
-            |> Geometry.rotate godAngle
-            |> Geometry.add center
-        in
-          { name = trait.name
-          , icon = trait.icon
-          , id = trait.trait
-          , location = p
-          }
+    List.append
+      (layout.placements
+        |> List.map (\{id, point} ->
+          let
+            p = point
+              |> Geometry.scale scaleFactor
+              |> Geometry.rotate godAngle
+              |> Geometry.add center
+          in
+          Traits.dataBoon data id
+            |> Maybe.map (\trait ->
+                { name = trait.name
+                , icon = trait.icon
+                , id = id
+                , location = p
+                , iconType = Direct
+                }
+              )
+            |> (\mboon ->
+              case mboon of
+                Just boon -> Just boon
+                Nothing ->
+                  if String.startsWith "Any" id then
+                    let slot = String.dropLeft 3 id in
+                    Just 
+                      { name = Traits.nameForSlot slot
+                      , icon = Traits.iconForSlot slot
+                      , id = id
+                      , location = p
+                      , iconType = Slot
+                      }
+                  else
+                    Nothing
+              )
+            |> Maybe.withDefault
+              { name = id
+              , icon = "GUI/LockIcon/LockIcon0001.png"
+              , id = id
+              , location = p
+              , iconType = Slot
+              }
+        )
+      )
+      (if Set.isEmpty missing then
+        []
+      else
+        boons
+          |> List.filter (\trait -> Set.member trait.trait missing)
+          |> List.indexedMap (\i trait ->
+              { name = trait.name
+              , icon = trait.icon
+              , id = trait.trait
+              , location = (0, 0.05)
+                |> Geometry.rotate (((toFloat i) * -angle) + -angle/2)
+                |> Geometry.rotate godAngle
+                |> Geometry.add center
+              , iconType = Direct
+              }
+          )
       )
 
 colorForGod : ChartMetrics -> God -> Color
@@ -494,8 +553,12 @@ hitBoons radius at boons =
     |> Maybe.map .id
 
 hitBoon : Float -> Point -> Boon -> Bool
-hitBoon radius at {location} =
-  Geometry.length (Geometry.sub at location) < radius
+hitBoon radius at {location, iconType} =
+  case iconType of
+    Direct ->
+      Geometry.length (Geometry.sub at location) < radius
+    Slot ->
+      False
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
 hitGod godRadius boonRadius at godMetrics =

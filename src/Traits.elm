@@ -25,8 +25,12 @@ module Traits exposing
   , miscBoons
   , boonsForSlot
   , isSlot
+  , slots
+  , iconForSlot
+  , nameForSlot
   , boonsOf
   , basicBoons
+  , dataBoon
   , boonStatus
   , traitStatus
   , addLayout
@@ -226,6 +230,13 @@ basicBoons data =
     |> godTraits
     |> List.filter isBasicBoon
 
+dataBoon : GodData -> TraitId -> Maybe Trait
+dataBoon data id =
+  data
+    |> godTraits
+    |> List.filter (hasId id)
+    |> List.head
+
 boonsForSlot : SlotId -> Traits -> List Trait
 boonsForSlot slot (Traits {gods}) =
   gods
@@ -236,6 +247,35 @@ boonsForSlot slot (Traits {gods}) =
 isSlot : SlotId -> Trait -> Bool
 isSlot target {slot} =
   slot == Just target
+
+slots : List SlotId
+slots =
+  [ "Melee"
+  , "Secondary"
+  , "Ranged"
+  , "Rush"
+  , "Shout"
+  ]
+
+iconForSlot : SlotId -> String
+iconForSlot slot =
+  case slot of
+    "Melee" -> "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png"
+    "Secondary" -> "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png"
+    "Ranged" -> "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png"
+    "Rush" -> "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png"
+    "Shout" -> "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png"
+    _ -> "GUI/LockIcon/LockIcon0001.png"
+
+nameForSlot : SlotId -> String
+nameForSlot slot =
+  case slot of
+    "Melee" -> "Any Attack"
+    "Secondary" -> "Any Secondary"
+    "Ranged" -> "Any Ranged"
+    "Rush" -> "Any Dash"
+    "Shout" -> "Any Call"
+    _ -> "Unknown Slot"
 
 boonsOf : God -> Traits -> List Trait
 boonsOf target (Traits {gods}) =
@@ -476,13 +516,12 @@ boonStatus : Set TraitId -> Set SlotId -> Set TraitId -> Trait -> BoonStatus
 boonStatus activeTraits activeSlots excludedTraits trait =
   if Set.member trait.trait activeTraits then
     Active
+  else if Set.member trait.trait excludedTraits then
+    Excluded
+  else if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
+    Available
   else
-    if Set.member trait.trait excludedTraits then
-      Excluded
-    else if boonHasRequiredSlottedTrait activeSlots trait && boonMeetsRequirements activeTraits trait then
-      Available
-    else
-      Unavailable
+    Unavailable
 
 slotFilled : Set SlotId -> Trait -> Bool
 slotFilled activeSlots trait =
@@ -543,9 +582,22 @@ traitStatus activeTraits metaUpgrade traits =
   let
     activeSlots = calculateActiveSlots activeTraits traits
     excludedTraits = calculateExcludedTraits activeTraits activeSlots metaUpgrade traits
+    statusOfTraits =
+      allTraits traits
+        |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots excludedTraits trait))
+    statusOfSlots =
+      slots
+        |> List.map (\slot ->
+            let id = "Any"++slot in
+            ( id
+            , if Set.member slot activeSlots then
+                Active
+              else
+                Available
+            )
+          )
   in
-  allTraits traits
-    |> List.map (\trait -> (trait.trait, boonStatus activeTraits activeSlots excludedTraits trait))
+  (List.append statusOfTraits statusOfSlots)
     |> Dict.fromList
 
 addLayout : God -> Layout -> Traits -> Traits

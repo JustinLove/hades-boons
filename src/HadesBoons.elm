@@ -331,10 +331,14 @@ updateDerivedStatus model =
         Set.remove "HadesShoutTrait" model.activeTraits
     gods = Traits.allGods model.traits
     activeSlots = Traits.calculateActiveSlots activeTraits model.traits
+    slotTraits = Set.map (\slot -> "Any"++slot) activeSlots
+
+    activeSlotTraits = Set.union activeTraits slotTraits
+      |> Debug.log "slottraits"
   in
   { model
   | activeTraits = activeTraits
-  , activeBasicGroups = Traits.calculateActiveLayoutGroups activeTraits gods
+  , activeBasicGroups = Traits.calculateActiveLayoutGroups activeSlotTraits gods
   , activeDuoGroups = Traits.calculateActiveDuoSets gods activeTraits (Traits.duoBoons model.traits)
   , activeSlots = activeSlots
   , boonStatus = Traits.traitStatus activeTraits model.metaUpgrade model.traits
