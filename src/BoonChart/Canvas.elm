@@ -195,6 +195,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         Direct -> boonSize
         Slot -> boonSize * 0.8
         Reference -> boonSize * 0.5
+        Keepsake -> boonSize
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     color =
       case status of
@@ -238,15 +239,18 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
     ]
     [ rect (0,0) side side
     ]
-  , case status of
-      Active ->
-        image textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
-      Available ->
-        image textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
-      Excluded -> 
-        image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-      Unavailable ->
-        group [] []
+  , if boon.iconType == Keepsake then
+      group [] []
+    else
+      case status of
+        Active ->
+          image textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+        Available ->
+          image textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
+        Excluded ->
+          image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+        Unavailable ->
+          group [] []
   , textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
   --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]

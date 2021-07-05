@@ -64,6 +64,7 @@ type IconType
   = Direct
   | Slot
   | Reference
+  | Keepsake
 
 type alias Connector =
   { shape : ConnectorShape
@@ -457,7 +458,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 , icon = trait.icon
                 , id = id
                 , location = p
-                , iconType = Direct
+                , iconType = if trait.slot == Just "Keepsake" then Keepsake else Direct
                 }
               )
             |> (\mboon ->
@@ -579,6 +580,8 @@ hitBoon radius at {location, iconType} =
       False
     Reference ->
       Geometry.length (Geometry.sub at location) < radius * 0.5
+    Keepsake ->
+      Geometry.length (Geometry.sub at location) < radius
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
 hitGod godRadius boonRadius at godMetrics =
