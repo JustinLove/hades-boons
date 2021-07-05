@@ -57,7 +57,7 @@
 - x some casts
   - x layout updates
 - x keepsake derived exclusions
-- any-two lines
+- x any-two lines
 - live update centering
 - other prereqs of duos boons
   - call - zeus aphrodite

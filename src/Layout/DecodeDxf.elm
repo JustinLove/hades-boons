@@ -51,7 +51,7 @@ connection : Decoder ConnectionType ->  Decoder Connection
 connection decoder =
   succeed Connection
     |> with inLayer
-    |> with (maybe idFromTag)
+    |> with idFromTag
     |> with decoder
 
 arc : Decoder ConnectionType
@@ -138,15 +138,18 @@ idFromText : Decoder String
 idFromText =
   tag 1 primaryText
 
-idFromTag : Decoder String
+idFromTag : Decoder (List String)
 idFromTag =
-  andThen extractId (tag 1000 text)
+  oneOf
+    [ (tag 1000 text) |> andThen extractId
+    , succeed []
+    ]
 
-extractId : String -> Decoder String
+extractId : String -> Decoder (List String)
 extractId s =
   case String.split(":") s of
-    "link" :: link :: [] -> succeed link
-    _ -> fail "link not tagged"
+    "link" :: link :: [] -> succeed (String.split(",") link)
+    _ -> succeed []
 
 pointBase : Int -> Decoder (Float, Float)
 pointBase base =

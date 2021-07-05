@@ -67,7 +67,7 @@ type ConnectionType
 
 type alias Connection =
   { group : GroupId
-  , link : Maybe TraitId
+  , link : List TraitId
   , shape : ConnectionType
   }
 
@@ -92,32 +92,19 @@ getPlacement layout trait =
 calculateActiveGroups : Set TraitId -> Layout -> Set GroupId
 calculateActiveGroups activeTraits layout =
   let
+    foldActive {link, group} active =
+      case link of
+        [] ->
+          active
+        _ ->
+          if List.all (\id -> Set.member id activeTraits) link then
+            Set.insert group active
+          else
+            active
     fromTraits = 
       layout.connections
-        |> List.foldl
-          (\{link, group} active ->
-            case link of
-              Just id ->
-                if Set.member id activeTraits then
-                  Set.insert group active
-                else
-                  active
-              Nothing ->
-                active
-          )
-          Set.empty
+        |> List.foldl foldActive Set.empty
   in
     layout.connections
-      |> List.foldl
-        (\{link, group} active ->
-          case link of
-            Just id ->
-              if Set.member id active then
-                Set.insert group active
-              else
-                active
-            Nothing ->
-              active
-        )
-        fromTraits
+      |> List.foldl foldActive fromTraits
 

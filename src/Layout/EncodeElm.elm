@@ -29,7 +29,7 @@ connection : Connection -> Expression
 connection c =
   record
     [ ("group", c.group |> string)
-    , ("link", c.link |> maybe string)
+    , ("link", c.link |> List.map string |> list)
     , ("shape", c.shape |> connectionType)
     ]
 

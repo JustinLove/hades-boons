@@ -274,19 +274,19 @@ displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
     (thickness, col) =
       if Set.member group activeGroups then
         case link of
-          Just id ->
-            if Dict.get id boonStatus == Just Active || Set.member id activeGroups then
+          [] ->
+            (0.004, bright)
+          _ ->
+            if List.all (\id -> Dict.get id boonStatus == Just Active || Set.member id activeGroups) link then
               (0.004, bright)
             else
               (0.001, dark)
-          Nothing ->
-            (0.004, bright)
       else
         case link of
-          Just id ->
-            (0.001, dark)
-          Nothing ->
+          [] ->
             (0.002, dark)
+          _ ->
+            (0.001, dark)
     lineStyle =
       [ lineWidth thickness
       , stroke col

@@ -68,7 +68,7 @@ type IconType
 
 type alias Connector =
   { shape : ConnectorShape
-  , link : Maybe TraitId
+  , link : List TraitId
   , group : String
   , color : Color
   }

@@ -12,6 +12,7 @@ type Error
   | WrongEntityType EntityType EntityType
   | NotAnEntity
   | ParseError (List (Parser.Advanced.DeadEnd Parser.Context Parser.Problem))
+  | NoneOf
 
 errorToString : Error -> String
 errorToString err =
@@ -22,6 +23,7 @@ errorToString err =
     WrongEntityType actual expected -> "Wrong entity type encountered"
     NotAnEntity -> "Was expecting an entity value and got something else"
     ParseError parseError -> Parser.deadEndsToString parseError
+    NoneOf -> "No option to oneOf succeeded"
 
 type alias Decoder a = List CodePair -> Result Error a
 
@@ -114,6 +116,16 @@ maybe decoder list =
   case decoder list of
     Ok v -> Ok (Just v)
     Err e -> Ok Nothing
+
+oneOf : List (Decoder a) -> Decoder a
+oneOf decoders list =
+  case decoders of
+    first :: rest ->
+      case first list of
+        Ok v -> Ok v
+        Err _ -> oneOf rest list
+    _ ->
+      Err NoneOf
 
 with : Decoder a -> Decoder (a -> b)-> Decoder b
 with = map2 (|>)
