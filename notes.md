@@ -52,6 +52,7 @@
 - x required slotted
   - x layout updates
   - visual contrast
+- keepsake frame in chart
 - x some casts
   - x layout updates
 - other prereqs of duos boons

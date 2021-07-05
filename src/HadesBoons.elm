@@ -334,7 +334,6 @@ updateDerivedStatus model =
     slotTraits = Set.map (\slot -> "Any"++slot) activeSlots
 
     activeSlotTraits = Set.union activeTraits slotTraits
-      |> Debug.log "slottraits"
   in
   { model
   | activeTraits = activeTraits
