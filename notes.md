@@ -64,6 +64,7 @@
   - revenge
 - line formatting
   - zoom relative size?
+- dynamic duo display position
 - slot menu scaling for window width
 - save calculated metrics
 - rotation outside metrics?

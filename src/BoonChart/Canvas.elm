@@ -289,6 +289,7 @@ displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
             (0.001, dark)
     lineStyle =
       [ lineWidth thickness
+      , lineCap RoundCap
       , stroke col
       ]
   in
