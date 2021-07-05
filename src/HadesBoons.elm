@@ -324,11 +324,9 @@ selectBoon id model =
 updateDerivedStatus : Model -> Model
 updateDerivedStatus model =
   let
-    activeTraits =
-      if Set.member "HadesShoutKeepsake" model.activeTraits then
-        Set.insert "HadesShoutTrait" model.activeTraits
-      else
-        Set.remove "HadesShoutTrait" model.activeTraits
+    activeTraits = model.activeTraits
+      |> updateHadesCall
+      |> updatePoseidonDrop
     gods = Traits.allGods model.traits
     activeSlots = Traits.calculateActiveSlots activeTraits model.traits
     slotTraits = Set.map (\slot -> "Any"++slot) activeSlots
@@ -342,6 +340,20 @@ updateDerivedStatus model =
   , activeSlots = activeSlots
   , boonStatus = Traits.traitStatus activeTraits model.metaUpgrade model.traits
   }
+
+updateHadesCall : Set TraitId -> Set TraitId
+updateHadesCall activeTraits =
+  if Set.member "HadesShoutKeepsake" activeTraits then
+    Set.insert "HadesShoutTrait" activeTraits
+  else
+    Set.remove "HadesShoutTrait" activeTraits
+
+updatePoseidonDrop : Set TraitId -> Set TraitId
+updatePoseidonDrop activeTraits =
+  if Set.member "RandomMinorLootDrop" activeTraits then
+    Set.insert "PoseidonPickedUpMinorLootTrait" activeTraits
+  else
+    Set.remove "PoseidonPickedUpMinorLootTrait" activeTraits
 
 updateChartMetrics : Model -> Model
 updateChartMetrics model =
