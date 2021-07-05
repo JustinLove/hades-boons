@@ -58,7 +58,7 @@
   - x layout updates
 - x keepsake derived exclusions
 - x any-two lines
-- live update centering
+- x live update centering
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge

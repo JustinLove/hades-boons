@@ -169,8 +169,15 @@ update msg model =
         |> defaultView
       , Cmd.none)
     WindowReSize (width, height) ->
-      ( {model | windowWidth = width, windowHeight = height}
-      , Cmd.none)
+      let
+        oldCenter = screenToChart model (View.chartCenter model.windowWidth model.windowHeight)
+          |> Geometry.add (-0.5, -0.5)
+          |> (\(x,y) -> (x, -y))
+      in
+      ( { model | windowWidth = width , windowHeight = height }
+        |> focusView oldCenter (1/model.zoom) model.rotation
+      , Cmd.none
+      )
     Rotate dt ->
       ( focusFollow Poseidon { model | rotation = Geometry.modAngle (model.rotation + (dt/10000)) }
       , Cmd.none
@@ -306,7 +313,7 @@ hitBoon model point =
 screenToChart : Viewable model -> Point -> Point
 screenToChart model point =
   point
-    |> Geometry.add (Geometry.scale -1 model.offset)
+    |> Geometry.minus model.offset
     |> Geometry.scale (1/(View.chartDiameter model.windowWidth model.windowHeight))
     |> Geometry.scale (1/model.zoom)
 

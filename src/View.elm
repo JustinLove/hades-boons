@@ -80,10 +80,11 @@ view model =
       , inFront displayReset
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
-      --, inFront (displayWindowPoints
-        --[ model.offset
-        --, chartCenter model.windowWidth model.windowHeight
-        --])
+      {-, inFront (displayWindowPoints
+        [ model.offset
+        , chartCenter model.windowWidth model.windowHeight
+        ])
+        -}
       ]
       [ {-BoonChart.Svg.boonChart
         [ Html.Attributes.style "width" "50vw"

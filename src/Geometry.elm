@@ -8,6 +8,10 @@ sub : Point -> Point -> Point
 sub (ax, ay) (bx, by) =
   (ax - bx, ay - by)
 
+minus : Point -> Point -> Point
+minus (ax, ay) (bx, by) =
+  (bx - ax, by - ay)
+
 add : Point -> Point -> Point
 add (ax, ay) (bx, by) =
   (ax + bx, ay + by)
