@@ -51,19 +51,19 @@
   - x duo lines passing behind
 - x required slotted
   - x layout updates
-  - visual contrast
-- keepsake frame in chart
+  - x visual contrast
+- x keepsake frame in chart
+- x keepsake display - mask wrong shape
 - x some casts
   - x layout updates
+- x keepsake derived exclusions
+- any-two lines
+- live update centering
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge
-- any-two lines
 - line formatting
   - zoom relative size?
 - slot menu scaling for window width
-- keepsake display - mask wrong shape
-- keepsake derived exclusions
 - save calculated metrics
 - rotation outside metrics?
-- live update centering

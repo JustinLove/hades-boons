@@ -229,28 +229,32 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         group [] []
     side = (0.47 * (sqrt 2))
   in
-  [ image textures 0.9 boon.icon
-  , shapes
-    [ fill (Color.rgba 0 0 0 (1.0 - brightness))
-    , transform
-      [ translate (-0.47, 0.0)
-      , rotate (tau/8)
-      ]
-    ]
-    [ rect (0,0) side side
-    ]
-  , if boon.iconType == Keepsake then
-      group [] []
+  [ if boon.iconType == Keepsake then
+      group []
+        [ image [Canvas.alpha brightness] textures 0.9 boon.icon
+        ]
     else
-      case status of
-        Active ->
-          image textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
-        Available ->
-          image textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
-        Excluded ->
-          image textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-        Unavailable ->
-          group [] []
+      group []
+        [ image [] textures 0.9 boon.icon
+        , shapes
+          [ fill (Color.rgba 0 0 0 (1.0 - brightness))
+          , transform
+            [ translate (-0.47, 0.0)
+            , rotate (tau/8)
+            ]
+          ]
+          [ rect (0,0) side side
+          ]
+        , case status of
+            Active ->
+              image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+            Available ->
+              image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
+            Excluded ->
+              image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+            Unavailable ->
+              group [] []
+        ]
   , textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
   --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]
@@ -342,17 +346,19 @@ displayBoonConnector boonStatus activeGroups {shape, link, group, color} =
     Tag ->
       Canvas.group [] []
 
-image : Dict String Canvas.Texture -> Float -> String -> Renderable
-image textures size key =
+image : List Setting -> Dict String Canvas.Texture -> Float -> String -> Renderable
+image settings textures size key =
   Dict.get key textures
     |> Maybe.map (\tex ->
       let {width, height} = Canvas.dimensions tex in
       texture
-        [ transform
-          [ scale (size/(max width height))
-          , translate (-width/2, height/2)
+        (List.append settings
+          [ transform
+            [ scale (size/(max width height))
+            , translate (-width/2, height/2)
+            ]
           ]
-        ]
+        )
         (0,0)
         tex
       )
