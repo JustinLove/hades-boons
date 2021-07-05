@@ -261,11 +261,11 @@ slots =
 iconForSlot : SlotId -> String
 iconForSlot slot =
   case slot of
-    "Melee" -> "GUI/HUD/PrimaryBoons/SlotIcon_Attack.png"
-    "Secondary" -> "GUI/HUD/PrimaryBoons/SlotIcon_Secondary.png"
-    "Ranged" -> "GUI/HUD/PrimaryBoons/SlotIcon_Ranged.png"
-    "Rush" -> "GUI/HUD/PrimaryBoons/SlotIcon_Dash.png"
-    "Shout" -> "GUI/HUD/PrimaryBoons/SlotIcon_Wrath.png"
+    "Melee" -> "GUI/HUD/PrimaryBoons/SlotIcon_Attack_White.png"
+    "Secondary" -> "GUI/HUD/PrimaryBoons/SlotIcon_Secondary_White.png"
+    "Ranged" -> "GUI/HUD/PrimaryBoons/SlotIcon_Ranged_White.png"
+    "Rush" -> "GUI/HUD/PrimaryBoons/SlotIcon_Dash_White.png"
+    "Shout" -> "GUI/HUD/PrimaryBoons/SlotIcon_Wrath_White.png"
     _ -> "GUI/LockIcon/LockIcon0001.png"
 
 nameForSlot : SlotId -> String
