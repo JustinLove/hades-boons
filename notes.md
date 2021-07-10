@@ -58,6 +58,7 @@
   https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
 - x overview icon - bat cage?
 - x boon levels of detail
+- initial flash of content
 - dynamic duo display position
 - other prereqs of duos boons
   - call - zeus aphrodite

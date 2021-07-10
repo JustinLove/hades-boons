@@ -197,12 +197,12 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         Reference -> boonSize * 0.5
         Keepsake -> boonSize
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
-    color =
+    textColor =
       case status of
         Active -> Color.white
-        Available -> Color.darkGrey
+        Available -> Color.white
+        Unavailable -> Color.darkGrey
         Excluded -> Color.charcoal
-        Unavailable -> Color.charcoal
     brightness =
       case status of
         Active -> 1.0
@@ -225,7 +225,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       let
         fontSize = size * displayDiameter * sz
         f = (fontSize - 6.0) / 8.0 |> atMost 1.0
-        c = darken f color
+        c = darken f textColor
       in
       if fontSize > 6 then
         [ text
@@ -288,7 +288,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         ]
     else
       group [] []
-  , textLine boon.id 0.1 (0, -0.65)
+  --, textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
   --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]
   ]
