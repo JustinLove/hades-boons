@@ -53,6 +53,7 @@ type alias Model =
   , metaUpgrade : Maybe String
   , boonStatus : Dict TraitId BoonStatus
   , currentPrimaryMenu : Maybe SlotId
+  , artAttribution : Bool
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -87,6 +88,7 @@ initialModel flags location key =
   , metaUpgrade = Just "AmmoMetaUpgrade"
   , boonStatus = Dict.empty
   , currentPrimaryMenu = Nothing
+  , artAttribution = False
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -303,6 +305,8 @@ update msg model =
         |> updateDerivedStatus
       , Cmd.none
       )
+    UI (View.Supergiant hover) ->
+      ( { model | artAttribution = hover }, Cmd.none )
 
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =

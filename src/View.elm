@@ -11,6 +11,8 @@ import Canvas.Texture as Canvas
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events as Events
+import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
@@ -37,6 +39,7 @@ type Msg
   | SelectSoul TraitId
   | SelectWeapon TraitId
   | Reset
+  | Supergiant Bool
 
 type Frame
   = Primary
@@ -74,7 +77,7 @@ view model =
       [ height fill
       , width fill
       , clip
-      , inFront displayFooter
+      , inFront (displayFooter model.artAttribution)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront displayReset
@@ -136,7 +139,7 @@ displayGodSelect model =
         |> List.map Traits.dataGod
         |> List.map displayGod
       )
-      [ displayGodButton ViewAll "GUI/Screens/BoonIcons/godmode.png" "All"]
+      [ displayGodButton ViewAll "favicon.ico" "All"]
     )
 
 displayGod : God -> Element Msg
@@ -539,9 +542,9 @@ displayReset =
     }
 
 
-displayFooter : Element msg
-displayFooter =
-  row [ Region.footer, spacing 10, alignBottom, padding 8 ]
+displayFooter : Bool -> Element Msg
+displayFooter artAttribution =
+  row [ Region.footer, spacing 10, alignBottom, padding 8, Font.size footerSize, width fill ]
     {-[ link []
       { url = "https://github.com/JustinLove/"
       , label = row [] [ icon "github", text "hades-boons" ]
@@ -555,6 +558,42 @@ displayFooter =
       { url = "https://twitch.tv/wondible"
       , label = row [] [ icon "twitch", text "wondible" ]
       }
+    , row
+      [ Events.onMouseEnter (Supergiant True)
+      , Events.onMouseLeave (Supergiant False)
+      , above (if artAttribution then supergiantAttribution else none)
+      , width fill
+      ]
+      [ text "Art by "
+      , link
+        [ Events.onFocus (Supergiant True)
+        , Events.onLoseFocus (Supergiant False)
+        ]
+        { url = "https://www.supergiantgames.com/"
+        , label = text "Supergiant Games"
+        }
+      ]
+    ]
+
+supergiantAttribution : Element msg
+supergiantAttribution =
+  column [ padding (sizeStep -1 |> round) ]
+    [ paragraph []
+      [ text "God and boon icons and frames are from "
+      , link []
+        { url = "https://www.supergiantgames.com/"
+        , label = text "Supergiant Games"
+        }
+      , text " "
+      , link []
+        { url = "https://www.supergiantgames.com/games/hades"
+        , label = text "Hades"
+        }
+      , text "."
+      ]
+    , paragraph []
+      [ text "This site is not developed or approved by Supergiant games."
+      ]
     ]
 
 icon : String -> Element msg
@@ -562,6 +601,10 @@ icon name =
   svg [ Svg.Attributes.class ("icon icon-"++name) ]
     [ use [ xlinkHref ("symbol-defs.svg#icon-"++name) ] [] ]
   |> html
+
+footerSize = sizeStep -1 |> round
+
+sizeStep = modular 16 1.25
 
 displayWindowPoints : List Point -> Element msg
 displayWindowPoints points =

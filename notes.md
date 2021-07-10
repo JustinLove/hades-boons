@@ -15,13 +15,7 @@
   - x import points
   - x activating areas/outlines
   - x diagrams.net, use lots of waypoints to create connted lines
-  - boundary arcs not working under rotation
-- design issues
-  - any aid
-  - poseidon - area asymetry
-  - ares - maybe flip pomel?
-  - incompatible boons?
-  - souls
+  - x boundary arcs not working under rotation
 - x hermes angle
 - x full view
 - x footer misaligned
@@ -59,12 +53,23 @@
 - x keepsake derived exclusions
 - x any-two lines
 - x live update centering
+- art credit
+  https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
+  https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
+- overview icon - bat cage?
+- dynamic duo display position
+- boon levels of detail
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge
 - line formatting
   - zoom relative size?
-- dynamic duo display position
 - slot menu scaling for window width
+- design issues
+  - any aid
+  - poseidon - area asymetry
+  - ares - maybe flip pomel?
+  - incompatible boons?
+  - souls
 - save calculated metrics
 - rotation outside metrics?
