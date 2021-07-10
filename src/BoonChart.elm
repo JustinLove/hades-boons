@@ -58,6 +58,7 @@ type alias Boon =
   , id : String
   , location : Point
   , iconType : IconType
+  , color : Color
   }
 
 type IconType
@@ -210,6 +211,7 @@ layoutDuoBoon metrics trait =
       , id = trait.trait
       , location = iconPoint
       , iconType = Direct
+      , color = Color.rgb255 184 239 21
       }
     , { shape = shape
       , groupA = (Traits.godName godA) ++ trait.trait
@@ -459,6 +461,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 , id = id
                 , location = p
                 , iconType = if trait.slot == Just "Keepsake" then Keepsake else Direct
+                , color = Traits.dataLootColor data
                 }
               )
             |> (\mboon ->
@@ -473,6 +476,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                       , id = id
                       , location = p
                       , iconType = Slot
+                      , color = Traits.dataLootColor data
                       }
                   else
                     Nothing
@@ -488,6 +492,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                         , id = id
                         , location = p
                         , iconType = Reference
+                        , color = Traits.dataLootColor data
                         }
                       )
               )
@@ -497,6 +502,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
               , id = id
               , location = p
               , iconType = Slot
+              , color = Color.rgb255 23 25 21
               }
         )
       )
@@ -514,6 +520,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 |> Geometry.rotate godAngle
                 |> Geometry.add center
               , iconType = Direct
+              , color = Traits.dataLootColor data
               }
           )
       )

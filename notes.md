@@ -57,8 +57,8 @@
   https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
   https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
 - x overview icon - bat cage?
+- x boon levels of detail
 - dynamic duo display position
-- boon levels of detail
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge

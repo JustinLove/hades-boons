@@ -93,7 +93,7 @@ initialModel flags location key =
   , rotation = rotation
   , drag = Released
   , offset = (0,0)
-  , zoom = 0.15
+  , zoom = 1
   }
 
 init : () -> Url -> Navigation.Key -> (Model, Cmd Msg)
@@ -208,13 +208,15 @@ update msg model =
     UI (View.OnWheel point scroll) ->
       let
         tweak = if scroll > 0 then 0.8 else 1.2
+        newZoom = model.zoom * tweak |> clamp 0.8 32
+        clampedTweak = newZoom / model.zoom
         diff = point |> Geometry.sub model.offset
       in
       ( { model
-        | zoom = model.zoom * tweak
+        | zoom = newZoom
         , offset = diff
           |> Geometry.sub model.offset
-          |> Geometry.add (Geometry.scale tweak diff)
+          |> Geometry.add (Geometry.scale clampedTweak diff)
         }
       , Cmd.none
       )

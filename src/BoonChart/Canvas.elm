@@ -207,8 +207,20 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       case status of
         Active -> 1.0
         Available -> 0.5
-        Excluded -> 0.1
         Unavailable -> 0.1
+        Excluded -> 0.1
+    overlayColor =
+      case status of
+        Active -> Color.rgba 1 1 1 0.7
+        Available -> Color.rgba 0 0 0 0
+        Unavailable -> Color.rgba 0 0 0 0.5
+        Excluded -> Color.rgba 0 0 0 0.8
+    smallColor =
+      case status of
+        Active -> Color.white
+        Available -> boon.color
+        Unavailable -> boon.color |> darken 0.5
+        Excluded -> Color.charcoal
     textLine = \tx sz p ->
       let
         fontSize = size * displayDiameter * sz
@@ -228,33 +240,54 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       else
         group [] []
     side = (0.47 * (sqrt 2))
+    displaySize = size * displayDiameter
+      --|> Debug.log "displaysize"
   in
-  [ if boon.iconType == Keepsake then
-      group []
-        [ image [Canvas.alpha brightness] textures 0.9 boon.icon
+  [ if 15.0 < displaySize then
+      if boon.iconType == Keepsake then
+        group []
+          [ image [Canvas.alpha brightness] textures 0.9 boon.icon
+          ]
+      else
+        group []
+          [ image [] textures 0.9 boon.icon
+          , if overlayColor /= (Color.rgba 0 0 0 0) then
+              shapes
+                [ fill overlayColor
+                , transform
+                  [ translate (-0.47, 0.0)
+                  , rotate (tau/8)
+                  ]
+                ]
+                [ rect (0,0) side side
+                ]
+            else
+              group [] []
+          , case status of
+              Active ->
+                image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+              Available ->
+                image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
+              Excluded ->
+                image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+              Unavailable ->
+                group [] []
+          ]
+    else
+      group [] []
+  , if displaySize < 25.0 then
+      shapes
+        [ fill smallColor
+        , transform
+          [ translate (-0.47, 0.0)
+          , rotate (tau/8)
+          ]
+        , Canvas.alpha (1.0 - (((displaySize - 15.0) / 10.0) |> clamp 0 1))
+        ]
+        [ rect (0,0) side side
         ]
     else
-      group []
-        [ image [] textures 0.9 boon.icon
-        , shapes
-          [ fill (Color.rgba 0 0 0 (1.0 - brightness))
-          , transform
-            [ translate (-0.47, 0.0)
-            , rotate (tau/8)
-            ]
-          ]
-          [ rect (0,0) side side
-          ]
-        , case status of
-            Active ->
-              image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
-            Available ->
-              image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
-            Excluded ->
-              image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-            Unavailable ->
-              group [] []
-        ]
+      group [] []
   , textLine boon.id 0.1 (0, -0.65)
   , textLine boon.name 0.2 (0, -0.5)
   --, shapes [ fill (Color.white) ] [ circle (0,0) 0.05 ]

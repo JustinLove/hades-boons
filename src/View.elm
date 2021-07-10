@@ -606,8 +606,8 @@ resetSize = sizeStep 2 |> round
 
 sizeStep = modular 16 1.25
 
-buttonBackColor = rgb255 23 25 21
-buttonBorderColor = rgb255 100 100 63
+buttonBackColor = rgb255 59 64 54
+buttonBorderColor = rgb255 255 255 160
 
 displayWindowPoints : List Point -> Element msg
 displayWindowPoints points =
