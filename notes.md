@@ -53,10 +53,10 @@
 - x keepsake derived exclusions
 - x any-two lines
 - x live update centering
-- art credit
+- x art credit
   https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
   https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
-- overview icon - bat cage?
+- x overview icon - bat cage?
 - dynamic duo display position
 - boon levels of detail
 - other prereqs of duos boons

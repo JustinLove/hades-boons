@@ -13,25 +13,15 @@ svg.icon {
   fill: currentColor;
 }
 
-#top.dark {
+#top {
   background-color: black;
-  color: #e5e3e8;
+  color: #dbdbdb;
 }
-.dark .icon-github { color: #888; }
-.dark .icon-twitter { color: #55acee; }
-.dark .icon-twitch { color: #6441A4; }
-.dark a:link, .dark a:visited { color: #6441a4; }
-.dark a:hover, .dark a:active { color: rgb(218, 216, 222); }
-
-#top.light {
-  background-color: #fff;
-  color: #232127;
-}
-.light .icon-github { color: #888; }
-.light .icon-twitter { color: #55acee; }
-.light .icon-twitch { color: #e2dbf0; }
-.light a:link, .light a:visited { color: #e2dbf0; }
-.light a:hover, .light a:active { color: rgb(218, 216, 222); }
+.icon-github { color: #888; }
+.icon-twitter { color: #55acee; }
+.icon-twitch { color: #6441A4; }
+a:link, a:visited { color: #b6a242; }
+a:hover, a:active { color: rgb(218, 216, 222); }
 
 .boon-column,
 .boon-column .nb.bh,

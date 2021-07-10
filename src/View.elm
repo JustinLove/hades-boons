@@ -532,13 +532,17 @@ displayReset =
     ]
     { onPress = Just Reset
     , label =
-      (image
-        [ width (px 80)
-        ]
-        { src = "GUI/Screens/LevelUpRespec.png"
-        , description = "Reset"
-        }
-      )
+        row
+          [ Font.size resetSize
+          , centerY
+          , padding 8
+          , Background.color buttonBackColor
+          , Border.color buttonBorderColor
+          , Border.width 2
+          , Border.rounded 2
+          , moveUp 2
+          ]
+          [ icon "spinner11", text " Reset" ]
     }
 
 
@@ -570,7 +574,7 @@ displayFooter artAttribution =
         , Events.onLoseFocus (Supergiant False)
         ]
         { url = "https://www.supergiantgames.com/"
-        , label = text "Supergiant Games"
+        , label = row [ Font.color (rgb 202 0 0) ] [ icon "star-full", text "Supergiant Games" ]
         }
       ]
     ]
@@ -581,13 +585,8 @@ supergiantAttribution =
     [ paragraph []
       [ text "God and boon icons and frames are from "
       , link []
-        { url = "https://www.supergiantgames.com/"
-        , label = text "Supergiant Games"
-        }
-      , text " "
-      , link []
         { url = "https://www.supergiantgames.com/games/hades"
-        , label = text "Hades"
+        , label = text "Supergiant Games Hades"
         }
       , text "."
       ]
@@ -603,8 +602,12 @@ icon name =
   |> html
 
 footerSize = sizeStep -1 |> round
+resetSize = sizeStep 2 |> round
 
 sizeStep = modular 16 1.25
+
+buttonBackColor = rgb255 23 25 21
+buttonBorderColor = rgb255 100 100 63
 
 displayWindowPoints : List Point -> Element msg
 displayWindowPoints points =
