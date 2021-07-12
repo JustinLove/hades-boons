@@ -7,7 +7,6 @@ import Geometry exposing (Point, tau)
 import Layout exposing (Layout, GroupId)
 import Layout.DecodeDxf as DecodeDxf
 import Log
---import MeasureText
 import Traits exposing (TraitId, SlotId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
 import Traits.Generated as Generated
@@ -36,7 +35,6 @@ type Msg
   | WindowSize (Int, Int)
   | WindowReSize (Int, Int)
   | Rotate Float
-  --| TextSize MeasureText.TextSize
 
 type alias Model =
   { location : Url
@@ -130,8 +128,6 @@ initialWindowSize =
   Dom.getViewport
     |> Task.map (\viewport -> (round viewport.viewport.width, round viewport.viewport.height))
     |> Task.perform WindowSize
-
-      --|> List.map (\name -> MeasureText.getTextWidth {font = "100px sans-serif", text = name})
 
 update msg model =
   case msg of
@@ -442,7 +438,6 @@ subscriptions model =
   Sub.batch
     [ Browser.Events.onResize (\w h -> WindowReSize (w, h))
     --, Browser.Events.onAnimationFrameDelta Rotate
-    --, MeasureText.textSize TextSize
     ]
 
 fetchTraits : Cmd Msg
