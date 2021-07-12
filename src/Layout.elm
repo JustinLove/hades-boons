@@ -97,7 +97,7 @@ calculateActiveGroups activeTraits layout =
         [] ->
           active
         _ ->
-          if List.all (\id -> Set.member id activeTraits) link then
+          if List.all (\id -> Set.member id active || Set.member id activeTraits) link then
             Set.insert group active
           else
             active

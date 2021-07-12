@@ -59,7 +59,7 @@
 - x overview icon - bat cage?
 - x boon levels of detail
 - x dynamic duo display position
-- line to demeter not highlighting on athena - linked group dependent edges
+- x line to demeter not highlighting on athena - linked group dependent edges
 - initial flash of content
 - other prereqs of duos boons
   - call - zeus aphrodite
