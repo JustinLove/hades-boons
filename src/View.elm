@@ -107,28 +107,31 @@ view model =
         , zoom = model.zoom
         , diameter = chartDiameter model.windowWidth model.windowHeight
         } |> html
-      , -}BoonChart.Canvas.boonChart
-        [ Html.Attributes.style "width" "100vw"
-        , Html.Attributes.style "height" "100vh"
-        , Html.Attributes.id "graph"
-        ]
-        { metrics = model.chartMetrics
-        , activeBasicGroups = model.activeBasicGroups
-        , activeDuoGroups = model.activeDuoGroups
-        , boonStatus = model.boonStatus
-        , onMouseMove = OnMouseMove
-        , onMouseDown = OnMouseDown
-        , onMouseUp = OnMouseUp
-        , onWheel = OnWheel
-        , onTexture = TextureLoaded
-        , drag = model.drag
-        , offset = model.offset
-        , zoom = model.zoom
-        , diameter = chartDiameter model.windowWidth model.windowHeight
-        , width = model.windowWidth//1
-        , height = model.windowHeight
-        , textures = model.canvasTextures
-        } |> html
+      , -} if model.windowKnown then
+        BoonChart.Canvas.boonChart
+          [ Html.Attributes.style "width" "100vw"
+          , Html.Attributes.style "height" "100vh"
+          , Html.Attributes.id "graph"
+          ]
+          { metrics = model.chartMetrics
+          , activeBasicGroups = model.activeBasicGroups
+          , activeDuoGroups = model.activeDuoGroups
+          , boonStatus = model.boonStatus
+          , onMouseMove = OnMouseMove
+          , onMouseDown = OnMouseDown
+          , onMouseUp = OnMouseUp
+          , onWheel = OnWheel
+          , onTexture = TextureLoaded
+          , drag = model.drag
+          , offset = model.offset
+          , zoom = model.zoom
+          , diameter = chartDiameter model.windowWidth model.windowHeight
+          , width = model.windowWidth//1
+          , height = model.windowHeight
+          , textures = model.canvasTextures
+          } |> html
+        else
+          none
       ]
 
 displayGodSelect model =

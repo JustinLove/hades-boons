@@ -24,6 +24,7 @@ import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
 import Set exposing (Set)
 import Task
+import Time
 import Url exposing (Url)
 
 type Msg
@@ -41,6 +42,7 @@ type alias Model =
   , navigationKey : Navigation.Key
   , windowWidth : Int
   , windowHeight : Int
+  , windowKnown : Bool
   , canvasTextures : Dict String Canvas.Texture
   , traits : Traits
   , chartMetrics : BoonChart.ChartMetrics
@@ -75,6 +77,7 @@ initialModel flags location key =
   , navigationKey = key
   , windowWidth = 320
   , windowHeight = 300
+  , windowKnown = False
   , canvasTextures = Dict.empty
   --, labelWidths = Dict.empty
   , traits = Traits.empty
@@ -163,7 +166,7 @@ update msg model =
     GotLayout god (Err error) ->
       (model, Log.httpError "fetch error: layout" error)
     WindowSize (width, height) ->
-      ( {model | windowWidth = width, windowHeight = height}
+      ( {model | windowWidth = width, windowHeight = height, windowKnown = True}
         |> defaultView
       , Cmd.none)
     WindowReSize (width, height) ->
@@ -172,7 +175,7 @@ update msg model =
           |> Geometry.add (-0.5, -0.5)
           |> (\(x,y) -> (x, -y))
       in
-      ( { model | windowWidth = width , windowHeight = height }
+      ( { model | windowWidth = width , windowHeight = height, windowKnown = True }
         |> focusView oldCenter (1/model.zoom) model.rotation
       , Cmd.none
       )
@@ -437,6 +440,10 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
     [ Browser.Events.onResize (\w h -> WindowReSize (w, h))
+    , if model.windowKnown == False then
+       Time.every 1000 (\_ -> WindowSize (model.windowWidth, model.windowHeight))
+      else
+        Sub.none
     --, Browser.Events.onAnimationFrameDelta Rotate
     ]
 

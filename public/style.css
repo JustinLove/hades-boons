@@ -35,10 +35,6 @@ a:hover, a:active { color: rgb(218, 216, 222); }
 
 #top > * { animation: delay-appear 2s; }
 canvas { animation: delay-appear 2s; }
-@keyframes appear {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
 @keyframes delay-appear {
   0% { opacity: 0; }
   30% { opacity: 0; }

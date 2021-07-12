@@ -60,7 +60,7 @@
 - x boon levels of detail
 - x dynamic duo display position
 - x line to demeter not highlighting on athena - linked group dependent edges
-- initial flash of content
+- x initial flash of content
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge
