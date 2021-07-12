@@ -552,12 +552,11 @@ displayReset =
 displayFooter : Bool -> Element Msg
 displayFooter artAttribution =
   row [ Region.footer, spacing 10, alignBottom, padding 8, Font.size footerSize, width fill ]
-    {-[ link []
-      { url = "https://github.com/JustinLove/"
+    [ link []
+      { url = "https://github.com/JustinLove/hades-boons"
       , label = row [] [ icon "github", text "hades-boons" ]
       }
-      -}
-    [ link []
+    , link []
       { url = "https://twitter.com/wondible"
       , label = row [] [ icon "twitter", text "@wondible" ]
       }
