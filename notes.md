@@ -58,11 +58,13 @@
   https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
 - x overview icon - bat cage?
 - x boon levels of detail
+- x dynamic duo display position
+- line to demeter not highlighting on athena - linked group dependent edges
 - initial flash of content
-- dynamic duo display position
 - other prereqs of duos boons
   - call - zeus aphrodite
   - revenge
+- coloring reference boons
 - line formatting
   - zoom relative size?
 - slot menu scaling for window width

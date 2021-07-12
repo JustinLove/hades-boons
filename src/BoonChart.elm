@@ -35,6 +35,7 @@ type DragMode
 type alias ChartMetrics =
   { gods : Array GodMetrics
   , duoBoons : List Boon
+  , duoReferenceBoons : List Boon
   , duoConnectors : List DuoConnector
   , angle : Float
   , adjacentDistance : Float
@@ -143,10 +144,11 @@ calculateMetrics : Traits -> Float -> ChartMetrics
 calculateMetrics traits rotation =
   let
     metrics = initialMetrics traits rotation
-    (duoBoons, duoConnectors) = layoutDuoBoons metrics (Traits.duoBoons traits)
+    {duoBoons, duoReferenceBoons, duoConnectors} = layoutDuoBoons metrics (Traits.duoBoons traits)
   in
     { metrics
     | duoBoons = duoBoons
+    , duoReferenceBoons = duoReferenceBoons
     , duoConnectors = duoConnectors
     }
 
@@ -187,39 +189,61 @@ initialMetrics traits rotation =
       )
       |> Array.fromList
     , duoBoons = []
+    , duoReferenceBoons = []
     , duoConnectors = []
     , angle = angle
     , adjacentDistance = adjacentDistance
     }
 
-layoutDuoBoons : ChartMetrics -> List Trait -> (List Boon, List DuoConnector)
+layoutDuoBoons : ChartMetrics -> List Trait -> {duoBoons : List Boon, duoReferenceBoons : List Boon, duoConnectors: List DuoConnector}
 layoutDuoBoons metrics traits =
-  traits
-    |> List.map (layoutDuoBoon metrics)
-    |> List.unzip
+  let
+    duos = traits |> List.map (layoutDuoBoon metrics)
+  in
+    { duoBoons = duos |> List.map .duoBoon
+    , duoReferenceBoons = duos |> List.concatMap .duoReferenceBoons
+    , duoConnectors = duos |> List.map .duoConnector
+    }
 
-layoutDuoBoon : ChartMetrics -> Trait -> (Boon, DuoConnector)
+layoutDuoBoon : ChartMetrics -> Trait -> {duoBoon: Boon, duoReferenceBoons : List Boon, duoConnector : DuoConnector}
 layoutDuoBoon metrics trait =
   let
     (iconPoint, shape) = calculateDuo metrics trait
     (godA, godB) = case trait.boonType of
       BasicBoon g -> (g, g)
       DuoBoon a b -> (a, b)
+    referencePoints = case shape of
+      DuoArc {endA, endB} -> [endA, endB]
+      DuoLine endA endB -> [endA, endB]
+      Invisible -> []
   in
-    ( { name = trait.name
+    { duoBoon =
+      { name = trait.name
       , icon = trait.icon
       , id = trait.trait
       , location = iconPoint
       , iconType = Direct
       , color = Color.rgb255 184 239 21
       }
-    , { shape = shape
+    , duoReferenceBoons = 
+     referencePoints
+      |> List.map (\point ->
+          { name = trait.name
+          , icon = trait.icon
+          , id = trait.trait
+          , location = point
+          , iconType = Reference
+          , color = Color.rgb255 184 239 21
+          }
+        )
+    , duoConnector =
+      { shape = shape
       , groupA = (Traits.godName godA) ++ trait.trait
       , colorA = colorForGod metrics godA
       , groupB = (Traits.godName godB) ++ trait.trait
       , colorB = colorForGod metrics godB
       }
-    )
+    }
 
 calculateDuo : ChartMetrics -> Trait -> (Point, DuoConnectorShape)
 calculateDuo metrics trait =
@@ -566,10 +590,16 @@ hitChart metrics zoom at =
       |> Array.toList
       |> List.filterMap (hitGod (metrics.adjacentDistance / 2) ((basicBoonSize zoom) / 2) point)
       |> List.head
+    duoHit =
+      case godHit of
+        Just _ -> godHit
+        Nothing -> hitBoons ((duoBoonSize zoom) / 2) point metrics.duoBoons
+    duoRefHit =
+      case duoHit of
+        Just _ -> duoHit
+        Nothing -> hitBoons ((basicBoonSize zoom) / 2) point metrics.duoReferenceBoons
   in
-    case godHit of
-      Just _ -> godHit
-      Nothing -> hitBoons ((duoBoonSize zoom) / 2) point metrics.duoBoons
+    duoRefHit
 
 hitBoons : Float -> Point -> List Boon -> Maybe TraitId
 hitBoons radius at boons =

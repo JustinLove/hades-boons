@@ -101,6 +101,7 @@ boonChart attributes model =
             basicConnectors
             |> List.concat
         , basicBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
+        , metrics.duoReferenceBoons |> List.map (displayBoonTrait displayDiameter basicSize model.textures model.boonStatus)
         , metrics.duoBoons |> List.map (displayBoonTrait displayDiameter duoSize model.textures model.boonStatus)
         --, [ shapes [ stroke Color.white , lineWidth 0.01 ] [ circle (0, 0) 0.5 ] ]
         --, metrics.gods
