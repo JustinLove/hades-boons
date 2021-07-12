@@ -8,6 +8,8 @@ import Layout exposing (..)
 import Dxf exposing (..)
 import Dxf.Decode exposing (..)
 
+import Dict exposing (Dict)
+
 layout : Decoder Layout
 layout =
   succeed Layout
@@ -47,12 +49,16 @@ connections =
     |> with (entities EllipseEntity (connection ellipticArc))
     |> with (entities PointEntity (connection point))
 
-connection : Decoder ConnectionType ->  Decoder Connection
+connection : Decoder ConnectionType -> Decoder Connection
 connection decoder =
-  succeed Connection
-    |> with inLayer
-    |> with idFromTag
-    |> with decoder
+  allNotes
+    |> andThen (\notes ->
+      succeed Connection
+        |> with inLayer
+        |> with (links notes)
+        |> with (miscFlag notes)
+        |> with decoder
+      )
 
 arc : Decoder ConnectionType
 arc =
@@ -138,18 +144,26 @@ idFromText : Decoder String
 idFromText =
   tag 1 primaryText
 
-idFromTag : Decoder (List String)
-idFromTag =
-  oneOf
-    [ (tag 1000 text) |> andThen extractId
-    , succeed []
-    ]
+links : Dict String String -> Decoder (List String)
+links notes =
+  Dict.get "link" notes
+    |> Maybe.map (String.split ",")
+    |> Maybe.withDefault []
+    |> succeed
 
-extractId : String -> Decoder (List String)
-extractId s =
-  case String.split(":") s of
-    "link" :: link :: [] -> succeed (String.split(",") link)
-    _ -> succeed []
+miscFlag : Dict String String -> Decoder Bool
+miscFlag notes =
+  succeed (Dict.get "misc" notes /= Nothing)
+
+allNotes : Decoder (Dict String String)
+allNotes =
+  every 1000 (tag 1000 text)
+    |> map (List.foldl (\s dict ->
+      case String.split(":") s of
+        key :: value :: [] -> Dict.insert key value dict
+        _ -> dict
+      ) Dict.empty
+    )
 
 pointBase : Int -> Decoder (Float, Float)
 pointBase base =

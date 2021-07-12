@@ -21,6 +21,7 @@ module Traits exposing
   , dataLayout
   , godName
   , godIcon
+  , godColor
   , duoBoons
   , miscBoons
   , boonsForSlot

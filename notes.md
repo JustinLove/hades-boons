@@ -61,15 +61,15 @@
 - x dynamic duo display position
 - x line to demeter not highlighting on athena - linked group dependent edges
 - x initial flash of content
-- other prereqs of duos boons
-  - call - zeus aphrodite
-  - revenge
-- coloring reference boons
+- x other prereqs of duos boons
+  - x call - zeus aphrodite
+  - x revenge
+- x coloring reference boons
 - line formatting
   - zoom relative size?
 - slot menu scaling for window width
 - design issues
-  - any aid
+  - x any aid
   - poseidon - area asymetry
   - ares - maybe flip pomel?
   - incompatible boons?

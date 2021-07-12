@@ -68,6 +68,7 @@ type ConnectionType
 type alias Connection =
   { group : GroupId
   , link : List TraitId
+  , misc : Bool
   , shape : ConnectionType
   }
 

@@ -30,6 +30,7 @@ connection c =
   record
     [ ("group", c.group |> string)
     , ("link", c.link |> List.map string |> list)
+    , ("misc", c.misc |> bool)
     , ("shape", c.shape |> connectionType)
     ]
 
@@ -38,6 +39,13 @@ maybe encoder m =
   case m of
     Just x -> construct "Just" [encoder x]
     Nothing -> val "Nothing"
+
+bool : Bool -> Expression
+bool b =
+  if b then
+    val "True"
+  else
+    val "False"
 
 connectionType : ConnectionType -> Expression
 connectionType ct =

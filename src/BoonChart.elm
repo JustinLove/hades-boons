@@ -223,7 +223,7 @@ layoutDuoBoon metrics trait =
       , id = trait.trait
       , location = iconPoint
       , iconType = Direct
-      , color = Color.rgb255 184 239 21
+      , color = duoBoonColor
       }
     , duoReferenceBoons = 
      referencePoints
@@ -233,7 +233,7 @@ layoutDuoBoon metrics trait =
           , id = trait.trait
           , location = point
           , iconType = Reference
-          , color = Color.rgb255 184 239 21
+          , color = duoBoonColor
           }
         )
     , duoConnector =
@@ -441,11 +441,11 @@ layoutBasicConnectorsOf godRadius origin godAngle data =
     data
       |> Traits.dataLayout
       |> .connections
-      |> List.map (\{group, link, shape} ->
+      |> List.map (\{group, link, misc, shape} ->
         { shape = mapShape shape
         , link = link
         , group = group
-        , color = Traits.dataLootColor data
+        , color = if misc then Color.white else Traits.dataLootColor data
         }
       )
       |> List.filter (\{shape} -> shape /= Tag)
@@ -500,7 +500,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                       , id = id
                       , location = p
                       , iconType = Slot
-                      , color = Traits.dataLootColor data
+                      , color = Color.charcoal
                       }
                   else
                     Nothing
@@ -516,7 +516,10 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                         , id = id
                         , location = p
                         , iconType = Reference
-                        , color = Traits.dataLootColor data
+                        , color =
+                          case trait.boonType of
+                            BasicBoon g -> Traits.godColor g
+                            DuoBoon _ _ -> duoBoonColor
                         }
                       )
               )
@@ -633,6 +636,9 @@ duoBoonSize zoom = (0.3 / zoom |> clamp 0.02 0.08)
 
 basicBoonSize : Float -> Float
 basicBoonSize zoom = (0.3 / zoom |> clamp 0.01 0.02)
+
+duoBoonColor : Color
+duoBoonColor = Color.rgb255 184 239 21
 
 pointX : Point -> Float
 pointX (x,_) = x
