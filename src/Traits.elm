@@ -445,9 +445,9 @@ oneFromEachSetAccumulator group boonType =
       if a == g || b == g then
         DuoBoon a b
       else
-        Debug.todo "too many gods"
+        -- Debug.todo "too many gods"
         -- no way to punt
-        --boonType
+        boonType
 
 godOfSet : List GodData -> Set TraitId -> GodsInGroup
 godOfSet gods set =
