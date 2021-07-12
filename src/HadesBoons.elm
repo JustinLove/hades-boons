@@ -450,14 +450,14 @@ subscriptions model =
 fetchTraits : Cmd Msg
 fetchTraits =
   Http.get
-    { url = "traits.json"
+    { url = "../work/traits.json"
     , expect = Http.expectJson GotTraits Decode.traits
     }
 
 fetchDxf : God -> Cmd Msg
 fetchDxf god =
   Http.get
-    { url = (god |> Traits.godName |> String.toLower) ++ ".dxf"
+    { url = "../work/" ++ (god |> Traits.godName |> String.toLower) ++ ".dxf"
     , expect = expectDxf (GotLayout god) DecodeDxf.layout
     }
 

@@ -29,7 +29,7 @@ var consoleCommand = function(message) {
       break
     case 'readFile':
       //console.log('js readfile')
-      var filename = 'public/'+message.filename
+      var filename = 'work/'+message.filename
       fs.readFile(filename, function(err, contents) {
         var result
         if (err) {
