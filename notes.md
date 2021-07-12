@@ -65,14 +65,15 @@
   - x call - zeus aphrodite
   - x revenge
 - x coloring reference boons
-- line formatting
-  - zoom relative size?
-- slot menu scaling for window width
+- duo frames
 - design issues
   - x any aid
   - poseidon - area asymetry
   - ares - maybe flip pomel?
   - incompatible boons?
   - souls
+- line formatting
+  - zoom relative size?
+- slot menu scaling for window width
 - save calculated metrics
 - rotation outside metrics?
