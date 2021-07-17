@@ -2,7 +2,7 @@ module BoonChart.Canvas exposing (BoonChart, boonChart)
 
 import BoonChart exposing (..)
 import Geometry
-import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
+import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonStatus(..))
 import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
 import MouseWheel
 
@@ -63,6 +63,7 @@ boonChart attributes model =
         |> (::) "GUI/LockIcon/LockIcon0001.png"
         |> (::) "GUI/Screens/BoonIconFrames/common.png"
         |> (::) "GUI/Screens/BoonIconFrames/primary.png"
+        |> (::) "GUI/Screens/BoonIconFrames/duo.png"
         |> List.append (metrics.gods
           |> Array.toList
           |> List.map .god
@@ -196,7 +197,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         Direct -> boonSize
         Slot -> boonSize * 0.8
         Reference -> boonSize * 0.5
-        Keepsake -> boonSize
+        KeepsakeIcon -> boonSize
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     textColor =
       case status of
@@ -245,7 +246,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       --|> Debug.log "displaysize"
   in
   [ if 15.0 < displaySize then
-      if boon.iconType == Keepsake then
+      if boon.frame == Keepsake then
         group []
           [ image [Canvas.alpha brightness] textures 0.9 boon.icon
           ]
@@ -266,7 +267,10 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
               group [] []
           , case status of
               Active ->
-                image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+                if boon.frame == Duo then
+                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/duo.png"
+                else
+                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
               Available ->
                 image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
               Excluded ->

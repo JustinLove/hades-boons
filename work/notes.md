@@ -1,70 +1,3 @@
-- god layouts?
-  - figure out duo boon connctions
-    - 24.84
-    - 47.04
-    - 132.95
-    - 155.15
-    - 202.5
-    - 270
-    - 337.5
-  - figure out scale
-  - x import ellipse arcs from dxf
-    - https://www.blog.akhil.cc/ellipse
-    - http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
-  - x ares arc broke
-  - x import points
-  - x activating areas/outlines
-  - x diagrams.net, use lots of waypoints to create connted lines
-  - x boundary arcs not working under rotation
-- x hermes angle
-- x full view
-- x footer misaligned
-- x primary trait quick select
-- x keepsake in trait bar
-- x jump to god
-- x fill screen
-- x chrome graphic size
-- x need trait icons on side menu
-- x lock icons are smaller on weapon aspects
-- x hit detection issue with icon second column
-- x souls
-- x hades keepsake
-  - x locked if another aid selected
-- x removing things from slot menus
-- x keepsake size
-- x hades god in enum?
-- x not-a-god in enum?
-- x built-in keepsakes move to misc?
-- x special weapons
-- x mirror - only soul?
-- x fix colors
-- x text display when small
-- x boundary arc under rotation
-- x god icon backgrounds
-- x where does hermes go?
-  - x duo lines passing behind
-- x required slotted
-  - x layout updates
-  - x visual contrast
-- x keepsake frame in chart
-- x keepsake display - mask wrong shape
-- x some casts
-  - x layout updates
-- x keepsake derived exclusions
-- x any-two lines
-- x live update centering
-- x art credit
-  https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
-  https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
-- x overview icon - bat cage?
-- x boon levels of detail
-- x dynamic duo display position
-- x line to demeter not highlighting on athena - linked group dependent edges
-- x initial flash of content
-- x other prereqs of duos boons
-  - x call - zeus aphrodite
-  - x revenge
-- x coloring reference boons
 - duo frames
 - design issues
   - x any aid
@@ -77,3 +10,19 @@
 - slot menu scaling for window width
 - save calculated metrics
 - rotation outside metrics?
+
+- god layouts?
+  - figure out duo boon connctions
+    - 24.84
+    - 47.04
+    - 132.95
+    - 155.15
+    - 202.5
+    - 270
+    - 337.5
+  - x import ellipse arcs from dxf
+    - https://www.blog.akhil.cc/ellipse
+    - http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+- x art credit
+  https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
+  https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"

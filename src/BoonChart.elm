@@ -2,6 +2,7 @@ module BoonChart exposing
   ( ArcType
   , Boon
   , IconType(..)
+  , Frame(..)
   , ChartMetrics
   , Connector
   , ConnectorShape(..)
@@ -59,6 +60,7 @@ type alias Boon =
   , id : String
   , location : Point
   , iconType : IconType
+  , frame : Frame
   , color : Color
   }
 
@@ -66,7 +68,12 @@ type IconType
   = Direct
   | Slot
   | Reference
+  | KeepsakeIcon
+
+type Frame
+  = Common
   | Keepsake
+  | Duo
 
 type alias Connector =
   { shape : ConnectorShape
@@ -212,6 +219,7 @@ layoutDuoBoon metrics trait =
     (godA, godB) = case trait.boonType of
       BasicBoon g -> (g, g)
       DuoBoon a b -> (a, b)
+      Traits.Keepsake -> (Hades, Hades)
     referencePoints = case shape of
       DuoArc {endA, endB} -> [endA, endB]
       DuoLine endA endB -> [endA, endB]
@@ -223,6 +231,7 @@ layoutDuoBoon metrics trait =
       , id = trait.trait
       , location = iconPoint
       , iconType = Direct
+      , frame = Duo
       , color = duoBoonColor
       }
     , duoReferenceBoons = 
@@ -233,6 +242,7 @@ layoutDuoBoon metrics trait =
           , id = trait.trait
           , location = point
           , iconType = Reference
+          , frame = Duo
           , color = duoBoonColor
           }
         )
@@ -249,6 +259,7 @@ calculateDuo : ChartMetrics -> Trait -> (Point, DuoConnectorShape)
 calculateDuo metrics trait =
   case trait.boonType of
     BasicBoon _ -> ((0,0), Invisible)
+    Traits.Keepsake -> ((0,0), Invisible)
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.gods) a b of
         Adjacent -> calculateAdjacent metrics a b
@@ -484,7 +495,8 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 , icon = trait.icon
                 , id = id
                 , location = p
-                , iconType = if trait.slot == Just "Keepsake" then Keepsake else Direct
+                , iconType = if trait.slot == Just "Keepsake" then KeepsakeIcon else Direct
+                , frame = if trait.slot == Just "Keepsake" then Keepsake else Common
                 , color = Traits.dataLootColor data
                 }
               )
@@ -500,6 +512,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                       , id = id
                       , location = p
                       , iconType = Slot
+                      , frame = Common
                       , color = Color.charcoal
                       }
                   else
@@ -516,10 +529,15 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                         , id = id
                         , location = p
                         , iconType = Reference
+                        , frame = case trait.boonType of
+                            BasicBoon _ -> Common
+                            DuoBoon _ _ -> Duo
+                            Traits.Keepsake -> Keepsake
                         , color =
                           case trait.boonType of
                             BasicBoon g -> Traits.godColor g
                             DuoBoon _ _ -> duoBoonColor
+                            Traits.Keepsake -> keepsakeColor
                         }
                       )
               )
@@ -529,6 +547,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
               , id = id
               , location = p
               , iconType = Slot
+              , frame = Common
               , color = Color.rgb255 23 25 21
               }
         )
@@ -547,6 +566,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 |> Geometry.rotate godAngle
                 |> Geometry.add center
               , iconType = Direct
+              , frame = Common
               , color = Traits.dataLootColor data
               }
           )
@@ -620,7 +640,7 @@ hitBoon radius at {location, iconType} =
       False
     Reference ->
       Geometry.length (Geometry.sub at location) < radius * 0.5
-    Keepsake ->
+    KeepsakeIcon ->
       Geometry.length (Geometry.sub at location) < radius
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
@@ -639,6 +659,9 @@ basicBoonSize zoom = (0.3 / zoom |> clamp 0.01 0.02)
 
 duoBoonColor : Color
 duoBoonColor = Color.rgb255 184 239 21
+
+keepsakeColor : Color
+keepsakeColor = Color.rgb255 236 210 104
 
 pointX : Point -> Float
 pointX (x,_) = x

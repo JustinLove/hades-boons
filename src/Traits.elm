@@ -76,6 +76,7 @@ type God
 type BoonType
   = BasicBoon God
   | DuoBoon God God
+  | Keepsake
 
 type GodData = GodData GodDataRecord
 
@@ -298,12 +299,14 @@ isBasicBoon {boonType} =
   case boonType of
     BasicBoon _ -> True
     DuoBoon _ _ -> False
+    Keepsake -> True
 
 isDuoBoon : Trait -> Bool
 isDuoBoon {boonType} =
   case boonType of
     BasicBoon _ -> False
     DuoBoon _ _ -> True
+    Keepsake -> False
 
 makeTraits : List GodData -> Traits
 makeTraits gods =
@@ -448,6 +451,8 @@ oneFromEachSetAccumulator group boonType =
         -- Debug.todo "too many gods"
         -- no way to punt
         boonType
+    (Keepsake, _) ->
+      boonType
 
 godOfSet : List GodData -> Set TraitId -> GodsInGroup
 godOfSet gods set =
@@ -458,6 +463,7 @@ godAccumulator gods id group =
   case (findBoonType gods id, group) of
     (_, Many) -> Many
     (Nothing, _) -> group
+    (Just (Keepsake), _) -> group
     (Just (BasicBoon a), Empty) -> One a
     (Just (BasicBoon a), One b) -> if a == b then One a else Many
     (Just (DuoBoon _ _), _) -> Many
