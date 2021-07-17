@@ -64,7 +64,7 @@ chartCenter width height =
   )
 
 document tagger model =
-  { title = "Hades Boons"
+  { title = "Hades Boon Chart"
   , body = [Html.map tagger (view model)]
   }
 
