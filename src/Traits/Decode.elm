@@ -49,7 +49,7 @@ trinkets godTag =
         , requiredMetaUpgradeSelected = Nothing
         , requiredFalseTraits = Set.empty
         , requirements = None
-        , boonType = BasicBoon Poseidon
+        , boonType = Keepsake
         }
       ]
     Hermes ->
@@ -61,7 +61,7 @@ trinkets godTag =
         , requiredMetaUpgradeSelected = Nothing
         , requiredFalseTraits = Set.empty
         , requirements = None
-        , boonType = BasicBoon Hermes
+        , boonType = Keepsake
         }
       ]
     _ ->

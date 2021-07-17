@@ -392,7 +392,7 @@ miscBoons =
     , requiredMetaUpgradeSelected = Nothing
     , requiredFalseTraits = Set.empty
     , requirements = None
-    , boonType = BasicBoon Hades
+    , boonType = Keepsake
     }
   ]
 
