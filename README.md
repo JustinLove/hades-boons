@@ -12,6 +12,8 @@ Social and other svg icons: [IcoMoon - Free](https://icomoon.io/#icons-icomoon) 
 
 Built in [Elm](https://elm-lang.org/)
 
+Uses a local [fork with group support](https://github.com/JustinLove/elm-canvas/tree/groups) of [joakin/elm-canvas](https://package.elm-lang.org/packages/joakin/elm-canvas/latest/)
+
 My build command:
 
 > elm make src/HadesBoons.elm --output public/hades-boons.js
