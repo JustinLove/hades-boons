@@ -197,7 +197,6 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         Direct -> boonSize
         Slot -> boonSize * 0.8
         Reference -> boonSize * 0.5
-        KeepsakeIcon -> boonSize
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     textColor =
       case status of

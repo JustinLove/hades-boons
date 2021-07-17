@@ -68,7 +68,6 @@ type IconType
   = Direct
   | Slot
   | Reference
-  | KeepsakeIcon
 
 type Frame
   = Common
@@ -258,14 +257,13 @@ layoutDuoBoon metrics trait =
 calculateDuo : ChartMetrics -> Trait -> (Point, DuoConnectorShape)
 calculateDuo metrics trait =
   case trait.boonType of
-    BasicBoon _ -> ((0,0), Invisible)
-    Traits.Keepsake -> ((0,0), Invisible)
     DuoBoon a b ->
       case godAdjacency (Array.length metrics.gods) a b of
         Adjacent -> calculateAdjacent metrics a b
         SkipOne -> calculateSkipOne metrics a b
         SkipTwo -> calculateSkipTwo metrics a b
         Opposite -> calculateOpposite metrics a b
+    _ -> ((0,0), Invisible)
 
 calculateAdjacent : ChartMetrics -> God -> God -> (Point, DuoConnectorShape)
 calculateAdjacent metrics a b =
@@ -495,7 +493,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 , icon = trait.icon
                 , id = id
                 , location = p
-                , iconType = if trait.slot == Just "Keepsake" then KeepsakeIcon else Direct
+                , iconType = Direct
                 , frame = if trait.slot == Just "Keepsake" then Keepsake else Common
                 , color = Traits.dataLootColor data
                 }
@@ -640,8 +638,6 @@ hitBoon radius at {location, iconType} =
       False
     Reference ->
       Geometry.length (Geometry.sub at location) < radius * 0.5
-    KeepsakeIcon ->
-      Geometry.length (Geometry.sub at location) < radius
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId
 hitGod godRadius boonRadius at godMetrics =
