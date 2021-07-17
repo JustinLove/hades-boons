@@ -48,6 +48,7 @@ trait t =
     , ("requiredFalseTraits", t.requiredFalseTraits |> set)
     , ("requirements", t.requirements |> requirements)
     , ("boonType", t.boonType |> boonType)
+    , ("frame", t.frame |> frame)
     ]
 
 requirements : Requirements -> Expression
@@ -66,6 +67,15 @@ boonType bt =
   case bt of
     BasicBoon g -> construct "BasicBoon" [god g]
     DuoBoon a b -> construct "DuoBoon" [god a, god b]
+    Keepsake -> val "Keepsake"
+
+frame : Frame -> Expression
+frame fr =
+  case fr of
+    CommonFrame -> val "CommonFrame"
+    DuoFrame -> val "DuoFrame"
+    KeepsakeFrame -> val "KeepsakeFrame"
+    LegendaryFrame -> val "LegendaryFrame"
 
 maybe : (a -> Expression) -> Maybe a -> Expression
 maybe encoder m =

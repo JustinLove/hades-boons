@@ -2,7 +2,6 @@ module BoonChart exposing
   ( ArcType
   , Boon
   , IconType(..)
-  , Frame(..)
   , ChartMetrics
   , Connector
   , ConnectorShape(..)
@@ -21,7 +20,7 @@ module BoonChart exposing
 
 import Geometry
 import Layout exposing (GroupId, Boundary(..), Winding(..))
-import Traits exposing (TraitId, Traits, Trait, God(..), GodData, BoonType(..), SlotId)
+import Traits exposing (TraitId, Traits, Trait, God(..), GodData, BoonType(..), Frame(..), SlotId)
 
 import Array exposing (Array)
 import Color exposing (Color)
@@ -68,11 +67,6 @@ type IconType
   = Direct
   | Slot
   | Reference
-
-type Frame
-  = Common
-  | Keepsake
-  | Duo
 
 type alias Connector =
   { shape : ConnectorShape
@@ -218,7 +212,7 @@ layoutDuoBoon metrics trait =
     (godA, godB) = case trait.boonType of
       BasicBoon g -> (g, g)
       DuoBoon a b -> (a, b)
-      Traits.Keepsake -> (Hades, Hades)
+      Keepsake -> (Hades, Hades)
     referencePoints = case shape of
       DuoArc {endA, endB} -> [endA, endB]
       DuoLine endA endB -> [endA, endB]
@@ -230,7 +224,7 @@ layoutDuoBoon metrics trait =
       , id = trait.trait
       , location = iconPoint
       , iconType = Direct
-      , frame = Duo
+      , frame = trait.frame
       , color = duoBoonColor
       }
     , duoReferenceBoons = 
@@ -241,7 +235,7 @@ layoutDuoBoon metrics trait =
           , id = trait.trait
           , location = point
           , iconType = Reference
-          , frame = Duo
+          , frame = trait.frame
           , color = duoBoonColor
           }
         )
@@ -494,7 +488,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 , id = id
                 , location = p
                 , iconType = Direct
-                , frame = if trait.slot == Just "Keepsake" then Keepsake else Common
+                , frame = trait.frame
                 , color = Traits.dataLootColor data
                 }
               )
@@ -510,7 +504,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                       , id = id
                       , location = p
                       , iconType = Slot
-                      , frame = Common
+                      , frame = CommonFrame
                       , color = Color.charcoal
                       }
                   else
@@ -527,15 +521,12 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                         , id = id
                         , location = p
                         , iconType = Reference
-                        , frame = case trait.boonType of
-                            BasicBoon _ -> Common
-                            DuoBoon _ _ -> Duo
-                            Traits.Keepsake -> Keepsake
+                        , frame = trait.frame
                         , color =
                           case trait.boonType of
                             BasicBoon g -> Traits.godColor g
                             DuoBoon _ _ -> duoBoonColor
-                            Traits.Keepsake -> keepsakeColor
+                            Keepsake -> keepsakeColor
                         }
                       )
               )
@@ -545,7 +536,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
               , id = id
               , location = p
               , iconType = Slot
-              , frame = Common
+              , frame = CommonFrame
               , color = Color.rgb255 23 25 21
               }
         )
@@ -564,7 +555,7 @@ layoutBasicBoonsOf traits godRadius center godAngle data =
                 |> Geometry.rotate godAngle
                 |> Geometry.add center
               , iconType = Direct
-              , frame = Common
+              , frame = trait.frame
               , color = Traits.dataLootColor data
               }
           )

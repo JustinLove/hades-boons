@@ -7,6 +7,7 @@ module Traits exposing
   , empty
   , God(..)
   , BoonType(..)
+  , Frame(..)
   , GodData
   , GodDataRecord
   , godData
@@ -78,6 +79,12 @@ type BoonType
   | DuoBoon God God
   | Keepsake
 
+type Frame
+  = CommonFrame
+  | DuoFrame
+  | KeepsakeFrame
+  | LegendaryFrame
+
 type GodData = GodData GodDataRecord
 
 type alias GodDataRecord =
@@ -96,6 +103,7 @@ type alias Trait =
   , requiredFalseTraits : Set TraitId
   , requirements : Requirements
   , boonType : BoonType
+  , frame : Frame
   }
 
 type Requirements
@@ -334,6 +342,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Charon
+    , frame = CommonFrame
     }
   , { icon = "GUI/Screens/WeaponEnchantmentIcons/shield_enchantment_3.png"
     , trait = "ShieldLoadAmmoTrait"
@@ -344,6 +353,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Charon
+    , frame = CommonFrame
     }
   , { icon = "GUI/Screens/MirrorIcons/infernal soul.png"
     , trait = "AmmoMetaUpgrade"
@@ -354,6 +364,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Nyx
+    , frame = CommonFrame
     }
   , { icon = "GUI/Screens/MirrorBIcons/Stygian_Soul.png"
     , trait = "ReloadAmmoMetaUpgrade"
@@ -364,6 +375,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Nyx
+    , frame = CommonFrame
     }
   , { icon = "GUI/Screens/AwardMenu/badge_23.png"
     , trait = "HadesShoutKeepsake"
@@ -383,6 +395,7 @@ miscBoons =
       ]
     , requirements = None
     , boonType = BasicBoon Hades
+    , frame = CommonFrame
     }
   , { icon = "GUI/Screens/BoonIcons/Hades_01_Large.png"
     , trait = "HadesShoutTrait"
@@ -393,6 +406,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = Keepsake
+    , frame = KeepsakeFrame
     }
   ]
 
@@ -410,7 +424,17 @@ tagLinkedGodBoons gods (GodData god) =
 
 tagLinkedBoon : List GodData -> God -> Trait -> Trait
 tagLinkedBoon gods god trait =
-  { trait | boonType = boonTypeFromRequirements gods god trait.requirements }
+  case trait.boonType of
+    Keepsake -> trait
+    _ ->
+      let boonType = boonTypeFromRequirements gods god trait.requirements in
+      { trait
+      | boonType = boonType
+      , frame = case boonType of
+        BasicBoon _ -> frameFromRequirements gods trait.requirements
+        DuoBoon _ _ -> DuoFrame
+        Keepsake -> KeepsakeFrame
+      }
 
 boonTypeFromRequirements : List GodData -> God -> Requirements -> BoonType
 boonTypeFromRequirements gods god requirements =
@@ -421,6 +445,31 @@ boonTypeFromRequirements gods god requirements =
       list
         |> List.map (godOfSet gods)
         |> List.foldr oneFromEachSetAccumulator (BasicBoon god)
+
+frameFromRequirements : List GodData -> Requirements -> Frame
+frameFromRequirements gods requirements =
+  if legendaryRequirements gods requirements then
+    LegendaryFrame
+  else
+    CommonFrame
+
+legendaryRequirements : List GodData -> Requirements -> Bool
+legendaryRequirements gods requirements =
+  case requirements of
+    None -> False
+    OneOf set -> setHasRequirements gods set
+    OneFromEachSet list -> True
+
+setHasRequirements : List GodData -> Set TraitId -> Bool
+setHasRequirements gods set =
+  set
+    |> Set.toList
+    |> List.map (findBoonRequirements gods)
+    |> List.any (\req ->
+      req /= None
+      && req /= OneOf (Set.singleton "ShieldLoadAmmoTrait")
+      && req /= OneOf (Set.fromList ["BowLoadAmmoTrait", "ShieldLoadAmmoTrait"])
+      )
 
 type GodsInGroup
   = Empty
@@ -472,6 +521,12 @@ findBoonType : List GodData -> TraitId -> Maybe BoonType
 findBoonType gods id =
   findGodBoon gods id
     |> Maybe.map .boonType
+
+findBoonRequirements : List GodData -> TraitId -> Requirements
+findBoonRequirements gods id =
+  findGodBoon gods id
+    |> Maybe.map .requirements
+    |> Maybe.withDefault None
 
 findGodBoon : List GodData -> TraitId -> Maybe Trait
 findGodBoon gods id =

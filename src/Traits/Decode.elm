@@ -50,6 +50,7 @@ trinkets godTag =
         , requiredFalseTraits = Set.empty
         , requirements = None
         , boonType = Keepsake
+        , frame = KeepsakeFrame
         }
       ]
     Hermes ->
@@ -62,6 +63,7 @@ trinkets godTag =
         , requiredFalseTraits = Set.empty
         , requirements = None
         , boonType = Keepsake
+        , frame = KeepsakeFrame
         }
       ]
     _ ->
@@ -100,6 +102,7 @@ trait godTag =
     )
     |> map2 (|>) requirements
     |> map2 (|>) (succeed (BasicBoon godTag))
+    |> map2 (|>) (succeed CommonFrame)
 
 requirements : Decoder Requirements
 requirements =

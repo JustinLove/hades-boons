@@ -1,4 +1,3 @@
-- duo frames
 - design issues
   - x any aid
   - poseidon - area asymetry

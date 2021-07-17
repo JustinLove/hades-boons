@@ -2,7 +2,7 @@ module BoonChart.Canvas exposing (BoonChart, boonChart)
 
 import BoonChart exposing (..)
 import Geometry
-import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonStatus(..))
+import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonStatus(..), Frame(..))
 import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
 import MouseWheel
 
@@ -64,6 +64,7 @@ boonChart attributes model =
         |> (::) "GUI/Screens/BoonIconFrames/common.png"
         |> (::) "GUI/Screens/BoonIconFrames/primary.png"
         |> (::) "GUI/Screens/BoonIconFrames/duo.png"
+        |> (::) "GUI/Screens/BoonIconFrames/legendary.png"
         |> List.append (metrics.gods
           |> Array.toList
           |> List.map .god
@@ -245,7 +246,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       --|> Debug.log "displaysize"
   in
   [ if 15.0 < displaySize then
-      if boon.frame == Keepsake then
+      if boon.frame == KeepsakeFrame then
         group []
           [ image [Canvas.alpha brightness] textures 0.9 boon.icon
           ]
@@ -266,10 +267,13 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
               group [] []
           , case status of
               Active ->
-                if boon.frame == Duo then
-                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/duo.png"
-                else
-                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+                case boon.frame of
+                  DuoFrame ->
+                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/duo.png"
+                  LegendaryFrame ->
+                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/legendary.png"
+                  _ ->
+                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
               Available ->
                 image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
               Excluded ->
