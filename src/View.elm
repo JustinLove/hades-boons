@@ -1,7 +1,7 @@
 module View exposing (Msg(..), document, view, chartDiameter, chartCenter)
 
 import BoonChart
-import BoonChart.Svg
+--import BoonChart.Svg
 import BoonChart.Canvas
 import Geometry
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))

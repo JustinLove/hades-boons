@@ -1,7 +1,6 @@
 module HadesBoons exposing (..)
 
 import BoonChart exposing (DragMode(..))
-import BoonChart.Svg as BoonChart
 import Dxf.Decode
 import Geometry exposing (Point, tau)
 import Layout exposing (Layout, GroupId)
