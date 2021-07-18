@@ -501,7 +501,7 @@ displayFrame scaled frame =
         ] none
     Keepsake ->
       el
-        [ Background.image "GUI/HUD/Primaryboons/Keepsake_Backing.png"
+        [ Background.image "GUI/HUD/PrimaryBoons/Keepsake_Backing.png"
         , width (px (scaled 173))
         , height (px (scaled 114))
         , moveDown (scaled 50 |> toFloat)
