@@ -647,7 +647,7 @@ boonExcludedByRequirements excludedTraits trait =
       else
         False
 
-traitStatus : Set TraitId -> Maybe String -> Traits -> Dict TraitId BoonStatus
+traitStatus : Set TraitId -> String -> Traits -> Dict TraitId BoonStatus
 traitStatus activeTraits metaUpgrade traits =
   let
     activeSlots = calculateActiveSlots activeTraits traits
@@ -670,7 +670,7 @@ traitStatus activeTraits metaUpgrade traits =
       metaUpgrades
         |> List.map (\id ->
             ( id
-            , if Just id == metaUpgrade then
+            , if id == metaUpgrade then
                 Active
               else
                 Excluded
@@ -742,7 +742,7 @@ calculateActiveSlots activeTraits (Traits {gods}) =
     |> List.filterMap .slot
     |> Set.fromList
 
-calculateExcludedTraits : Set TraitId -> Set SlotId -> Maybe String -> Traits -> Set TraitId
+calculateExcludedTraits : Set TraitId -> Set SlotId -> String -> Traits -> Set TraitId
 calculateExcludedTraits activeTraits activeSlots metaUpgrade (Traits {gods, duos} as traits) =
   let
     basics = gods |> List.concatMap godTraits
@@ -773,17 +773,13 @@ calculateExcludedIncompatibleTraits activeTraits traits =
     |> List.map .trait
     |> Set.fromList
 
-calculateExcludedMetaUpgradeTraits : Maybe String -> List Trait -> Set TraitId
+calculateExcludedMetaUpgradeTraits : String -> List Trait -> Set TraitId
 calculateExcludedMetaUpgradeTraits metaUpgrade traits =
   traits
     |> List.filter (\{requiredMetaUpgradeSelected} ->
       case requiredMetaUpgradeSelected of
-        Just req ->
-          case metaUpgrade of
-            Just meta -> meta /= req
-            Nothing -> True
-        Nothing ->
-          False
+        Just req -> metaUpgrade /= req
+        Nothing -> False
       )
     |> List.map .trait
     |> Set.fromList

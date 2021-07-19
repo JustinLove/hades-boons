@@ -49,7 +49,7 @@ type alias Model =
   , activeBasicGroups : List (Set GroupId)
   , activeDuoGroups : Set GroupId
   , activeSlots : Set SlotId
-  , metaUpgrade : Maybe String
+  , metaUpgrade : String
   , boonStatus : Dict TraitId BoonStatus
   , currentPrimaryMenu : Maybe SlotId
   , artAttribution : Bool
@@ -85,7 +85,7 @@ initialModel flags location key =
   , activeBasicGroups = []
   , activeDuoGroups = Set.empty
   , activeSlots = Set.empty
-  , metaUpgrade = Just "AmmoMetaUpgrade"
+  , metaUpgrade = "AmmoMetaUpgrade"
   , boonStatus = Dict.empty
   , currentPrimaryMenu = Nothing
   , artAttribution = False
@@ -244,7 +244,10 @@ update msg model =
           )
         , metaUpgrade =
           if slot == "Soul" then
-            Nothing
+            if model.metaUpgrade == "AmmoMetaUpgrade" then
+              "ReloadAmmoMetaUpgrade"
+            else
+              "AmmoMetaUpgrade"
           else
             model.metaUpgrade
         }
@@ -283,7 +286,7 @@ update msg model =
     UI (View.SelectSoul id) ->
       ( { model
         | currentPrimaryMenu = Nothing
-        , metaUpgrade = Just id
+        , metaUpgrade = id
         }
           |> updateDerivedStatus
       , Cmd.none
@@ -346,7 +349,7 @@ updateDerivedStatus model =
     activeLayoutTraits =
       activeTraits
         |> Set.union slotTraits
-        |> Set.union (model.metaUpgrade |> Maybe.map Set.singleton |> Maybe.withDefault Set.empty)
+        |> Set.insert model.metaUpgrade
   in
   { model
   | activeTraits = activeTraits

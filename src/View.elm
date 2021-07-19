@@ -281,15 +281,11 @@ metaTrayButton model scaled =
     inSlot =
       Traits.miscBoons
         |> List.filter (Traits.isSlot "Soul")
-        |> List.filter (\{trait} -> Just trait == model.metaUpgrade)
+        |> List.filter (\{trait} -> trait == model.metaUpgrade)
         |> List.head
   in
   el
-    [ if model.currentPrimaryMenu == Just "Soul" then
-        onRight (soulMenu model scaled)
-      else
-        padding 0
-    , width (px (scaled 200))
+    [ width (px (scaled 200))
     ]
     (case inSlot of
       Just boon ->
@@ -327,15 +323,6 @@ keepsakeMenu model scaled =
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
       |> List.map (\boon -> keepsakeIconButton (SelectKeepsake boon.trait) scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)))
-    )
-
-soulMenu model scaled =
-  row
-    [ centerY
-    ]
-    (Traits.miscBoons
-      |> List.filter (Traits.isSlot "Soul")
-      |> List.map (\boon -> metaIconButton (SelectSoul boon.trait) scaled MetaUpgrade (Just boon.icon) (boon.name))
     )
 
 weaponMenu model scaled =
