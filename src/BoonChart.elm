@@ -67,6 +67,7 @@ type IconType
   = Direct
   | Slot
   | Reference
+  | DuoReference
 
 type alias Connector =
   { shape : ConnectorShape
@@ -234,7 +235,7 @@ layoutDuoBoon metrics trait =
           , icon = trait.icon
           , id = trait.trait
           , location = point
-          , iconType = Reference
+          , iconType = DuoReference
           , frame = trait.frame
           , color = duoBoonColor
           }
@@ -628,6 +629,8 @@ hitBoon radius at {location, iconType} =
     Slot ->
       False
     Reference ->
+      Geometry.length (Geometry.sub at location) < radius * 0.5
+    DuoReference ->
       Geometry.length (Geometry.sub at location) < radius * 0.5
 
 hitGod : Float -> Float -> Point -> GodMetrics -> Maybe TraitId

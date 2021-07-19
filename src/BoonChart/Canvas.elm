@@ -198,6 +198,7 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
         Direct -> boonSize
         Slot -> boonSize * 0.8
         Reference -> boonSize * 0.5
+        DuoReference -> boonSize * 0.5
     status = Dict.get boon.id boonStatus |> Maybe.withDefault Unavailable
     textColor =
       case status of
@@ -246,54 +247,55 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
       --|> Debug.log "displaysize"
   in
   [ if 15.0 < displaySize then
-      if boon.frame == KeepsakeFrame then
-        group []
-          (case status of
-            Active ->
-              [ image [Canvas.alpha 1.0] textures 0.9 boon.icon
-              ]
-            Available ->
-              [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
-              ]
-            _ ->
-              [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
-              , image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-              ]
-          )
+      (if boon.frame == KeepsakeFrame then
+        (case status of
+          Active ->
+            [ image [Canvas.alpha 1.0] textures 0.9 boon.icon
+            ]
+          Available ->
+            [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
+            ]
+          _ ->
+            [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
+            , image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+            ]
+        )
       else
-        group []
-          [ image [] textures 0.9 boon.icon
-          , if overlayColor /= (Color.rgba 0 0 0 0) then
-              shapes
-                [ fill overlayColor
-                , transform
-                  [ translate (-0.47, 0.0)
-                  , rotate (tau/8)
-                  ]
+        [ image [] textures 0.9 boon.icon
+        , if overlayColor /= (Color.rgba 0 0 0 0) then
+            shapes
+              [ fill overlayColor
+              , transform
+                [ translate (-0.47, 0.0)
+                , rotate (tau/8)
                 ]
-                [ rect (0,0) side side
-                ]
-            else
+              ]
+              [ rect (0,0) side side
+              ]
+          else
+            group [] []
+        , case status of
+            Active ->
+              case boon.frame of
+                DuoFrame ->
+                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/duo.png"
+                LegendaryFrame ->
+                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/legendary.png"
+                _ ->
+                  image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
+            Available ->
+              image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
+            Excluded ->
+              image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+            Unavailable ->
               group [] []
-          , case status of
-              Active ->
-                case boon.frame of
-                  DuoFrame ->
-                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/duo.png"
-                  LegendaryFrame ->
-                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/legendary.png"
-                  _ ->
-                    image [] textures 1.2 "GUI/Screens/BoonIconFrames/common.png"
-              Available ->
-                image [] textures 1.2 "GUI/Screens/BoonIconFrames/primary.png"
-              Excluded ->
-                image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
-              Unavailable ->
-                group [] []
-          ]
+        ]
+      )
+        |> group [ Canvas.alpha ((((displaySize - 15.0) / 10.0) |> clamp 0 1))
+            ]
     else
       group [] []
-  , if displaySize < 25.0 then
+  , if displaySize < 25.0 && boon.iconType /= DuoReference then
       shapes
         [ fill smallColor
         , transform
