@@ -80,6 +80,7 @@ view model =
       , inFront (displayFooter model.artAttribution)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
+      , inFront (displayDescription model)
       , inFront displayReset
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
@@ -513,6 +514,37 @@ displayFrame scaled frame =
         , centerY
         ] none
 
+displayDescription model =
+  case model.descriptionBoon of
+    Just id ->
+      let
+        desc =
+          Traits.findBoon model.traits id
+            |> Maybe.map .description
+            |> Maybe.map (\d -> if d == "" then id else d)
+            |> Maybe.withDefault id
+      in
+      el
+        [ paddingEach
+          { top = 0
+          , right = resetSize * 5
+          , bottom = footerSize * 2
+          , left = 200
+          }
+        , alignBottom
+        , centerX
+        ]
+        ( paragraph
+          [ Background.color windowBackColor
+          , Border.color buttonBorderColor
+          , Border.width 2
+          , Border.rounded 2
+          , padding 10
+          ]
+          [ text desc ]
+        )
+    Nothing ->
+      none
 
 displayReset : Element Msg
 displayReset =
@@ -595,6 +627,7 @@ resetSize = sizeStep 2 |> round
 
 sizeStep = modular 16 1.25
 
+windowBackColor = rgb255 21 22 19
 buttonBackColor = rgb255 59 64 54
 buttonBorderColor = rgb255 255 255 160
 

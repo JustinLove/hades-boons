@@ -42,6 +42,7 @@ trait t =
     [ ("icon", t.icon |> string)
     , ("trait", t.trait |> string)
     , ("name", t.name |> string)
+    , ("description", t.description |> string)
     , ("slot", t.slot |> maybe string)
     , ("requiredSlottedTrait", t.requiredSlottedTrait |> maybe string)
     , ("requiredMetaUpgradeSelected", t.requiredMetaUpgradeSelected |> maybe string)

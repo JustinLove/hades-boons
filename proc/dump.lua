@@ -64,6 +64,23 @@ local function TraitName(id)
 	end
 end
 
+local function TraitDescription(id)
+	for i,data in ipairs(Texts) do
+		if data.Id == id then
+			if data.Description then
+				local x = string.find(data.Description, "\n", 1, true)
+				if x then
+					return string.sub(data.Description, 1, x-2)
+				else
+					return data.Description
+				end
+			elseif data.InheritFrom then
+				return TraitName(data.InheritFrom)
+			end
+		end
+	end
+end
+
 local function IconPath(id)
 	local name = id .. '_Large'
 	for i,data in ipairs(Animations) do
@@ -178,6 +195,7 @@ local function GodTrait(trait, extra)
 	local name = trait
 	local image = ""
 	local tname = TraitName(trait)
+	local desc = TraitDescription(trait)
 	if tname then
 		name = tname
 	end
@@ -213,7 +231,8 @@ local function GodTrait(trait, extra)
 		item = item .. '        "RequiredMetaUpgradeSelected": ' .. String(meta) .. ',\n'
 	end
 	item = item .. '        "trait": ' .. String(trait) .. ',\n'
-	item = item .. '        "name": ' .. String(name) .. '\n'
+	item = item .. '        "name": ' .. String(name) .. ',\n'
+	item = item .. '        "description": ' .. String(desc) .. '\n'
 	item = item .. '      }'
 	return item
 end

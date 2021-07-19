@@ -19,6 +19,10 @@
     - mirgeshot vs posiedon ares
   - x souls
 - boon text
+  - formatting
+  - chart hover
+  - tray hover
+  - hard coded descriptions
 - mobile
 - slot menu scaling for window width
 - languages?

@@ -53,6 +53,7 @@ type alias Model =
   , boonStatus : Dict TraitId BoonStatus
   , currentPrimaryMenu : Maybe SlotId
   , artAttribution : Bool
+  , descriptionBoon : Maybe TraitId
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -89,6 +90,7 @@ initialModel flags location key =
   , boonStatus = Dict.empty
   , currentPrimaryMenu = Nothing
   , artAttribution = False
+  , descriptionBoon = Nothing
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -333,6 +335,11 @@ selectBoon id model =
       Set.remove id model.activeTraits
     else
       Set.insert id model.activeTraits
+  , descriptionBoon =
+    if Set.member id model.activeTraits then
+      Nothing
+    else
+      Just id
   }
     |> updateDerivedStatus
 

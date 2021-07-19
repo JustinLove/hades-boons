@@ -44,6 +44,7 @@ trinkets godTag =
       [ { icon = "GUI/Screens/AwardMenu/conch_shell_17.png"
         , trait = "ForcePoseidonBoonTrait"
         , name = "Conch Shell"
+        , description = ""
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
         , requiredMetaUpgradeSelected = Nothing
@@ -57,6 +58,7 @@ trinkets godTag =
       [ { icon = "GUI/Screens/AwardMenu/feather.png"
         , trait = "FastClearDodgeBonusTrait"
         , name = "Lambent Plume"
+        , description = ""
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
         , requiredMetaUpgradeSelected = Nothing
@@ -92,6 +94,7 @@ trait godTag =
     |> map2 (|>) (field "icon" string)
     |> map2 (|>) (field "trait" string)
     |> map2 (|>) (field "name" string)
+    |> map2 (|>) (field "description" string)
     |> map2 (|>) (maybe (field "slot" string))
     |> map2 (|>) (maybe (field "RequiredSlottedTrait" string))
     |> map2 (|>) (maybe (field "RequiredMetaUpgradeSelected" string))

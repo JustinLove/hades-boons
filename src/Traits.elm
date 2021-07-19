@@ -97,6 +97,7 @@ type alias Trait =
   { icon : String
   , trait : TraitId
   , name : String
+  , description : String
   , slot : Maybe SlotId
   , requiredSlottedTrait : Maybe SlotId
   , requiredMetaUpgradeSelected : Maybe TraitId
@@ -342,6 +343,7 @@ miscBoons =
   [ { icon = "GUI/Screens/WeaponEnchantmentIcons/bow_echantment_2.png"
     , trait = "BowLoadAmmoTrait"
     , name = "Aspect of Hera"
+    , description = ""
     , slot = Just "Weapon"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -353,6 +355,7 @@ miscBoons =
   , { icon = "GUI/Screens/WeaponEnchantmentIcons/shield_enchantment_3.png"
     , trait = "ShieldLoadAmmoTrait"
     , name = "Aspect of Beowulf"
+    , description = ""
     , slot = Just "Weapon"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -364,6 +367,7 @@ miscBoons =
   , { icon = "GUI/Screens/MirrorIcons/infernal soul.png"
     , trait = "AmmoMetaUpgrade"
     , name = "Infernal Soul"
+    , description = ""
     , slot = Just "Soul"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -375,6 +379,7 @@ miscBoons =
   , { icon = "GUI/Screens/MirrorBIcons/Stygian_Soul.png"
     , trait = "ReloadAmmoMetaUpgrade"
     , name = "Stygian Soul"
+    , description = ""
     , slot = Just "Soul"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -386,6 +391,7 @@ miscBoons =
   , { icon = "GUI/Screens/AwardMenu/badge_23.png"
     , trait = "HadesShoutKeepsake"
     , name = "Sigil of the Dead"
+    , description = ""
     , slot = Just "Keepsake"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -406,6 +412,7 @@ miscBoons =
   , { icon = "GUI/Screens/BoonIcons/Hades_01_Large.png"
     , trait = "HadesShoutTrait"
     , name = "Hades Aid"
+    , description = ""
     , slot = Just "Shout"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
