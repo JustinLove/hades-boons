@@ -160,6 +160,7 @@ update msg model =
         | traits = Traits.addLayout god layout model.traits
         }
           |> updateChartMetrics
+          |> updateDerivedStatus
       , Cmd.none
       )
     GotLayout god (Err error) ->
@@ -342,11 +343,14 @@ updateDerivedStatus model =
     activeSlots = Traits.calculateActiveSlots activeTraits model.traits
     slotTraits = Set.map (\slot -> "Any"++slot) activeSlots
 
-    activeSlotTraits = Set.union activeTraits slotTraits
+    activeLayoutTraits =
+      activeTraits
+        |> Set.union slotTraits
+        |> Set.union (model.metaUpgrade |> Maybe.map Set.singleton |> Maybe.withDefault Set.empty)
   in
   { model
   | activeTraits = activeTraits
-  , activeBasicGroups = Traits.calculateActiveLayoutGroups activeSlotTraits gods
+  , activeBasicGroups = Traits.calculateActiveLayoutGroups activeLayoutTraits gods
   , activeDuoGroups = Traits.calculateActiveDuoSets gods activeTraits (Traits.duoBoons model.traits)
   , activeSlots = activeSlots
   , boonStatus = Traits.traitStatus activeTraits model.metaUpgrade model.traits

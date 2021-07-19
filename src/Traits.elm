@@ -288,6 +288,12 @@ nameForSlot slot =
     "Shout" -> "Any Call"
     _ -> "Unknown Slot"
 
+metaUpgrades : List String
+metaUpgrades =
+  [ "AmmoMetaUpgrade"
+  , "ReloadAmmoMetaUpgrade"
+  ]
+
 boonsOf : God -> Traits -> List Trait
 boonsOf target (Traits {gods}) =
   gods
@@ -364,7 +370,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Nyx
-    , frame = CommonFrame
+    , frame = KeepsakeFrame
     }
   , { icon = "GUI/Screens/MirrorBIcons/Stygian_Soul.png"
     , trait = "ReloadAmmoMetaUpgrade"
@@ -375,7 +381,7 @@ miscBoons =
     , requiredFalseTraits = Set.empty
     , requirements = None
     , boonType = BasicBoon Nyx
-    , frame = CommonFrame
+    , frame = KeepsakeFrame
     }
   , { icon = "GUI/Screens/AwardMenu/badge_23.png"
     , trait = "HadesShoutKeepsake"
@@ -572,6 +578,7 @@ findBoon : Traits -> TraitId -> Maybe Trait
 findBoon traits id =
   traits
     |> allTraits
+    |> List.append miscBoons
     |> List.filter (hasId id)
     |> List.head
 
@@ -659,8 +666,20 @@ traitStatus activeTraits metaUpgrade traits =
                 Available
             )
           )
+    statusOfMeta =
+      metaUpgrades
+        |> List.map (\id ->
+            ( id
+            , if Just id == metaUpgrade then
+                Active
+              else
+                Excluded
+            )
+          )
   in
-  (List.append statusOfTraits statusOfSlots)
+  statusOfTraits
+    |> List.append statusOfSlots
+    |> List.append statusOfMeta
     |> Dict.fromList
 
 addLayout : God -> Layout -> Traits -> Traits

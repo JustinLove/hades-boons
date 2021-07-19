@@ -3,10 +3,13 @@
   - poseidon - area asymetry
   - ares - maybe flip pomel?
   - incompatible boons?
-  - souls
+  - x souls
 - line formatting
   - zoom relative size?
+- boon text
+- mobile
 - slot menu scaling for window width
+- languages?
 - save calculated metrics
 - rotation outside metrics?
 

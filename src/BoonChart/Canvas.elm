@@ -248,8 +248,18 @@ displayBoonTrait displayDiameter boonSize textures boonStatus boon =
   [ if 15.0 < displaySize then
       if boon.frame == KeepsakeFrame then
         group []
-          [ image [Canvas.alpha brightness] textures 0.9 boon.icon
-          ]
+          (case status of
+            Active ->
+              [ image [Canvas.alpha 1.0] textures 0.9 boon.icon
+              ]
+            Available ->
+              [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
+              ]
+            _ ->
+              [ image [Canvas.alpha 0.5] textures 0.9 boon.icon
+              , image [] textures 0.7 "GUI/LockIcon/LockIcon0001.png"
+              ]
+          )
       else
         group []
           [ image [] textures 0.9 boon.icon
