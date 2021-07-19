@@ -3,13 +3,27 @@
   - poseidon - area asymetry
   - ares - maybe flip pomel?
   - incompatible boons?
+    - hermes flurry with loaded ammo
+    - hermes quick reload with several casts and loaded ammo
+    - hermes bad news with 
+    - artemis exit wounds
+    - smouldering air hades shout
+    - parting shot, dionsys cast, shield
+    - homing laser vs self laser
+    - freezing vortext with ares homing
+    - curse of drowing some duos, bow
+    - hunting blades with shield, stationary rift
+    - ice wine with blizzard orb
+    - blizzard orb with ice strike array, posiedon ares, shield
+    - homing laser vs self laser
+    - mirgeshot vs posiedon ares
   - x souls
-- line formatting
-  - zoom relative size?
 - boon text
 - mobile
 - slot menu scaling for window width
 - languages?
+- line formatting
+  - zoom relative size?
 - save calculated metrics
 - rotation outside metrics?
 
