@@ -33,6 +33,10 @@ a:hover, a:active { color: rgb(218, 216, 222); }
   pointer-events: auto;
 }
 
+.s.p .e.superImage {
+  display: inline-block;
+}
+
 #top > * { animation: delay-appear 2s; }
 canvas { animation: delay-appear 2s; }
 @keyframes delay-appear {

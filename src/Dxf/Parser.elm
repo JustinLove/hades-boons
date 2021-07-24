@@ -86,7 +86,7 @@ controlString =
       |. symbol (Token "{" "looking for an open {")
       |= stringValue
     , succeed ControlStringEnd
-      |. symbol (Token "}" "looking for an close }")
+      |. symbol (Token "}" "looking for a close }")
       |. newline
     ]
 

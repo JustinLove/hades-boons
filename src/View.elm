@@ -4,6 +4,8 @@ import BoonChart
 --import BoonChart.Svg
 import BoonChart.Canvas
 import Geometry
+import SuperText exposing (..)
+import SuperText.Parser as SuperText
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
 import Dict
@@ -18,6 +20,7 @@ import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
 --import Html.Events exposing (on)
+import Parser.Advanced as Parser
 import Set exposing (Set)
 import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
@@ -523,6 +526,7 @@ displayDescription model =
             |> Maybe.map .description
             |> Maybe.map (\d -> if d == "" then id else d)
             |> Maybe.withDefault id
+            |> superText
       in
       el
         [ paddingEach
@@ -540,8 +544,9 @@ displayDescription model =
           , Border.width 2
           , Border.rounded 2
           , padding 10
+          , Font.size descriptionSize
           ]
-          [ text desc ]
+          desc
         )
     Nothing ->
       none
@@ -624,6 +629,7 @@ icon name =
 
 footerSize = sizeStep -1 |> round
 resetSize = sizeStep 2 |> round
+descriptionSize = sizeStep 2 |> round
 
 sizeStep = modular 16 1.25
 
@@ -656,6 +662,109 @@ displayWindowPoint (x,y) =
       ] none
     , text ((printFloat x) ++ "," ++ (printFloat y))
     ]
+
+superText : String -> List (Element msg)
+superText s =
+  Parser.run SuperText.parse s
+    |> Result.map (List.map superPart)
+    --|> Result.mapError (Debug.log "supertext error")
+    |> Result.withDefault [ text s ]
+
+superPart : SuperText -> Element msg
+superPart st =
+  case st of
+    Text s ->
+      text s
+    Format f sub ->
+      paragraph (superFormat f) (List.map superPart sub)
+    Icons i ->
+      superIcon i
+    Keywords (Keyword k) ->
+      el [ Font.bold ] (text k)
+    TooltipData (PercentTooltip t) ->
+      el [ Font.bold ] (text "X%")
+    TooltipData (Tooltip t) ->
+      el [ Font.bold ] (text "X")
+
+superFormat : Format -> List (Attribute msg)
+superFormat format =
+  case format of
+    AltPenalty ->
+      [ Font.bold
+      , Font.color (rgb 1 0 0)
+      ]
+    AltUpgrade ->
+      [ Font.bold
+      , Font.color (rgb 0 1 0)
+      ]
+    Bold ->
+      [ Font.bold ]
+    BoldGraft ->
+      [ Font.bold ]
+    Italic ->
+      [ Font.italic ]
+    PreviousFormat -> []
+
+superIcon : Icon -> Element msg
+superIcon i =
+  case i of
+    Ammo ->
+      superImage
+        { src = "GUI/Icons/Ammo_Small.png"
+        , description = "Bloodstone"
+        }
+    Currency ->
+      superImage
+        { src = "GUI/Icons/Currency_Small.png"
+        , description = "Charon's Obol"
+        }
+    Gem ->
+      superImage
+        { src = "GUI/Icons/Gems_Small.png"
+        , description = "Gemstones"
+        }
+    GiftPoint ->
+      superImage
+        { src = "GUI/Icons/Gift_Small.png"
+        , description = "Nectar"
+        }
+    Health ->
+      superImage
+        { src = "GUI/Icons/Life_Small.png"
+        , description = "Life"
+        }
+    HealthRestore ->
+      superImage
+        { src = "GUI/Icons/LifeRestore_Small.png"
+        , description = "Healing"
+        }
+    HealthUp ->
+      superImage
+        { src = "GUI/Icons/LifeUp_Small.png"
+        , description = "Max Life"
+        }
+    KEnemyHealth ->
+      superImage
+        { src = "GUI/Icons/Life_Small.png"
+        , description = "Enemy Health"
+        }
+    MetaPoint ->
+      superImage
+        { src = "GUI/Icons/Darkness_Small.png"
+        , description = "Darkness"
+        }
+
+superImage : { src : String, description : String } -> Element msg
+superImage props =
+  el
+    [ moveDown 2
+    , htmlAttribute <| Html.Attributes.class "superImage"
+    ]
+    (image
+      [ height (px descriptionSize)
+      ]
+      props
+    )
 
 printFloat : Float -> String
 printFloat x =

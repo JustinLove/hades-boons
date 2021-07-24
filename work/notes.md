@@ -19,7 +19,8 @@
     - mirgeshot vs posiedon ares
   - x souls
 - boon text
-  - formatting
+  - x formatting
+  - keyword translations
   - chart hover
   - tray hover
   - hard coded descriptions
