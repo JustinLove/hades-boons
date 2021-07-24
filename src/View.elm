@@ -8,7 +8,7 @@ import SuperText exposing (..)
 import SuperText.Parser as SuperText
 import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
 
-import Dict
+import Dict exposing (Dict)
 import Canvas.Texture as Canvas
 import Element exposing (..)
 import Element.Background as Background
@@ -526,7 +526,7 @@ displayDescription model =
             |> Maybe.map .description
             |> Maybe.map (\d -> if d == "" then id else d)
             |> Maybe.withDefault id
-            |> superText
+            |> superText model.texts
       in
       el
         [ paddingEach
@@ -663,24 +663,24 @@ displayWindowPoint (x,y) =
     , text ((printFloat x) ++ "," ++ (printFloat y))
     ]
 
-superText : String -> List (Element msg)
-superText s =
+superText : Dict String String -> String -> List (Element msg)
+superText texts s =
   Parser.run SuperText.parse s
-    |> Result.map (List.map superPart)
+    |> Result.map (List.map (superPart texts))
     --|> Result.mapError (Debug.log "supertext error")
     |> Result.withDefault [ text s ]
 
-superPart : SuperText -> Element msg
-superPart st =
+superPart : Dict String String -> SuperText -> Element msg
+superPart texts st =
   case st of
     Text s ->
       text s
     Format f sub ->
-      paragraph (superFormat f) (List.map superPart sub)
+      paragraph (superFormat f) (List.map (superPart texts) sub)
     Icons i ->
       superIcon i
     Keywords (Keyword k) ->
-      el [ Font.bold ] (text k)
+      el [ Font.bold ] (text (Dict.get k texts |> Maybe.withDefault k))
     TooltipData (PercentTooltip t) ->
       el [ Font.bold ] (text "X%")
     TooltipData (Tooltip t) ->

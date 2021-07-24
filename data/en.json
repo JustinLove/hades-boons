@@ -1,0 +1,197 @@
+[
+  {
+    "Id": "Armor",
+    "DisplayName": "Armor"
+  }
+,
+  {
+    "Id": "Attack",
+    "DisplayName": "Attack"
+  }
+,
+  {
+    "Id": "BladeRift",
+    "DisplayName": "Blade Rift"
+  }
+,
+  {
+    "Id": "BlinkStrike",
+    "DisplayName": "Dash-Strike"
+  }
+,
+  {
+    "Id": "BossPlural",
+    "DisplayName": "Bosses"
+  }
+,
+  {
+    "Id": "Cast",
+    "DisplayName": "Cast"
+  }
+,
+  {
+    "Id": "Charm",
+    "DisplayName": "Charm"
+  }
+,
+  {
+    "Id": "Chill",
+    "DisplayName": "Chill"
+  }
+,
+  {
+    "Id": "Cloud",
+    "DisplayName": "Festive Fog"
+  }
+,
+  {
+    "Id": "Common",
+    "DisplayName": "Common"
+  }
+,
+  {
+    "Id": "Crit",
+    "DisplayName": "Critical"
+  }
+,
+  {
+    "Id": "Curse",
+    "DisplayName": "Doom"
+  }
+,
+  {
+    "Id": "Dash",
+    "DisplayName": "Dash"
+  }
+,
+  {
+    "Id": "Deflect",
+    "DisplayName": "Deflect"
+  }
+,
+  {
+    "Id": "Dodge",
+    "DisplayName": "Dodge"
+  }
+,
+  {
+    "Id": "Encounter",
+    "DisplayName": "Encounter(s)"
+  }
+,
+  {
+    "Id": "EncounterAlt",
+    "DisplayName": "Encounter"
+  }
+,
+  {
+    "Id": "EncounterPlural",
+    "DisplayName": "Encounters"
+  }
+,
+  {
+    "Id": "ExtraChance",
+    "DisplayName": "Death Defiance"
+  }
+,
+  {
+    "Id": "FishingPoint",
+    "DisplayName": "Fishing Point"
+  }
+,
+  {
+    "Id": "Fountain",
+    "DisplayName": "Fountain"
+  }
+,
+  {
+    "Id": "GodBoonPlural",
+    "DisplayName": "Boons"
+  }
+,
+  {
+    "Id": "Invulnerable",
+    "DisplayName": "Impervious"
+  }
+,
+  {
+    "Id": "Mark",
+    "DisplayName": "Marked"
+  }
+,
+  {
+    "Id": "Poison",
+    "DisplayName": "Hangover"
+  }
+,
+  {
+    "Id": "PomPlural",
+    "DisplayName": "Poms of Power"
+  }
+,
+  {
+    "Id": "Rarity",
+    "DisplayName": "Rarity"
+  }
+,
+  {
+    "Id": "Revenge",
+    "DisplayName": "Revenge"
+  }
+,
+  {
+    "Id": "RoomAlt",
+    "DisplayName": "Chamber"
+  }
+,
+  {
+    "Id": "Rupture",
+    "DisplayName": "Rupture"
+  }
+,
+  {
+    "Id": "Special",
+    "DisplayName": "Special"
+  }
+,
+  {
+    "Id": "Stagger",
+    "DisplayName": "Exposed"
+  }
+,
+  {
+    "Id": "Static",
+    "DisplayName": "Jolted"
+  }
+,
+  {
+    "Id": "Sturdy",
+    "DisplayName": "Sturdy"
+  }
+,
+  {
+    "Id": "Traps",
+    "DisplayName": "Traps"
+  }
+,
+  {
+    "Id": "Weak",
+    "DisplayName": "Weak"
+  }
+,
+  {
+    "Id": "Wrath",
+    "DisplayName": "Call"
+  }
+,
+  {
+    "Id": "WrathDerivedStocks",
+    "DisplayName": "Call"
+  }
+,
+  {
+    "Id": "WrathGauge",
+    "DisplayName": "God Gauge"
+  }
+
+]

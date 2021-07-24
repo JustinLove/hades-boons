@@ -20,10 +20,12 @@
   - x souls
 - boon text
   - x formatting
-  - keyword translations
+  - x keyword translations
+  - traitdata
   - chart hover
   - tray hover
   - hard coded descriptions
+- credit popup background
 - mobile
 - slot menu scaling for window width
 - languages?

@@ -9,6 +9,7 @@ import Log
 import Traits exposing (TraitId, SlotId, Traits, God(..), BoonStatus(..))
 import Traits.Decode as Decode
 import Traits.Generated as Generated
+import Texts.Generated as Generated
 --import Traits.Stub as Generated
 import View
 
@@ -31,6 +32,7 @@ type Msg
   | CurrentUrl Url
   | Navigate Browser.UrlRequest
   | GotTraits (Result Http.Error Traits)
+  | GotTexts (Result Http.Error (Dict String String))
   | GotLayout God (Result Http.Error Layout)
   | WindowSize (Int, Int)
   | WindowReSize (Int, Int)
@@ -44,6 +46,7 @@ type alias Model =
   , windowKnown : Bool
   , canvasTextures : Dict String Canvas.Texture
   , traits : Traits
+  , texts : Dict String String
   , chartMetrics : BoonChart.ChartMetrics
   , activeTraits : Set TraitId
   , activeBasicGroups : List (Set GroupId)
@@ -79,8 +82,8 @@ initialModel flags location key =
   , windowHeight = 300
   , windowKnown = False
   , canvasTextures = Dict.empty
-  --, labelWidths = Dict.empty
   , traits = Traits.empty
+  , texts = Dict.empty
   , chartMetrics = BoonChart.calculateMetrics Traits.empty rotation
   , activeTraits = Set.empty
   , activeBasicGroups = []
@@ -110,6 +113,7 @@ initWithGenerated : Model -> (Model, Cmd Msg)
 initWithGenerated model =
   ( { model
     | traits = Generated.traits
+    , texts = Generated.texts
     }
       |> updateChartMetrics
       |> updateDerivedStatus
@@ -123,6 +127,7 @@ initAndLoad model =
   ( model
   , Cmd.batch
     [ fetchTraits
+    , fetchText
     , initialWindowSize
     ]
   )
@@ -157,6 +162,12 @@ update msg model =
       )
     GotTraits (Err error) ->
       (model, Log.httpError "fetch error: traits" error)
+    GotTexts (Ok texts) ->
+      ( { model | texts = texts }
+      , Cmd.none
+      )
+    GotTexts (Err error) ->
+      (model, Log.httpError "fetch error: texts" error)
     GotLayout god (Ok layout) ->
       ( { model
         | traits = Traits.addLayout god layout model.traits
@@ -465,6 +476,13 @@ fetchTraits =
   Http.get
     { url = "../data/traits.json"
     , expect = Http.expectJson GotTraits Decode.traits
+    }
+
+fetchText : Cmd Msg
+fetchText =
+  Http.get
+    { url = "../data/en.json"
+    , expect = Http.expectJson GotTexts Decode.texts
     }
 
 fetchDxf : God -> Cmd Msg

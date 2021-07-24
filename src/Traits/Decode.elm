@@ -1,8 +1,9 @@
-module Traits.Decode exposing (traits)
+module Traits.Decode exposing (traits, texts)
 
 import Layout
 import Traits exposing (..)
 
+import Dict exposing (Dict)
 import Json.Decode exposing (..)
 import Set exposing (Set)
 
@@ -118,3 +119,16 @@ requirements =
 set : Decoder comparable -> Decoder (Set comparable)
 set decoder =
   list decoder |> map Set.fromList
+
+texts : Decoder (Dict String String)
+texts =
+  list text
+    |> map Dict.fromList
+
+text : Decoder (String, String)
+text =
+  map2 Tuple.pair
+    (field "Id" string)
+    (field "DisplayName" string)
+
+

@@ -8,6 +8,7 @@ import Traits exposing (TraitId, Traits, God(..))
 import Traits.Decode as Decode
 import Traits.EncodeElm as EncodeElm
 
+import Dict exposing (Dict)
 import Elm.CodeGen as Elm
 import Elm.Pretty
 import Json.Decode as Decode
@@ -21,6 +22,8 @@ main = Platform.worker
 
 type alias Model =
   { traits : Traits
+  , texts : Dict String String
+  , filesWritten : List String
   }
 
 type Msg
@@ -30,14 +33,18 @@ type Msg
 type File
   = TraitsJson Traits
   | Dxf God Layout
+  | TextsJson (Dict String String)
 
 init : () -> (Model, Cmd Msg)
 init _ =
   ( { traits = Traits.empty
+    , texts = Dict.empty
+    , filesWritten = []
     }
   , Cmd.batch
     [ Console.write "start"
     , Console.readFile "traits.json"
+    , Console.readFile "en.json"
     ]
   )
 
@@ -61,6 +68,11 @@ update msg model =
           | traits = Traits.addLayout god layout model.traits
           }
             |> checkDone
+        Ok (TextsJson texts) -> 
+          let output = (generateTexts texts) in
+          ( {model | texts = texts}
+          , Console.writeFile "Texts/Generated.elm" output
+          )
         Err err ->
           ( model
           , Cmd.batch
@@ -71,11 +83,15 @@ update msg model =
     ConsoleEvent (Ok (Console.ReadFile name (Err err))) ->
       (model, Console.write ("Failed to read " ++ name ++ " : " ++ err))
     ConsoleEvent (Ok (Console.WriteFile name (Ok _))) ->
-      ( model
-      , Cmd.batch
-        [ Console.exit
-        , Console.write "done"
-        ]
+      let written = name :: model.filesWritten in
+      ( { model | filesWritten = written }
+      , if List.length written == 2 then
+          Cmd.batch
+            [ Console.exit
+            , Console.write "done"
+            ]
+        else
+          Cmd.none
       )
     ConsoleEvent (Ok (Console.WriteFile name (Err err))) ->
       (model, Console.write ("Failed to write " ++ name ++ " : " ++ err))
@@ -128,6 +144,22 @@ generateFile traits =
     Nothing
     |> Elm.Pretty.pretty 80
 
+generateTexts : Dict String String -> String
+generateTexts texts =
+  Elm.file
+    (Elm.normalModule
+      ["Texts", "Generated"]
+      []
+    )
+    [ Elm.importStmt
+      ["Dict"]
+      Nothing
+      (Just (Elm.exposeExplicit [Elm.closedTypeExpose "Dict"]))
+    ]
+    (EncodeElm.texts texts)
+    Nothing
+    |> Elm.Pretty.pretty 80
+
 fetchDxf : God -> Cmd Msg
 fetchDxf god =
   Console.readFile ((god |> Traits.godName |> String.toLower) ++ ".dxf")
@@ -157,6 +189,10 @@ parseFile filename contents =
       parseDxf Zeus contents
     "dionysus.dxf" ->
       parseDxf Dionysus contents
+    "en.json" ->
+      Decode.decodeString Decode.texts contents
+        |> Result.map TextsJson
+        |> Result.mapError Decode.errorToString
     _ ->
       Err "Unknown file"
 

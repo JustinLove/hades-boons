@@ -3,6 +3,7 @@ module Traits.EncodeElm exposing (..)
 import Layout.EncodeElm
 import Traits exposing (..)
 
+import Dict exposing (Dict)
 import Elm.CodeGen exposing (..)
 import Set exposing (Set)
 
@@ -84,3 +85,19 @@ maybe encoder m =
     Just x -> construct "Just" [encoder x]
     Nothing -> val "Nothing"
 
+texts : Dict String String -> List Declaration
+texts tx =
+  [ valDecl
+    Nothing
+    (Just (typeVar "Dict String String"))
+    "texts"
+    (apply
+      [ (fun "Dict.fromList")
+      , (list (List.map pair (Dict.toList tx)))
+      ]
+    )
+  ]
+
+pair : (String, String) -> Expression
+pair (key, value) =
+  tuple [string key, string value]
