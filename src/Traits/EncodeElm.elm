@@ -44,6 +44,7 @@ trait t =
     , ("trait", t.trait |> string)
     , ("name", t.name |> string)
     , ("description", t.description |> string)
+    , ("tooltipData", t.tooltipData |> tooltipData)
     , ("slot", t.slot |> maybe string)
     , ("requiredSlottedTrait", t.requiredSlottedTrait |> maybe string)
     , ("requiredMetaUpgradeSelected", t.requiredMetaUpgradeSelected |> maybe string)
@@ -52,6 +53,14 @@ trait t =
     , ("boonType", t.boonType |> boonType)
     , ("frame", t.frame |> frame)
     ]
+
+tooltipData : Dict String Float -> Expression
+tooltipData tooltips =
+  (apply
+    [ (fun "Dict.fromList")
+    , (list (List.map floatPair (Dict.toList tooltips)))
+    ]
+  )
 
 requirements : Requirements -> Expression
 requirements r =
@@ -89,15 +98,19 @@ texts : Dict String String -> List Declaration
 texts tx =
   [ valDecl
     Nothing
-    (Just (typeVar "Dict String String"))
+    (Just (dictAnn stringAnn stringAnn))
     "texts"
     (apply
       [ (fun "Dict.fromList")
-      , (list (List.map pair (Dict.toList tx)))
+      , (list (List.map stringPair (Dict.toList tx)))
       ]
     )
   ]
 
-pair : (String, String) -> Expression
-pair (key, value) =
+stringPair : (String, String) -> Expression
+stringPair (key, value) =
   tuple [string key, string value]
+
+floatPair : (String, Float) -> Expression
+floatPair (key, value) =
+  tuple [string key, float value]

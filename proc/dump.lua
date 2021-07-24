@@ -48,6 +48,14 @@ local function ArrayOfStrings(a)
 	return '[' .. table.concat(strings, ', ') .. ']'
 end
 
+local function TableOfValues(t)
+	local rows = {}
+	for k,v in pairs(t) do
+		table.insert(rows, String(k) .. ':' .. v)
+	end
+	return '{' .. table.concat(rows, ', ') .. '}'
+end
+
 local function Color255(color)
 	return string.format('[%d,%d,%d]', color[1], color[2], color[3])
 end
@@ -191,6 +199,102 @@ local function TraitRequiredMetaUpgradeSelected(trait)
 	end
 end
 
+tooltipUsed = {"AddShout.SuperDuration","AmmoFieldWeapon.Interval.Min","DisplayDelta1","NewTotal1","TooltipAffectChance","TooltipChillStacks","TooltipCritChance","TooltipCriticalChance","TooltipDeathThreshold","TooltipDefense","TooltipDelay","TooltipDuration","TooltipRequiredPoisonedEnemies","TooltipRoomInterval","TooltipSpeedBoost","TooltipSpreadRate","TooltipThreshold"}
+
+local function TooltipData(obj, tooltipData)
+	if obj.TooltipSpreadRate then
+		tooltipData.TooltipSpreadRate = obj.TooltipSpreadRate
+	end
+	if obj.AddShout and obj.AddShout.SuperDuration then
+		if type(obj.AddShout.SuperDuration) == 'number' then
+			tooltipData['AddShout.SuperDuration'] = obj.AddShout.SuperDuration
+		else 
+			tooltipData['AddShout.SuperDuration'] = obj.AddShout.SuperDuration.BaseValue
+		end
+	end
+	if obj.AmmoFieldWeapon and obj.AmmoFieldWeapon.Interval and obj.AmmoFieldWeapon.Interval.Min then
+		tooltipData['AmmoFieldWeapon.Interval.Min'] = obj.AmmoFieldWeapon.Interval.Min
+	end
+	if obj.ExtractValues then
+		for i,extract in ipairs(obj.ExtractValues) do
+			if obj[extract.Key] then
+				for u,t in ipairs(tooltipUsed) do
+					if t == extract.ExtractAs then
+						value = obj[extract.Key]
+						if type(value) == 'table' then
+							value = value.BaseValue
+						end
+						if extract.Format == "Percent" then
+							tooltipData[extract.ExtractAs] = obj[extract.Key]*100
+						elseif extract.Format == "NegativePercentDelta" then
+							tooltipData[extract.ExtractAs] = 100 - (obj[extract.Key]*100)
+						else
+							tooltipData[extract.ExtractAs] = obj[extract.Key]
+						end
+					end
+				end
+			elseif extract.BaseName == 'DemeterProjectile' then  
+				tooltipData[extract.ExtractAs] = 5
+			end
+		end
+	end
+	if obj.ExtractValue then
+		extract = obj.ExtractValue
+		value = nil
+		if obj.ChangeValue then
+			value = obj.ChangeValue
+		end
+		if obj.BaseValue then
+			value = obj.BaseValue
+		end
+		if value then
+			for u,t in ipairs(tooltipUsed) do
+				if t == extract.ExtractAs then
+					if extract.Format == "Percent" then
+						tooltipData[extract.ExtractAs] = value*100
+					else
+						tooltipData[extract.ExtractAs] = value
+					end
+				end
+			end
+		end
+	end
+end
+
+local function TraitTooltipData(trait)
+	if TraitData[trait] then
+		tooltipData = {}
+		TooltipData(TraitData[trait], tooltipData)
+		if TraitData[trait].AddOnEffectWeapons then
+			TooltipData(TraitData[trait].AddOnEffectWeapons, tooltipData)
+		end
+		if TraitData[trait].OnDamageEnemyFunction then
+			TooltipData(TraitData[trait].OnDamageEnemyFunction.FunctionArgs, tooltipData)
+		end
+		if TraitData[trait].AddIncomingDamageModifier then
+			TooltipData(TraitData[trait].AddIncomingDamageModifier, tooltipData)
+		end
+		if TraitData[trait].AddIncomingDamageModifiers then
+			TooltipData(TraitData[trait].AddIncomingDamageModifiers, tooltipData)
+		end
+		if TraitData[trait].PropertyChanges then
+			for i,prop in ipairs(TraitData[trait].PropertyChanges) do
+				TooltipData(prop, tooltipData)
+			end
+		end
+		if next(tooltipData) then
+			return tooltipData
+		end
+	elseif ConsumableData[trait] then
+		tooltipData = {}
+		TooltipData(ConsumableData[trait], tooltipData)
+		if next(tooltipData) then
+			return tooltipData
+		end
+	end
+	return {}
+end
+
 local function GodTrait(trait, extra)
 	local name = trait
 	local image = ""
@@ -229,6 +333,10 @@ local function GodTrait(trait, extra)
 	meta = TraitRequiredMetaUpgradeSelected(trait)
 	if meta then
 		item = item .. '        "RequiredMetaUpgradeSelected": ' .. String(meta) .. ',\n'
+	end
+	tooltipData = TraitTooltipData(trait)
+	if tooltipData then
+		item = item .. '        "TooltipData": ' .. TableOfValues(tooltipData) .. ',\n'
 	end
 	item = item .. '        "trait": ' .. String(trait) .. ',\n'
 	item = item .. '        "name": ' .. String(name) .. ',\n'

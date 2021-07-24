@@ -21,10 +21,10 @@
 - boon text
   - x formatting
   - x keyword translations
-  - traitdata
+  - x traitdata
   - chart hover
   - tray hover
-  - hard coded descriptions
+  - hard coded traits descriptions
 - credit popup background
 - mobile
 - slot menu scaling for window width
@@ -49,3 +49,5 @@
 - x art credit
   https://www.supergiantgames.com/blog/policy-on-lets-play-videos/
   https://www.supergiantgames.com/blog/policy-on-fan-merchandise/ "Unofficial"
+
+["AddShout.SuperDuration","AmmoFieldWeapon.Interval.Min","DisplayDelta1","NewTotal1","TooltipAffectChance","TooltipChillStacks","TooltipCritChance","TooltipCriticalChance","TooltipDeathThreshold","TooltipDefense","TooltipDelay","TooltipDuration","TooltipRequiredPoisonedEnemies","TooltipRoomInterval","TooltipSpeedBoost","TooltipSpreadRate","TooltipThreshold"]

@@ -7,12 +7,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_13.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {},
         "trait": "RegeneratingSuperTrait",
         "name": "Quick Favor",
         "description": "Your {$Keywords.WrathGauge} charges up automatically."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_14.png",
+        "TooltipData": {},
         "trait": "ChamberGoldTrait",
         "name": "Side Hustle",
         "description": "Each time you enter a {$Keywords.RoomAlt}, gain a bit of wealth."
@@ -20,6 +22,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_03.png",
         "RequiredMetaUpgradeSelected": "ReloadAmmoMetaUpgrade",
+        "TooltipData": {},
         "trait": "AmmoReloadTrait",
         "name": "Auto Reload",
         "description": "You regenerate {!Icons.Ammo} faster."
@@ -27,12 +30,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_12.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {"TooltipDuration":10},
         "trait": "HermesShoutDodge",
         "name": "Second Wind",
         "description": "After using {$Keywords.Wrath}, gain {$Keywords.Dodge} chance and move speed for {#BoldFormatGraft}{$TooltipData.TooltipDuration} Sec.{#PreviousFormat}"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_06.png",
+        "TooltipData": {},
         "trait": "HermesWeaponTrait",
         "name": "Swift Strike",
         "description": "Your {$Keywords.Attack} is faster."
@@ -40,24 +45,28 @@
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_09.png",
         "RequiredFalseTraits": ["SwordSecondaryBlinkTrait"],
+        "TooltipData": {},
         "trait": "HermesSecondaryTrait",
         "name": "Swift Flourish",
         "description": "Your {$Keywords.Special} is faster."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_07.png",
+        "TooltipData": {},
         "trait": "RushRallyTrait",
         "name": "Quick Recovery",
         "description": "After taking damage, quickly {$Keywords.Dash} to recover some {!Icons.Health_Small_Tooltip} you just lost."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_05.png",
+        "TooltipData": {},
         "trait": "MoveSpeedTrait",
         "name": "Greater Haste",
         "description": "You move faster."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_08.png",
+        "TooltipData": {"TooltipDuration":0.5, "TooltipSpeedBoost":2.0},
         "trait": "RushSpeedBoostTrait",
         "name": "Hyper Sprint",
         "description": "After you {$Keywords.Dash}, briefly become {$Keywords.Sturdy} and move {#BoldFormatGraft}{$TooltipData.TooltipSpeedBoost:P} {#PreviousFormat} faster."
@@ -66,18 +75,21 @@
         "icon": "GUI/Screens/BoonIcons/Hermes_02.png",
         "RequiredFalseTraits": ["BowLoadAmmoTrait", "ShieldLoadAmmoTrait"],
         "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "TooltipData": {},
         "trait": "RapidCastTrait",
         "name": "Flurry Cast",
         "description": "Hold {$Keywords.Cast} to fire in rapid succession."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_01.png",
+        "TooltipData": {},
         "trait": "BonusDashTrait",
         "name": "Greatest Reflex",
         "description": "You can {$Keywords.Dash} more times in a row."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Hermes_04.png",
+        "TooltipData": {},
         "trait": "DodgeChanceTrait",
         "name": "Greater Evasion",
         "description": "Whenever you are hit, you have a chance to {$Keywords.Dodge} automatically."
@@ -86,6 +98,7 @@
         "icon": "GUI/Screens/BoonIcons/Hermes_03.png",
         "RequiredFalseTraits": ["AresRangedTrait", "DionysusRangedTrait", "DemeterRangedTrait", "ShieldLoadAmmoTrait", "PoseidonAresProjectileTrait"],
         "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "TooltipData": {},
         "trait": "AmmoReclaimTrait",
         "name": "Quick Reload",
         "description": "Foes drop {!Icons.Ammo} stuck in them faster."
@@ -94,17 +107,9 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["AmmoReloadTrait", "FastClearDodgeBonusTrait"],
-        "icon": "GUI/Screens/BoonIcons/Hermes_02.png",
-        "RequiredFalseTraits": ["MagnetismTrait"],
-        "RequiredMetaUpgradeSelected": "ReloadAmmoMetaUpgrade",
-        "trait": "UnstoredAmmoDamageTrait",
-        "name": "Bad News",
-        "description": "Your {$Keywords.Cast} deals bonus damage to foes {#ItalicFormat}without {#PreviousFormat}{!Icons.Ammo} in them."
-      },
-      {
         "OneOf":["MoveSpeedTrait", "RushSpeedBoostTrait", "FastClearDodgeBonusTrait"],
         "icon": "GUI/Screens/BoonIcons/Hermes_15.png",
+        "TooltipData": {},
         "trait": "SpeedDamageTrait",
         "name": "Rush Delivery",
         "description": "You deal bonus damage based on any bonus move speed."
@@ -113,9 +118,20 @@
         "OneOf":["RapidCastTrait", "AmmoReclaimTrait", "FastClearDodgeBonusTrait"],
         "icon": "GUI/Screens/BoonIcons/Hermes_11.png",
         "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "TooltipData": {},
         "trait": "MagnetismTrait",
         "name": "Greater Recall",
         "description": "Your {!Icons.Ammo} return to you automatically."
+      },
+      {
+        "OneOf":["AmmoReloadTrait", "FastClearDodgeBonusTrait"],
+        "icon": "GUI/Screens/BoonIcons/Hermes_02.png",
+        "RequiredFalseTraits": ["MagnetismTrait"],
+        "RequiredMetaUpgradeSelected": "ReloadAmmoMetaUpgrade",
+        "TooltipData": {},
+        "trait": "UnstoredAmmoDamageTrait",
+        "name": "Bad News",
+        "description": "Your {$Keywords.Cast} deals bonus damage to foes {#ItalicFormat}without {#PreviousFormat}{!Icons.Ammo} in them."
       }
     ]
   }
@@ -128,6 +144,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "AphroditeWeaponTrait",
         "name": "Heartbreak Strike",
         "description": "Your {$Keywords.Attack} deals more damage and inflicts {$Keywords.Weak}."
@@ -135,6 +152,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "AphroditeRushTrait",
         "name": "Passion Dash",
         "description": "Your {$Keywords.Dash} deals damage where you end up, inflicting {$Keywords.Weak}."
@@ -143,6 +161,7 @@
         "icon": "GUI/Screens/BoonIcons/Aphrodite_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "AphroditeRangedTrait",
         "name": "Crush Shot",
         "description": "Your {$Keywords.Cast} is a wide, short-range blast that inflicts {$Keywords.Weak}."
@@ -150,6 +169,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "AphroditeSecondaryTrait",
         "name": "Heartbreak Flourish",
         "description": "Your {$Keywords.Special} deals more damage and inflicts {$Keywords.Weak}."
@@ -157,6 +177,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":0.25, "TooltipDuration":5},
         "trait": "AphroditeShoutTrait",
         "name": "Aphrodite's Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} fires a seeking projectile that inflicts {$Keywords.Charm}."
@@ -165,30 +186,35 @@
         "icon": "GUI/Screens/BoonIcons/Aphrodite_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_AphroditeRangedTrait",
         "name": "Passion Flare",
         "description": "Your {$Keywords.Cast} damages foes around you and inflicts {$Keywords.Weak}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_09_Large.png",
+        "TooltipData": {},
         "trait": "AphroditeRetaliateTrait",
         "name": "Wave of Despair",
         "description": "After you take damage, damage foes around you and inflict {$Keywords.Weak}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_08_Large.png",
+        "TooltipData": {},
         "trait": "AphroditeDeathTrait",
         "name": "Dying Lament",
         "description": "When foes are slain, they damage nearby foes and inflict {$Keywords.Weak}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_07_Large.png",
+        "TooltipData": {},
         "trait": "ProximityArmorTrait",
         "name": "Different League",
         "description": "Resist some damage from nearby foes' attacks."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Aphrodite_11_Large.png",
+        "TooltipData": {},
         "trait": "HealthRewardBonusTrait",
         "name": "Life Affirmation",
         "description": "Any {!Icons.HealthUp_Small} chamber rewards are worth more."
@@ -197,93 +223,105 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Poseidon_01.png",
-        "trait": "ImprovedPomTrait",
-        "name": "Sweet Nectar",
-        "description": "Any {$Keywords.PomPlural} you find are more potent."
-      },
-      {
         "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Aphrodite_05_Large.png",
+        "TooltipData": {"TooltipDuration":5},
         "trait": "AphroditeDurationTrait",
         "name": "Empty Inside",
         "description": "Your {$Keywords.Weak} effects have a longer duration."
       },
       {
+        "OneFromEachSet":[["DemeterRangedTrait"], ["AphroditeWeaponTrait", "AphroditeRushTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Demeter_01.png",
+        "RequiredFalseTraits": ["HomingLaserTrait"],
+        "TooltipData": {"TooltipDuration":4},
+        "trait": "SelfLaserTrait",
+        "name": "Cold Embrace",
+        "description": "Your {$Keywords.Cast} crystal fires its beam directly at you for {#BoldFormatGraft}+{$TooltipData.TooltipDuration} Sec{#PreviousFormat}."
+      },
+      {
         "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Aphrodite_06_Large.png",
+        "TooltipData": {},
         "trait": "AphroditeWeakenTrait",
         "name": "Sweet Surrender",
         "description": "{$Keywords.Weak}-afflicted foes are also more susceptible to damage."
       },
       {
-        "OneOf":["AphroditeRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_13_Large.png",
-        "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
-        "trait": "AphroditeRangedBonusTrait",
-        "name": "Blown Kiss",
-        "description": "Your {$Keywords.Cast} shoots farther and is stronger against undamaged foes."
+        "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_12_Large.png",
+        "TooltipData": {},
+        "trait": "AphroditePotencyTrait",
+        "name": "Broken Resolve",
+        "description": "Your {$Keywords.Weak} effects are more potent."
       },
       {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_Aphrodite_01.png",
-        "trait": "HeartsickCritDamageTrait",
-        "name": "Heart Rend",
-        "description": "Your {$Keywords.Crit} effects deal even more damage to {$Keywords.Weak} foes."
+        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Ares_Aphrodite_01.png",
+        "TooltipData": {},
+        "trait": "CurseSickTrait",
+        "name": "Curse of Longing",
+        "description": "Your {$Keywords.Curse} effects continuously strike {$Keywords.Weak} foes."
       },
       {
         "OneFromEachSet":[["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Dionysus_Aphrodite_01.png",
+        "TooltipData": {},
         "trait": "DionysusAphroditeStackIncreaseTrait",
         "name": "Low Tolerance",
         "description": "Your {$Keywords.Poison} effects can stack more times against {$Keywords.Weak} foes."
       },
       {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Athena_01.png",
-        "RequiredFalseTraits": ["DionysusRangedTrait", "ShieldLoadAmmoTrait"],
-        "trait": "CastBackstabTrait",
-        "name": "Parting Shot",
-        "description": "Your {$Keywords.Cast} gains any bonuses you have for striking foes from behind."
+        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Poseidon_01.png",
+        "TooltipData": {},
+        "trait": "ImprovedPomTrait",
+        "name": "Sweet Nectar",
+        "description": "Any {$Keywords.PomPlural} you find are more potent."
       },
       {
-        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Ares_Aphrodite_01.png",
-        "trait": "CurseSickTrait",
-        "name": "Curse of Longing",
-        "description": "Your {$Keywords.Curse} effects continuously strike {$Keywords.Weak} foes."
+        "OneFromEachSet":[["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["AphroditeDurationTrait", "AphroditeWeakenTrait", "AphroditePotencyTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_10_Large.png",
+        "TooltipData": {"TooltipAffectChance":15.0, "TooltipDuration":4},
+        "trait": "CharmTrait",
+        "name": "Unhealthy Fixation",
+        "description": "Your {$Keywords.Weak} effects also have a {#BoldFormat}{$TooltipData.TooltipAffectChance:P} {#PreviousFormat}chance to {$Keywords.Charm} foes."
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_Aphrodite_01.png",
+        "TooltipData": {},
+        "trait": "HeartsickCritDamageTrait",
+        "name": "Heart Rend",
+        "description": "Your {$Keywords.Crit} effects deal even more damage to {$Keywords.Weak} foes."
+      },
+      {
+        "OneOf":["AphroditeRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_13_Large.png",
+        "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
+        "trait": "AphroditeRangedBonusTrait",
+        "name": "Blown Kiss",
+        "description": "Your {$Keywords.Cast} shoots farther and is stronger against undamaged foes."
       },
       {
         "OneFromEachSet":[["AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeRangedTrait", "AphroditeRushTrait", "AphroditeShoutTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Zeus_Aphrodite_01.png",
         "RequiredSlottedTrait": "Shout",
         "RequiredFalseTraits": ["HadesShoutTrait"],
+        "TooltipData": {},
         "trait": "RegeneratingCappedSuperTrait",
         "name": "Smoldering Air",
         "description": "Your {$Keywords.WrathGauge} charges up automatically, but is capped at {#AltPenaltyFormat}25%{#PreviousFormat}."
       },
       {
-        "OneFromEachSet":[["DemeterRangedTrait"], ["AphroditeWeaponTrait", "AphroditeRushTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_Demeter_01.png",
-        "RequiredFalseTraits": ["HomingLaserTrait"],
-        "trait": "SelfLaserTrait",
-        "name": "Cold Embrace",
-        "description": "Your {$Keywords.Cast} crystal fires its beam directly at you for {#BoldFormatGraft}+{$TooltipData.TooltipDuration} Sec{#PreviousFormat}."
-      },
-      {
-        "OneFromEachSet":[["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"], ["AphroditeDurationTrait", "AphroditeWeakenTrait", "AphroditePotencyTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_10_Large.png",
-        "trait": "CharmTrait",
-        "name": "Unhealthy Fixation",
-        "description": "Your {$Keywords.Weak} effects also have a {#BoldFormat}{$TooltipData.TooltipAffectChance:P} {#PreviousFormat}chance to {$Keywords.Charm} foes."
-      },
-      {
-        "OneOf":["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "ShieldLoadAmmo_AphroditeRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Aphrodite_12_Large.png",
-        "trait": "AphroditePotencyTrait",
-        "name": "Broken Resolve",
-        "description": "Your {$Keywords.Weak} effects are more potent."
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["AphroditeRushTrait", "AphroditeRangedTrait", "AphroditeWeaponTrait", "AphroditeSecondaryTrait", "AphroditeShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Aphrodite_Athena_01.png",
+        "RequiredFalseTraits": ["DionysusRangedTrait", "ShieldLoadAmmoTrait"],
+        "TooltipData": {},
+        "trait": "CastBackstabTrait",
+        "name": "Parting Shot",
+        "description": "Your {$Keywords.Cast} gains any bonuses you have for striking foes from behind."
       }
     ]
   }
@@ -296,6 +334,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Ares_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "AresWeaponTrait",
         "name": "Curse of Agony",
         "description": "Your {$Keywords.Attack} inflicts {$Keywords.Curse}."
@@ -303,6 +342,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Ares_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "AresRushTrait",
         "name": "Blade Dash",
         "description": "Your {$Keywords.Dash} creates a {$Keywords.BladeRift} where you started."
@@ -311,6 +351,7 @@
         "icon": "GUI/Screens/BoonIcons/Ares_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "AresRangedTrait",
         "name": "Slicing Shot",
         "description": "Your {$Keywords.Cast} sends a {$Keywords.BladeRift} hurtling ahead."
@@ -318,6 +359,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Ares_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "AresSecondaryTrait",
         "name": "Curse of Pain",
         "description": "Your {$Keywords.Special} inflicts {$Keywords.Curse}."
@@ -325,6 +367,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Ares_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":1.2},
         "trait": "AresShoutTrait",
         "name": "Ares' Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} turns you into an {$Keywords.Invulnerable} {$Keywords.BladeRift} for {#BoldFormat}{$TooltipData.AddShout.SuperDuration} Sec{#PreviousFormat}."
@@ -333,30 +376,35 @@
         "icon": "GUI/Screens/BoonIcons/Ares_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_AresRangedTrait",
         "name": "Slicing Flare",
         "description": "Your {$Keywords.Cast} sends a large {$Keywords.BladeRift} hurtling ahead for a brief time."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Ares_05_Large.png",
+        "TooltipData": {},
         "trait": "AresRetaliateTrait",
         "name": "Curse of Vengeance",
         "description": "After you take damage, inflict {$Keywords.Curse} on foes around you."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Ares_06_Large.png",
+        "TooltipData": {},
         "trait": "IncreasedDamageTrait",
         "name": "Urge to Kill",
         "description": "Your {$Keywords.Attack}, {$Keywords.Special}, and {$Keywords.Cast} deal more damage."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Ares_12_Large.png",
+        "TooltipData": {},
         "trait": "OnEnemyDeathDamageInstanceBuffTrait",
         "name": "Battle Rage",
         "description": "After slaying a foe, your next {$Keywords.Attack} or {$Keywords.Special} deals more damage."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Ares_14_Large.png",
+        "TooltipData": {},
         "trait": "LastStandDamageBonusTrait",
         "name": "Blood Frenzy",
         "description": "After using {$Keywords.ExtraChance}, deal more damage that {$Keywords.EncounterAlt}."
@@ -365,84 +413,95 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["AresRangedTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_Ares_01.png",
-        "RequiredFalseTraits": ["StationaryRiftTrait", "ShieldLoadAmmoTrait"],
-        "trait": "AresHomingTrait",
-        "name": "Hunting Blades",
-        "description": "Your {$Keywords.Cast} creates a faster {$Keywords.BladeRift} that seeks the nearest foe."
-      },
-      {
-        "OneFromEachSet":[["AresRangedTrait", "ShieldLoadAmmo_AresRangedTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Ares_Demeter_01.png",
-        "RequiredFalseTraits": ["AresHomingTrait"],
-        "trait": "StationaryRiftTrait",
-        "name": "Freezing Vortex",
-        "description": "Your {$Keywords.Cast} inflicts {$Keywords.Chill}, but is smaller and moves slower."
-      },
-      {
-        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRushTrait", "AresShoutTrait"], ["PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_Ares_01.png",
-        "RequiredFalseTraits": ["BlizzardOrbTrait", "ArtemisBonusProjectileTrait", "BowLoadAmmoTrait"],
-        "trait": "PoseidonAresProjectileTrait",
-        "name": "Curse of Drowning",
-        "description": "Your {#BoldFormatGraft}Flood Shot {#PreviousFormat}becomes a pulse that damages foes around you."
-      },
-      {
         "OneOf":["AresWeaponTrait", "AresSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Ares_11_Large.png",
+        "TooltipData": {},
         "trait": "AresLoadCurseTrait",
         "name": "Dire Misfortune",
         "description": "Your {$Keywords.Curse} effects deal more damage when applied multiple times."
       },
       {
-        "OneOf":["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"],
-        "icon": "GUI/Screens/BoonIcons/Ares_13_Large.png",
-        "trait": "AresLongCurseTrait",
-        "name": "Impending Doom",
-        "description": "Your {$Keywords.Curse} effects deal more damage, but take {#BoldFormatGraft}+{$TooltipData.TooltipDelay} Sec. {#PreviousFormat}to activate."
-      },
-      {
         "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
         "icon": "GUI/Screens/BoonIcons/Athena_Ares_01.png",
+        "TooltipData": {},
         "trait": "TriggerCurseTrait",
         "name": "Merciful End",
         "description": "Your abilities that can {$Keywords.Deflect} immediately activate {$Keywords.Curse} effects."
       },
       {
-        "OneOf":["AresAoETrait", "AresDragTrait"],
-        "icon": "GUI/Screens/BoonIcons/Ares_09_Large.png",
-        "trait": "AresCursedRiftTrait",
-        "name": "Vicious Cycle",
-        "description": "Your {$Keywords.BladeRift} effects deal more damage for each consecutive hit."
-      },
-      {
         "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"], ["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Dionysus_Ares_01.png",
+        "TooltipData": {},
         "trait": "PoisonTickRateTrait",
         "name": "Curse of Nausea",
         "description": "Your {$Keywords.Poison} effects deal damage faster. "
       },
       {
-        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait", "ShieldLoadAmmo_ZeusRangedTrait"], ["AresWeaponTrait", "AresSecondaryTrait", "AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"], ["AresRetaliateTrait", "RetaliateWeaponTrait", "AthenaRetaliateTrait", "AphroditeRetaliateTrait", "DemeterRetaliateTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Zeus_Ares_01.png",
-        "trait": "AutoRetaliateTrait",
-        "name": "Vengeful Mood",
-        "description": "Your {$Keywords.Revenge} effects sometimes occur without taking damage."
+        "OneFromEachSet":[["AresRangedTrait", "ShieldLoadAmmo_AresRangedTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Ares_Demeter_01.png",
+        "RequiredFalseTraits": ["AresHomingTrait"],
+        "TooltipData": {},
+        "trait": "StationaryRiftTrait",
+        "name": "Freezing Vortex",
+        "description": "Your {$Keywords.Cast} inflicts {$Keywords.Chill}, but is smaller and moves slower."
       },
       {
         "OneOf":["AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Ares_07_Large.png",
+        "TooltipData": {},
         "trait": "AresAoETrait",
         "name": "Black Metal",
         "description": "Your {$Keywords.BladeRift} effects deal damage in a wider area."
       },
       {
+        "OneFromEachSet":[["AresWeaponTrait", "AresSecondaryTrait", "AresRushTrait", "AresShoutTrait"], ["PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_Ares_01.png",
+        "RequiredFalseTraits": ["BlizzardOrbTrait", "ArtemisBonusProjectileTrait", "BowLoadAmmoTrait"],
+        "TooltipData": {},
+        "trait": "PoseidonAresProjectileTrait",
+        "name": "Curse of Drowning",
+        "description": "Your {#BoldFormatGraft}Flood Shot {#PreviousFormat}becomes a pulse that damages foes around you."
+      },
+      {
         "OneOf":["AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Ares_08_Large.png",
+        "TooltipData": {"TooltipDuration":0.2},
         "trait": "AresDragTrait",
         "name": "Engulfing Vortex",
         "description": "Your {$Keywords.BladeRift} effects last longer and pull foes in."
+      },
+      {
+        "OneOf":["AresAoETrait", "AresDragTrait"],
+        "icon": "GUI/Screens/BoonIcons/Ares_09_Large.png",
+        "TooltipData": {},
+        "trait": "AresCursedRiftTrait",
+        "name": "Vicious Cycle",
+        "description": "Your {$Keywords.BladeRift} effects deal more damage for each consecutive hit."
+      },
+      {
+        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait", "ShieldLoadAmmo_ZeusRangedTrait"], ["AresWeaponTrait", "AresSecondaryTrait", "AresRangedTrait", "AresRushTrait", "AresShoutTrait", "ShieldLoadAmmo_AresRangedTrait"], ["AresRetaliateTrait", "RetaliateWeaponTrait", "AthenaRetaliateTrait", "AphroditeRetaliateTrait", "DemeterRetaliateTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Zeus_Ares_01.png",
+        "TooltipData": {},
+        "trait": "AutoRetaliateTrait",
+        "name": "Vengeful Mood",
+        "description": "Your {$Keywords.Revenge} effects sometimes occur without taking damage."
+      },
+      {
+        "OneOf":["AresWeaponTrait", "AresSecondaryTrait", "AresRetaliateTrait"],
+        "icon": "GUI/Screens/BoonIcons/Ares_13_Large.png",
+        "TooltipData": {"TooltipDelay":0.5},
+        "trait": "AresLongCurseTrait",
+        "name": "Impending Doom",
+        "description": "Your {$Keywords.Curse} effects deal more damage, but take {#BoldFormatGraft}+{$TooltipData.TooltipDelay} Sec. {#PreviousFormat}to activate."
+      },
+      {
+        "OneFromEachSet":[["AresRangedTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_Ares_01.png",
+        "RequiredFalseTraits": ["StationaryRiftTrait", "ShieldLoadAmmoTrait"],
+        "TooltipData": {},
+        "trait": "AresHomingTrait",
+        "name": "Hunting Blades",
+        "description": "Your {$Keywords.Cast} creates a faster {$Keywords.BladeRift} that seeks the nearest foe."
       }
     ]
   }
@@ -455,6 +514,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "DemeterWeaponTrait",
         "name": "Frost Strike",
         "description": "Your {$Keywords.Attack} is stronger and inflicts {$Keywords.Chill}."
@@ -462,6 +522,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "DemeterSecondaryTrait",
         "name": "Frost Flourish",
         "description": "Your {$Keywords.Special} is stronger and inflicts {$Keywords.Chill}."
@@ -469,6 +530,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "DemeterRushTrait",
         "name": "Mistral Dash",
         "description": "Your {$Keywords.Dash} shoots a gust ahead that inflicts {$Keywords.Chill}."
@@ -477,6 +539,7 @@
         "icon": "GUI/Screens/BoonIcons/Demeter_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {"TooltipDuration":5},
         "trait": "DemeterRangedTrait",
         "name": "Crystal Beam",
         "description": "Your {$Keywords.Cast} drops a crystal that fires a beam at foes for {#BoldFormatGraft}{$TooltipData.TooltipDuration} Sec{#PreviousFormat}."
@@ -485,6 +548,7 @@
         "icon": "GUI/Screens/BoonIcons/Demeter_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_DemeterRangedTrait",
         "name": "Icy Flare",
         "description": "Your {$Keywords.Cast} damages foes around you and inflicts {$Keywords.Chill}."
@@ -492,36 +556,42 @@
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":5},
         "trait": "DemeterShoutTrait",
         "name": "Demeter's Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} creates a winter vortex that grows over {#BoldFormat}{$TooltipData.AddShout.SuperDuration} Sec{#PreviousFormat}., inflicting {$Keywords.Chill}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_05_Large.png",
+        "TooltipData": {},
         "trait": "CastNovaTrait",
         "name": "Snow Burst",
         "description": "Whenever you {$Keywords.Cast}, damage foes around you and inflict {$Keywords.Chill}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_11_Large.png",
+        "TooltipData": {"TooltipDefense":10.0},
         "trait": "ZeroAmmoBonusTrait",
         "name": "Ravenous Will",
         "description": "When you have no {!Icons.Ammo}, take {#BoldFormat}{$TooltipData.TooltipDefense}% {#PreviousFormat}less damage and deal more."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_13_Large.png",
+        "TooltipData": {},
         "trait": "DemeterRetaliateTrait",
         "name": "Frozen Touch",
         "description": "After you take damage, damage and {#ItalicFormat}completely {#PreviousFormat}{$Keywords.Chill} your foe."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_09_Large.png",
+        "TooltipData": {},
         "trait": "HealingPotencyDrop",
         "name": "Nourished Soul",
         "description": "Any {!Icons.HealthRestore_Small_Tooltip} effects are more potent. Restore {$TooltipData.NewTotal1}{!Icons.Health_Small} now."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Demeter_08_Large.png",
+        "TooltipData": {"TooltipRoomInterval":3},
         "trait": "HarvestBoonDrop",
         "name": "Rare Crop",
         "description": "Your {$Keywords.GodBoonPlural} become {$Keywords.Common}, then gain {$Keywords.Rarity} every {#BoldFormat}{$TooltipData.TooltipRoomInterval} {#PreviousFormat} {$Keywords.Encounter}."
@@ -531,29 +601,59 @@
     "LinkedUpgrades": [
       {
         "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
-        "icon": "GUI/Screens/BoonIcons/Demeter_07_Large.png",
-        "trait": "MaximumChillBlast",
-        "name": "Arctic Blast",
-        "description": "Applying {#BoldFormat}{$TooltipData.TooltipChillStacks} {#PreviousFormat}stacks of {$Keywords.Chill} causes a blast, clearing the effect."
-      },
-      {
-        "OneOf":["DemeterRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Demeter_14_Large.png",
-        "trait": "DemeterRangedBonusTrait",
-        "name": "Glacial Glare",
-        "description": "Your {$Keywords.Cast} fires longer and inflicts {$Keywords.Chill}."
+        "icon": "GUI/Screens/BoonIcons/Demeter_12_Large.png",
+        "TooltipData": {},
+        "trait": "MaximumChillBonusSlow",
+        "name": "Killing Freeze",
+        "description": "When {#ItalicFormat}all {#PreviousFormat}foes are {$Keywords.Chill}-afflicted, they are {$TooltipData.DisplayDelta1} slower and decay."
       },
       {
         "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["ZeusLightningDebuff"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_Zeus_01.png",
+        "TooltipData": {"TooltipDuration":10},
         "trait": "JoltDurationTrait",
         "name": "Cold Fusion",
         "description": "Your {$Keywords.Static} effects do not expire when foes attack."
       },
       {
+        "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
+        "icon": "GUI/Screens/BoonIcons/Demeter_07_Large.png",
+        "TooltipData": {"TooltipChillStacks":10},
+        "trait": "MaximumChillBlast",
+        "name": "Arctic Blast",
+        "description": "Applying {#BoldFormat}{$TooltipData.TooltipChillStacks} {#PreviousFormat}stacks of {$Keywords.Chill} causes a blast, clearing the effect."
+      },
+      {
+        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["DemeterRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Demeter_Artemis_01.png",
+        "RequiredFalseTraits": ["SelfLaserTrait", "MultiLaserTrait"],
+        "TooltipData": {},
+        "trait": "HomingLaserTrait",
+        "name": "Crystal Clarity",
+        "description": "Your {$Keywords.Cast} is stronger and tracks foes more effectively."
+      },
+      {
+        "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["PoseidonRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_Demeter_01.png",
+        "RequiredFalseTraits": ["PoseidonAresProjectileTrait", "IceStrikeArrayTrait", "ShieldLoadAmmoTrait"],
+        "TooltipData": {},
+        "trait": "BlizzardOrbTrait",
+        "name": "Blizzard Shot",
+        "description": "Your {$Keywords.Cast} moves slowly, piercing foes and firing shards around it."
+      },
+      {
+        "OneOf":["DemeterRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Demeter_14_Large.png",
+        "TooltipData": {"TooltipDuration":2},
+        "trait": "DemeterRangedBonusTrait",
+        "name": "Glacial Glare",
+        "description": "Your {$Keywords.Cast} fires longer and inflicts {$Keywords.Chill}."
+      },
+      {
         "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_Dionysus_01.png",
         "RequiredFalseTraits": ["BlizzardOrbTrait"],
+        "TooltipData": {},
         "trait": "IceStrikeArrayTrait",
         "name": "Ice Wine",
         "description": "Your {$Keywords.Cast} blasts an area with freezing {$Keywords.Cloud} that inflicts {$Keywords.Chill}."
@@ -561,39 +661,18 @@
       {
         "OneFromEachSet":[["MaximumChillBlast", "ZeroAmmoBonusTrait"], ["MaximumChillBonusSlow", "MaximumChillBlast"], ["ZeroAmmoBonusTrait", "MaximumChillBonusSlow"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_10_Large.png",
+        "TooltipData": {"TooltipDeathThreshold":10.0},
         "trait": "InstantChillKill",
         "name": "Winter Harvest",
         "description": "{$Keywords.Chill}-afflicted foes shatter at {#BoldFormatGraft}{$TooltipData.TooltipDeathThreshold}%{#PreviousFormat}{!Icons.KEnemyHealth_Small}, inflicting {$Keywords.Chill} nearby."
       },
       {
-        "OneFromEachSet":[["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait"], ["PoseidonRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_Demeter_01.png",
-        "RequiredFalseTraits": ["PoseidonAresProjectileTrait", "IceStrikeArrayTrait", "ShieldLoadAmmoTrait"],
-        "trait": "BlizzardOrbTrait",
-        "name": "Blizzard Shot",
-        "description": "Your {$Keywords.Cast} moves slowly, piercing foes and firing shards around it."
-      },
-      {
         "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DemeterWeaponTrait", "DemeterRushTrait", "DemeterSecondaryTrait", "DemeterRangedTrait", "ShieldLoadAmmo_DemeterRangedTrait", "DemeterShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Demeter_Athena_01.png",
+        "TooltipData": {},
         "trait": "NoLastStandRegenerationTrait",
         "name": "Stubborn Roots",
         "description": "If you have no {$Keywords.ExtraChance}, your {!Icons.Health_Small_Tooltip} slowly recovers."
-      },
-      {
-        "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["DemeterRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Demeter_Artemis_01.png",
-        "RequiredFalseTraits": ["SelfLaserTrait", "MultiLaserTrait"],
-        "trait": "HomingLaserTrait",
-        "name": "Crystal Clarity",
-        "description": "Your {$Keywords.Cast} is stronger and tracks foes more effectively."
-      },
-      {
-        "OneOf":["DemeterWeaponTrait", "DemeterSecondaryTrait", "DemeterRushTrait", "DemeterShoutTrait", "ShieldLoadAmmo_DemeterRangedTrait", "CastNovaTrait"],
-        "icon": "GUI/Screens/BoonIcons/Demeter_12_Large.png",
-        "trait": "MaximumChillBonusSlow",
-        "name": "Killing Freeze",
-        "description": "When {#ItalicFormat}all {#PreviousFormat}foes are {$Keywords.Chill}-afflicted, they are {$TooltipData.DisplayDelta1} slower and decay."
       }
     ]
   }
@@ -606,6 +685,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "DionysusWeaponTrait",
         "name": "Drunken Strike",
         "description": "Your {$Keywords.Attack} inflicts {$Keywords.Poison}."
@@ -613,6 +693,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "DionysusSecondaryTrait",
         "name": "Drunken Flourish",
         "description": "Your {$Keywords.Special} inflicts {$Keywords.Poison}."
@@ -620,6 +701,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "DionysusRushTrait",
         "name": "Drunken Dash",
         "description": "Your {$Keywords.Dash} causes {$Keywords.Poison} several times near where you started."
@@ -628,6 +710,7 @@
         "icon": "GUI/Screens/BoonIcons/Dionysus_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait", "BowLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "DionysusRangedTrait",
         "name": "Trippy Shot",
         "description": "Your {$Keywords.Cast} lobs a large explosive that bursts into {$Keywords.Cloud}."
@@ -636,6 +719,7 @@
         "icon": "GUI/Screens/BoonIcons/Dionysus_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["BowLoadAmmoTrait", "ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_DionysusRangedTrait",
         "name": "Trippy Flare",
         "description": "Your {$Keywords.Cast} damages foes around you, leaving behind {$Keywords.Cloud}."
@@ -643,30 +727,35 @@
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":1.5},
         "trait": "DionysusShoutTrait",
         "name": "Dionysus' Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} inflicts {$Keywords.Poison} on foes all around you for {#BoldFormat}{$TooltipData.AddShout.SuperDuration} Sec{#PreviousFormat}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_10_Large.png",
+        "TooltipData": {},
         "trait": "DoorHealTrait",
         "name": "After Party",
         "description": "If your {!Icons.Health_Small_Tooltip} is low after {$Keywords.EncounterPlural}, restore to the threshold."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_12_Large.png",
+        "TooltipData": {"TooltipThreshold":40.0},
         "trait": "LowHealthDefenseTrait",
         "name": "Positive Outlook",
         "description": "You take less damage while at {#BoldFormat}{$TooltipData.TooltipThreshold}%{#PreviousFormat}{!Icons.Health_Small_Tooltip} or below."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_13_Large.png",
+        "TooltipData": {},
         "trait": "FountainDamageBonusTrait",
         "name": "Strong Drink",
         "description": "Using a {$Keywords.Fountain} restores {#ItalicFormat}all {#PreviousFormat}{!Icons.Health_Small} and gives you bonus damage."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Dionysus_05_Large.png",
+        "TooltipData": {},
         "trait": "DionysusGiftDrop",
         "name": "Premium Vintage",
         "description": "Gain {!Icons.HealthUp_Small} when you pick up {!Icons.GiftPointSmall}. Receive {#BoldFormat}1{#PreviousFormat}{!Icons.GiftPointSmall} now."
@@ -675,67 +764,76 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_06_Large.png",
-        "trait": "DionysusSlowTrait",
-        "name": "Numbing Sensation",
-        "description": "Your {$Keywords.Poison} effects also make foes move slower."
-      },
-      {
         "OneOf":["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Dionysus_11_Large.png",
+        "TooltipData": {},
         "trait": "DionysusDefenseTrait",
         "name": "High Tolerance",
         "description": "You take less damage while standing in {$Keywords.Cloud}."
       },
       {
-        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait"],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_07_Large.png",
-        "trait": "DionysusSpreadTrait",
-        "name": "Peer Pressure",
-        "description": "{$Keywords.Poison}-afflicted foes inflict it on other foes near them every {#BoldFormat}{$TooltipData.TooltipSpreadRate} Sec{#PreviousFormat}."
-      },
-      {
-        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Poseidon_01.png",
-        "trait": "RaritySuperBoost",
-        "name": "Exclusive Access",
-        "description": "Any {$Keywords.GodBoonPlural} you find are more potent."
-      },
-      {
-        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionyuss_Artemis_01.png",
-        "trait": "PoisonCritVulnerabilityTrait",
-        "name": "Splitting Headache",
-        "description": "{$Keywords.Poison}-afflicted foes are more likely to take {$Keywords.Crit} damage. "
-      },
-      {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_Athena_01.png",
-        "trait": "SlowProjectileTrait",
-        "name": "Calculated Risk",
-        "description": "Your foes' ranged-attack projectiles are slower."
-      },
-      {
-        "OneFromEachSet":[["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait", "DionysusRushTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Dionysus_08_Large.png",
-        "trait": "DionysusComboVulnerability",
-        "name": "Black Out",
-        "description": "{$Keywords.Poison}-afflicted foes take bonus damage in {$Keywords.Cloud}."
-      },
-      {
         "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["DionysusRangedTrait"]],
         "icon": "GUI/Screens/BoonIcons/Zeus_Dionysus_01.png",
+        "TooltipData": {},
         "trait": "LightningCloudTrait",
         "name": "Scintillating Feast",
         "description": "Your {$Keywords.Cloud} effects also deal lightning damage periodically."
       },
       {
+        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait"],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_07_Large.png",
+        "TooltipData": {"TooltipSpreadRate":4},
+        "trait": "DionysusSpreadTrait",
+        "name": "Peer Pressure",
+        "description": "{$Keywords.Poison}-afflicted foes inflict it on other foes near them every {#BoldFormat}{$TooltipData.TooltipSpreadRate} Sec{#PreviousFormat}."
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRushTrait", "AthenaShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Athena_01.png",
+        "TooltipData": {},
+        "trait": "SlowProjectileTrait",
+        "name": "Calculated Risk",
+        "description": "Your foes' ranged-attack projectiles are slower."
+      },
+      {
         "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Dionysus_09_Large.png",
+        "TooltipData": {"TooltipRequiredPoisonedEnemies":3},
         "trait": "DionysusPoisonPowerTrait",
         "name": "Bad Influence",
         "description": "Deal more damage while {$TooltipData.TooltipRequiredPoisonedEnemies} or more foes are {$Keywords.Poison}-afflicted."
+      },
+      {
+        "OneOf":["DionysusRushTrait", "DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_06_Large.png",
+        "TooltipData": {},
+        "trait": "DionysusSlowTrait",
+        "name": "Numbing Sensation",
+        "description": "Your {$Keywords.Poison} effects also make foes move slower."
+      },
+      {
+        "OneFromEachSet":[["DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusShoutTrait", "DionysusRushTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_08_Large.png",
+        "TooltipData": {},
+        "trait": "DionysusComboVulnerability",
+        "name": "Black Out",
+        "description": "{$Keywords.Poison}-afflicted foes take bonus damage in {$Keywords.Cloud}."
+      },
+      {
+        "OneFromEachSet":[["DionysusWeaponTrait", "DionysusRushTrait", "DionysusSecondaryTrait", "DionysusShoutTrait"], ["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionyuss_Artemis_01.png",
+        "TooltipData": {},
+        "trait": "PoisonCritVulnerabilityTrait",
+        "name": "Splitting Headache",
+        "description": "{$Keywords.Poison}-afflicted foes are more likely to take {$Keywords.Crit} damage. "
+      },
+      {
+        "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"], ["DionysusWeaponTrait", "DionysusSecondaryTrait", "DionysusRangedTrait", "ShieldLoadAmmo_DionysusRangedTrait", "DionysusRushTrait", "DionysusShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Dionysus_Poseidon_01.png",
+        "TooltipData": {},
+        "trait": "RaritySuperBoost",
+        "name": "Exclusive Access",
+        "description": "Any {$Keywords.GodBoonPlural} you find are more potent."
       }
     ]
   }
@@ -748,6 +846,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "PoseidonWeaponTrait",
         "name": "Tempest Strike",
         "description": "Your {$Keywords.Attack} deals more damage and knocks foes away."
@@ -755,6 +854,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "PoseidonRushTrait",
         "name": "Tidal Dash",
         "description": "Your {$Keywords.Dash} damages foes in an area and knocks them away."
@@ -763,6 +863,7 @@
         "icon": "GUI/Screens/BoonIcons/Poseidon_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "PoseidonRangedTrait",
         "name": "Flood Shot",
         "description": "Your {$Keywords.Cast} damages foes in an area and knocks them away."
@@ -771,6 +872,7 @@
         "icon": "GUI/Screens/BoonIcons/Poseidon_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_PoseidonRangedTrait",
         "name": "Flood Flare",
         "description": "Your {$Keywords.Cast} damages foes around you and knocks them away."
@@ -778,6 +880,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "PoseidonSecondaryTrait",
         "name": "Tempest Flourish",
         "description": "Your {$Keywords.Special} deals more damage and knocks foes away."
@@ -785,12 +888,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":1.2},
         "trait": "PoseidonShoutTrait",
         "name": "Poseidon's Aid",
         "description": "Your {$Keywords.Wrath} makes you surge into foes while {$Keywords.Invulnerable} for {#BoldFormat}{$TooltipData.AddShout.SuperDuration} Sec{#PreviousFormat}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_09_Large.png",
+        "TooltipData": {},
         "trait": "RoomRewardBonusTrait",
         "name": "Ocean's Bounty",
         "description": "Any {!Icons.GemSmall}, {!Icons.MetaPoint_Small} and {!Icons.Currency_Small} chamber rewards are worth more."
@@ -798,18 +903,21 @@
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_10_Large.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {},
         "trait": "DefensiveSuperGenerationTrait",
         "name": "Boiling Point",
         "description": "Your {$Keywords.WrathGauge} charges up faster when you take damage."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_14_Large.png",
+        "TooltipData": {"TooltipDuration":10},
         "trait": "EncounterStartOffenseBuffTrait",
         "name": "Hydraulic Might",
         "description": "Your {$Keywords.Attack} and {$Keywords.Special} are stronger the first {#BoldFormatGraft}{$TooltipData.TooltipDuration} Sec. {#PreviousFormat}in {$Keywords.Encounter}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Poseidon_06_Large.png",
+        "TooltipData": {},
         "trait": "RandomMinorLootDrop",
         "name": "Sunken Treasure",
         "description": "Gain a random assortment of {!Icons.GemSmall}, {!Icons.MetaPoint_Small}, {!Icons.Currency_Small}, and {!Icons.HealthRestore_Small_Tooltip}."
@@ -818,43 +926,57 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_11_Large.png",
-        "trait": "SlipperyTrait",
-        "name": "Razor Shoals",
-        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects also {$Keywords.Rupture} foes."
-      },
-      {
-        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_05_Large.png",
-        "trait": "BonusCollisionTrait",
-        "name": "Typhoon's Fury",
-        "description": "You deal more damage when slamming foes into barriers."
-      },
-      {
         "OneFromEachSet":[["RoomRewardBonusTrait", "PoseidonPickedUpMinorLootTrait"], ["PoseidonPickedUpMinorLootTrait", "ForcePoseidonBoonTrait"], ["RoomRewardBonusTrait", "ForcePoseidonBoonTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_13_Large.png",
+        "TooltipData": {},
         "trait": "FishingTrait",
         "name": "Huge Catch",
         "description": "You have a greater chance to find a {$Keywords.FishingPoint} in each {$Keywords.RoomAlt}."
       },
       {
-        "OneFromEachSet":[["BonusCollisionTrait", "SlamExplosionTrait"], ["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_07_Large.png",
-        "trait": "DoubleCollisionTrait",
-        "name": "Second Wave",
-        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects shove foes multiple times."
-      },
-      {
         "OneOf":["PoseidonShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Poseidon_15_Large.png",
+        "TooltipData": {},
         "trait": "PoseidonShoutDurationTrait",
         "name": "Rip Current",
         "description": "Your {$Keywords.Wrath} pulls in foes and the effect lasts longer."
       },
       {
         "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_12_Large.png",
+        "TooltipData": {},
+        "trait": "BossDamageTrait",
+        "name": "Wave Pounding",
+        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects deal bonus damage to {$Keywords.BossPlural}."
+      },
+      {
+        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_11_Large.png",
+        "TooltipData": {},
+        "trait": "SlipperyTrait",
+        "name": "Razor Shoals",
+        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects also {$Keywords.Rupture} foes."
+      },
+      {
+        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_Athena_01.png",
+        "TooltipData": {},
+        "trait": "StatusImmunityTrait",
+        "name": "Unshakable Mettle",
+        "description": "You cannot be stunned, and resist some damage from {$Keywords.BossPlural}."
+      },
+      {
+        "OneFromEachSet":[["BonusCollisionTrait", "SlamExplosionTrait"], ["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_07_Large.png",
+        "TooltipData": {},
+        "trait": "DoubleCollisionTrait",
+        "name": "Second Wave",
+        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects shove foes multiple times."
+      },
+      {
+        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Poseidon_08_Large.png",
+        "TooltipData": {},
         "trait": "SlamExplosionTrait",
         "name": "Breaking Wave",
         "description": "Slamming foes into barriers creates a watery blast in the area."
@@ -862,31 +984,27 @@
       {
         "OneFromEachSet":[["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"], ["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusRushTrait", "ZeusShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_Zeus_01.png",
+        "TooltipData": {},
         "trait": "ImpactBoltTrait",
         "name": "Sea Storm",
         "description": "When you knock foes away, they are struck by lightning."
       },
       {
+        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Poseidon_05_Large.png",
+        "TooltipData": {},
+        "trait": "BonusCollisionTrait",
+        "name": "Typhoon's Fury",
+        "description": "You deal more damage when slamming foes into barriers."
+      },
+      {
         "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonRushTrait", "PoseidonShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Poseidon_Artemis_01.png",
         "RequiredFalseTraits": ["PoseidonAresProjectileTrait"],
+        "TooltipData": {},
         "trait": "ArtemisBonusProjectileTrait",
         "name": "Mirage Shot",
         "description": "Your {$Keywords.Cast} fires a second projectile, which deals reduced base damage."
-      },
-      {
-        "OneFromEachSet":[["AthenaWeaponTrait", "AthenaSecondaryTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaShoutTrait"], ["PoseidonWeaponTrait", "PoseidonSecondaryTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonShoutTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_Athena_01.png",
-        "trait": "StatusImmunityTrait",
-        "name": "Unshakable Mettle",
-        "description": "You cannot be stunned, and resist some damage from {$Keywords.BossPlural}."
-      },
-      {
-        "OneOf":["PoseidonWeaponTrait", "PoseidonRushTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "PoseidonSecondaryTrait", "PoseidonShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Poseidon_12_Large.png",
-        "trait": "BossDamageTrait",
-        "name": "Wave Pounding",
-        "description": "Your {$Keywords.GodBoonPlural} with knock-away effects deal bonus damage to {$Keywords.BossPlural}."
       }
     ]
   }
@@ -899,6 +1017,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Athena_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "AthenaWeaponTrait",
         "name": "Divine Strike",
         "description": "Your {$Keywords.Attack} is stronger, and can {$Keywords.Deflect}."
@@ -906,6 +1025,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Athena_03_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "AthenaRushTrait",
         "name": "Divine Dash",
         "description": "Your {$Keywords.Dash} deals damage and can {$Keywords.Deflect}."
@@ -914,6 +1034,7 @@
         "icon": "GUI/Screens/BoonIcons/Athena_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "AthenaRangedTrait",
         "name": "Phalanx Shot",
         "description": "Your {$Keywords.Cast} damages foes in a small area, and can {$Keywords.Deflect}."
@@ -922,6 +1043,7 @@
         "icon": "GUI/Screens/BoonIcons/Athena_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_AthenaRangedTrait",
         "name": "Phalanx Flare",
         "description": "Your {$Keywords.Cast} damages foes around you, and can {$Keywords.Deflect}."
@@ -929,6 +1051,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Athena_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "AthenaSecondaryTrait",
         "name": "Divine Flourish",
         "description": "Your {$Keywords.Special} is stronger, and can {$Keywords.Deflect}."
@@ -936,24 +1059,28 @@
       {
         "icon": "GUI/Screens/BoonIcons/Athena_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":1.5},
         "trait": "AthenaShoutTrait",
         "name": "Athena's Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} briefly makes you {$Keywords.Invulnerable} and {$Keywords.Deflect} all attacks."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Athena_07_Large.png",
+        "TooltipData": {},
         "trait": "TrapDamageTrait",
         "name": "Sure Footing",
         "description": "Resist damage from {$Keywords.Traps}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Athena_06_Large.png",
+        "TooltipData": {},
         "trait": "EnemyDamageTrait",
         "name": "Bronze Skin",
         "description": "Resist damage from foes' attacks."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Athena_08_Large.png",
+        "TooltipData": {},
         "trait": "AthenaRetaliateTrait",
         "name": "Holy Shield",
         "description": "After you take damage, damage foes around you and briefly {$Keywords.Deflect}."
@@ -961,6 +1088,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Athena_13_Large.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {},
         "trait": "PreloadSuperGenerationTrait",
         "name": "Proud Bearing",
         "description": "You begin each {$Keywords.EncounterAlt} with your {$Keywords.WrathGauge} partly full."
@@ -968,6 +1096,7 @@
       {
         "OneOf":["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaRushTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_11_Large.png",
+        "TooltipData": {},
         "trait": "LastStandDurationDrop",
         "name": "Deathless Stand",
         "description": "{$Keywords.ExtraChance} makes you {$Keywords.Invulnerable} longer. Replenish {#BoldFormat}1 {#PreviousFormat}use."
@@ -975,6 +1104,7 @@
       {
         "OneOf":["AthenaWeaponTrait", "AthenaRangedTrait", "AthenaRushTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_12_Large.png",
+        "TooltipData": {},
         "trait": "LastStandHealDrop",
         "name": "Last Stand",
         "description": "{$Keywords.ExtraChance} restores more {!Icons.Health_Small_Tooltip} than usual. Replenish {#BoldFormat}1 {#PreviousFormat}use."
@@ -983,15 +1113,9 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["AthenaRangedTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Athena_Zeus_01.png",
-        "trait": "ReboundingAthenaCastTrait",
-        "name": "Lightning Phalanx",
-        "description": "Your Phalanx Shot {$Keywords.Cast} bounces between nearby foes."
-      },
-      {
         "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait"], ["AthenaWeaponTrait", "AthenaSecondaryTrait"]],
         "icon": "GUI/Screens/BoonIcons/Artemis_Athena_01.png",
+        "TooltipData": {"TooltipDuration":2.0, "TooltipCriticalChance":20.0},
         "trait": "ArtemisReflectBuffTrait",
         "name": "Deadly Reversal",
         "description": "After you {$Keywords.Deflect}, briefly gain {#AltUpgradeFormat}{$TooltipData.TooltipCriticalChance:P} {#PreviousFormat} chance to deal {$Keywords.Crit} damage."
@@ -999,6 +1123,7 @@
       {
         "OneOf":["AthenaWeaponTrait", "AthenaRangedTrait", "ShieldLoadAmmo_AthenaRangedTrait", "AthenaRushTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_14_Large.png",
+        "TooltipData": {},
         "trait": "AthenaBackstabDebuffTrait",
         "name": "Blinding Flash",
         "description": "Your abilities that can {$Keywords.Deflect} also make foes {$Keywords.Stagger}."
@@ -1006,6 +1131,7 @@
       {
         "OneOf":["AthenaShieldTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_10_Large.png",
+        "TooltipData": {},
         "trait": "ShieldHitTrait",
         "name": "Divine Protection",
         "description": "You have a barrier that negates an instance of damage."
@@ -1013,9 +1139,18 @@
       {
         "OneOf":["AthenaWeaponTrait", "AthenaRushTrait", "AthenaRetaliateTrait", "AthenaSecondaryTrait"],
         "icon": "GUI/Screens/BoonIcons/Athena_05_Large.png",
+        "TooltipData": {},
         "trait": "AthenaShieldTrait",
         "name": "Brilliant Riposte",
         "description": "When you {$Keywords.Deflect} attacks, it deals more damage."
+      },
+      {
+        "OneFromEachSet":[["ZeusWeaponTrait", "ZeusSecondaryTrait", "ZeusRushTrait", "ZeusShoutTrait"], ["AthenaRangedTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Athena_Zeus_01.png",
+        "TooltipData": {},
+        "trait": "ReboundingAthenaCastTrait",
+        "name": "Lightning Phalanx",
+        "description": "Your Phalanx Shot {$Keywords.Cast} bounces between nearby foes."
       }
     ]
   }
@@ -1028,6 +1163,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Artemis_01_Large.png",
         "slot": "Melee",
+        "TooltipData": {"TooltipCritChance":15.0},
         "trait": "ArtemisWeaponTrait",
         "name": "Deadly Strike",
         "description": "Your {$Keywords.Attack} is stronger, with {#AltUpgradeFormat}{$TooltipData.TooltipCritChance:P} {#PreviousFormat} chance to deal {$Keywords.Crit} damage."
@@ -1036,6 +1172,7 @@
         "icon": "GUI/Screens/BoonIcons/Artemis_03_Large.png",
         "slot": "Rush",
         "RequiredFalseTraits": ["GunLoadedGrenadeTrait"],
+        "TooltipData": {},
         "trait": "ArtemisRushTrait",
         "name": "Hunter Dash",
         "description": "Your {$Keywords.BlinkStrike} deals more damage."
@@ -1044,6 +1181,7 @@
         "icon": "GUI/Screens/BoonIcons/Artemis_02_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {"TooltipCritChance":10.0},
         "trait": "ArtemisRangedTrait",
         "name": "True Shot",
         "description": "Your {$Keywords.Cast} seeks foes, with {#AltUpgradeFormat}{$TooltipData.TooltipCritChance:P} {#PreviousFormat} chance to deal {$Keywords.Crit} damage."
@@ -1052,6 +1190,7 @@
         "icon": "GUI/Screens/BoonIcons/Artemis_02_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {"TooltipCritChance":10.0},
         "trait": "ShieldLoadAmmo_ArtemisRangedTrait",
         "name": "Hunter's Flare",
         "description": "Your {$Keywords.Cast} damages foes around you, with a {#AltUpgradeFormat}{$TooltipData.TooltipCritChance:P} {#PreviousFormat}{$Keywords.Crit} chance."
@@ -1059,6 +1198,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Artemis_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {"TooltipCritChance":20.0},
         "trait": "ArtemisSecondaryTrait",
         "name": "Deadly Flourish",
         "description": "Your {$Keywords.Special} is stronger, with {#AltUpgradeFormat}{$TooltipData.TooltipCritChance:P} {#PreviousFormat} chance to deal {$Keywords.Crit} damage."
@@ -1066,12 +1206,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Artemis_04_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":0.8, "TooltipCritChance":35.0},
         "trait": "ArtemisShoutTrait",
         "name": "Artemis' Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} fires a seeking arrow with {#AltUpgradeFormat}{$TooltipData.TooltipCritChance:P} {#PreviousFormat} {$Keywords.Crit} chance."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Artemis_08_Large.png",
+        "TooltipData": {},
         "trait": "CritBonusTrait",
         "name": "Pressure Points",
         "description": "Any damage you deal has a chance to be {$Keywords.Crit}."
@@ -1081,30 +1223,41 @@
     "LinkedUpgrades": [
       {
         "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_14_Large.png",
-        "trait": "CritVulnerabilityTrait",
-        "name": "Hunter's Mark",
-        "description": "After you deal {$Keywords.Crit} damage to a foe, a foe near it is {$Keywords.Mark}."
-      },
-      {
-        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Artemis_09_Large.png",
+        "TooltipData": {},
         "trait": "CriticalBufferMultiplierTrait",
         "name": "Hide Breaker",
         "description": "Your {$Keywords.Crit} effects deal even more damage to {$Keywords.Armor}."
       },
       {
-        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_13_Large.png",
-        "RequiredSlottedTrait": "Shout",
-        "trait": "CriticalSuperGenerationTrait",
-        "name": "Hunter Instinct",
-        "description": "Your {$Keywords.WrathGauge} charges up faster when you deal {$Keywords.Crit} damage."
+        "OneFromEachSet":[["ArtemisAmmoExitTrait", "CritBonusTrait"], ["ArtemisSupportingFireTrait", "ArtemisAmmoExitTrait"], ["ArtemisSupportingFireTrait", "CritBonusTrait"]],
+        "icon": "GUI/Screens/BoonIcons/Artemis_07_Large.png",
+        "TooltipData": {},
+        "trait": "MoreAmmoTrait",
+        "name": "Fully Loaded",
+        "description": "Gain extra {!Icons.Ammo} for your {$Keywords.Cast}."
+      },
+      {
+        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_14_Large.png",
+        "TooltipData": {},
+        "trait": "CritVulnerabilityTrait",
+        "name": "Hunter's Mark",
+        "description": "After you deal {$Keywords.Crit} damage to a foe, a foe near it is {$Keywords.Mark}."
+      },
+      {
+        "OneOf":["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait", "CritBonusTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_12_Large.png",
+        "TooltipData": {},
+        "trait": "ArtemisSupportingFireTrait",
+        "name": "Support Fire",
+        "description": "After you {$Keywords.Cast}, or hit with an {$Keywords.Attack} or {$Keywords.Special}, fire a seeking arrow."
       },
       {
         "OneFromEachSet":[["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisRushTrait", "ArtemisShoutTrait"], ["ZeusWeaponTrait", "ZeusRushTrait", "ZeusSecondaryTrait", "ZeusRangedTrait", "ShieldLoadAmmo_ZeusRangedTrait", "ZeusShoutTrait"]],
         "icon": "GUI/Screens/BoonIcons/Artemis_Zeus_01.png",
         "RequiredMetaUpgradeSelected": "AmmoMetaUpgrade",
+        "TooltipData": {"AmmoFieldWeapon.Interval.Min":1.0},
         "trait": "AmmoBoltTrait",
         "name": "Lightning Rod",
         "description": "Your collectible {!Icons.Ammo} strike nearby foes with lightning every {#BoldFormatGraft}{$TooltipData.AmmoFieldWeapon.Interval.Min} Sec{#PreviousFormat}."
@@ -1113,27 +1266,24 @@
         "OneOf":["ArtemisRangedTrait", "PoseidonRangedTrait", "ShieldLoadAmmo_PoseidonRangedTrait", "ZeusRangedTrait", "AphroditeRangedTrait", "AthenaRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Artemis_10_Large.png",
         "RequiredFalseTraits": ["BlizzardOrbTrait", "AresRangedTrait", "DionysusRangedTrait", "DemeterRangedTrait", "ShieldLoadAmmoTrait", "PoseidonAresProjectileTrait"],
+        "TooltipData": {},
         "trait": "ArtemisAmmoExitTrait",
         "name": "Exit Wounds",
         "description": "Your foes take damage when your {!Icons.Ammo} stuck in them is dislodged."
       },
       {
-        "OneOf":["ArtemisWeaponTrait", "ArtemisSecondaryTrait", "ArtemisRushTrait", "ArtemisRangedTrait", "ShieldLoadAmmo_ArtemisRangedTrait", "ArtemisShoutTrait", "CritBonusTrait"],
-        "icon": "GUI/Screens/BoonIcons/Artemis_12_Large.png",
-        "trait": "ArtemisSupportingFireTrait",
-        "name": "Support Fire",
-        "description": "After you {$Keywords.Cast}, or hit with an {$Keywords.Attack} or {$Keywords.Special}, fire a seeking arrow."
-      },
-      {
-        "OneFromEachSet":[["ArtemisAmmoExitTrait", "CritBonusTrait"], ["ArtemisSupportingFireTrait", "ArtemisAmmoExitTrait"], ["ArtemisSupportingFireTrait", "CritBonusTrait"]],
-        "icon": "GUI/Screens/BoonIcons/Artemis_07_Large.png",
-        "trait": "MoreAmmoTrait",
-        "name": "Fully Loaded",
-        "description": "Gain extra {!Icons.Ammo} for your {$Keywords.Cast}."
+        "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Artemis_13_Large.png",
+        "RequiredSlottedTrait": "Shout",
+        "TooltipData": {},
+        "trait": "CriticalSuperGenerationTrait",
+        "name": "Hunter Instinct",
+        "description": "Your {$Keywords.WrathGauge} charges up faster when you deal {$Keywords.Crit} damage."
       },
       {
         "OneOf":["ArtemisWeaponTrait", "CritBonusTrait", "ArtemisSecondaryTrait", "ArtemisRangedTrait", "ArtemisShoutTrait"],
         "icon": "GUI/Screens/BoonIcons/Artemis_05_Large.png",
+        "TooltipData": {},
         "trait": "ArtemisCriticalTrait",
         "name": "Clean Kill",
         "description": "Your {$Keywords.Crit} effects deal even more damage."
@@ -1149,6 +1299,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_04_Large.png",
         "slot": "Melee",
+        "TooltipData": {},
         "trait": "ZeusWeaponTrait",
         "name": "Lightning Strike",
         "description": "Your {$Keywords.Attack} emits chain-lightning when you damage a foe."
@@ -1156,6 +1307,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_06_Large.png",
         "slot": "Rush",
+        "TooltipData": {},
         "trait": "ZeusRushTrait",
         "name": "Thunder Dash",
         "description": "Your {$Keywords.Dash} causes a lightning bolt to strike nearby foes."
@@ -1164,6 +1316,7 @@
         "icon": "GUI/Screens/BoonIcons/Zeus_05_Large.png",
         "slot": "Ranged",
         "RequiredFalseTraits": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ZeusRangedTrait",
         "name": "Electric Shot",
         "description": "Your {$Keywords.Cast} is a burst of chain-lightning that bounces between foes."
@@ -1172,6 +1325,7 @@
         "icon": "GUI/Screens/BoonIcons/Zeus_05_Large.png",
         "slot": "Ranged",
         "OneOf": ["ShieldLoadAmmoTrait"],
+        "TooltipData": {},
         "trait": "ShieldLoadAmmo_ZeusRangedTrait",
         "name": "Thunder Flare",
         "description": "Your {$Keywords.Cast} causes a lightning bolt to strike nearby foes."
@@ -1179,6 +1333,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_secondary_attack.png",
         "slot": "Secondary",
+        "TooltipData": {},
         "trait": "ZeusSecondaryTrait",
         "name": "Thunder Flourish",
         "description": "Your {$Keywords.Special} causes a lightning bolt to strike nearby foes."
@@ -1186,12 +1341,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_07_Large.png",
         "slot": "Shout",
+        "TooltipData": {"AddShout.SuperDuration":1.5},
         "trait": "ZeusShoutTrait",
         "name": "Zeus' Aid",
         "description": "Your {$Keywords.WrathDerivedStocks} makes lightning rapidly strike nearby foes for {#BoldFormat}{$TooltipData.AddShout.SuperDuration} Sec{#PreviousFormat}."
       },
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_01_Large.png",
+        "TooltipData": {},
         "trait": "RetaliateWeaponTrait",
         "name": "Heaven's Vengeance",
         "description": "After you take damage, your foe is struck by lightning."
@@ -1199,6 +1356,7 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_09_Large.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {},
         "trait": "SuperGenerationTrait",
         "name": "Clouded Judgment",
         "description": "Your {$Keywords.WrathGauge} charges up faster when you deal or take damage."
@@ -1206,12 +1364,14 @@
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_13_Large.png",
         "RequiredSlottedTrait": "Shout",
+        "TooltipData": {"TooltipDuration":15},
         "trait": "OnWrathDamageBuffTrait",
         "name": "Billowing Strength",
         "description": "After using {$Keywords.Wrath}, you deal more damage for {#BoldFormatGraft}{$TooltipData.TooltipDuration} Sec.{#PreviousFormat}"
       },
       {
         "icon": "GUI/Screens/BoonIcons/Zeus_15_Large.png",
+        "TooltipData": {},
         "trait": "PerfectDashBoltTrait",
         "name": "Lightning Reflexes",
         "description": "After you {$Keywords.Dash} just before getting hit, a bolt strikes a nearby foe."
@@ -1220,29 +1380,17 @@
     ],
     "LinkedUpgrades": [
       {
-        "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Zeus_10_Large.png",
-        "trait": "ZeusBoltAoETrait",
-        "name": "High Voltage",
-        "description": "Your lightning bolt effects deal damage in a larger area."
-      },
-      {
         "OneOf":["ZeusBonusBounceTrait", "ZeusBoltAoETrait", "ZeusBonusBoltTrait"],
         "icon": "GUI/Screens/BoonIcons/Zeus_02_Large.png",
+        "TooltipData": {},
         "trait": "ZeusChargedBoltTrait",
         "name": "Splitting Bolt",
         "description": "Whenever you strike foes with lightning {$Keywords.GodBoonPlural}, fire an electric bolt."
       },
       {
-        "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
-        "icon": "GUI/Screens/BoonIcons/Zeus_11_Large.png",
-        "trait": "ZeusBonusBoltTrait",
-        "name": "Double Strike",
-        "description": "Your lightning bolt effects have a chance to strike twice."
-      },
-      {
         "OneOf":["ZeusWeaponTrait", "ZeusRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Zeus_03_Large.png",
+        "TooltipData": {},
         "trait": "ZeusBonusBounceTrait",
         "name": "Storm Lightning",
         "description": "Your chain-lightning effects bounce more times before expiring."
@@ -1250,9 +1398,26 @@
       {
         "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "RetaliateWeaponTrait", "ZeusWeaponTrait", "ZeusRangedTrait", "PerfectDashBoltTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
         "icon": "GUI/Screens/BoonIcons/Zeus_12_Large.png",
+        "TooltipData": {},
         "trait": "ZeusLightningDebuff",
         "name": "Static Discharge",
         "description": "Your lightning effects also make foes {$Keywords.Static}."
+      },
+      {
+        "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Zeus_11_Large.png",
+        "TooltipData": {},
+        "trait": "ZeusBonusBoltTrait",
+        "name": "Double Strike",
+        "description": "Your lightning bolt effects have a chance to strike twice."
+      },
+      {
+        "OneOf":["ZeusSecondaryTrait", "ZeusShoutTrait", "ZeusRushTrait", "ShieldLoadAmmo_ZeusRangedTrait"],
+        "icon": "GUI/Screens/BoonIcons/Zeus_10_Large.png",
+        "TooltipData": {},
+        "trait": "ZeusBoltAoETrait",
+        "name": "High Voltage",
+        "description": "Your lightning bolt effects deal damage in a larger area."
       }
     ]
   }

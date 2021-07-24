@@ -6,7 +6,7 @@ import BoonChart.Canvas
 import Geometry
 import SuperText exposing (..)
 import SuperText.Parser as SuperText
-import Traits exposing (TraitId, God, SlotId, BoonStatus(..))
+import Traits exposing (TraitId, God, Trait, SlotId, BoonStatus(..))
 
 import Dict exposing (Dict)
 import Canvas.Texture as Canvas
@@ -523,10 +523,8 @@ displayDescription model =
       let
         desc =
           Traits.findBoon model.traits id
-            |> Maybe.map .description
-            |> Maybe.map (\d -> if d == "" then id else d)
-            |> Maybe.withDefault id
-            |> superText model.texts
+            |> Maybe.map (superText model.texts)
+            |> Maybe.withDefault []
       in
       el
         [ paddingEach
@@ -663,28 +661,37 @@ displayWindowPoint (x,y) =
     , text ((printFloat x) ++ "," ++ (printFloat y))
     ]
 
-superText : Dict String String -> String -> List (Element msg)
-superText texts s =
-  Parser.run SuperText.parse s
-    |> Result.map (List.map (superPart texts))
+superText : Dict String String -> Trait -> List (Element msg)
+superText texts trait =
+  Parser.run SuperText.parse trait.description
+    |> Result.map (List.map (superPart texts trait.tooltipData))
     --|> Result.mapError (Debug.log "supertext error")
-    |> Result.withDefault [ text s ]
+    |> Result.withDefault [ text trait.description ]
 
-superPart : Dict String String -> SuperText -> Element msg
-superPart texts st =
+superPart : Dict String String -> Dict String Float -> SuperText -> Element msg
+superPart texts tooltipData st =
   case st of
     Text s ->
       text s
     Format f sub ->
-      paragraph (superFormat f) (List.map (superPart texts) sub)
+      paragraph (superFormat f) (List.map (superPart texts tooltipData) sub)
     Icons i ->
       superIcon i
     Keywords (Keyword k) ->
       el [ Font.bold ] (text (Dict.get k texts |> Maybe.withDefault k))
     TooltipData (PercentTooltip t) ->
-      el [ Font.bold ] (text "X%")
+      Dict.get t tooltipData
+        |> Maybe.map String.fromFloat
+        |> Maybe.withDefault "X"
+        |> (\x -> x ++ "%")
+        |> text
+        |> el [ Font.bold ]
     TooltipData (Tooltip t) ->
-      el [ Font.bold ] (text "X")
+      Dict.get t tooltipData
+        |> Maybe.map String.fromFloat
+        |> Maybe.withDefault "X"
+        |> text
+        |> el [ Font.bold ]
 
 superFormat : Format -> List (Attribute msg)
 superFormat format =

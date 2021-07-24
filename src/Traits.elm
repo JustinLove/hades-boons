@@ -33,6 +33,7 @@ module Traits exposing
   , boonsOf
   , basicBoons
   , dataBoon
+  , allTraits
   , findBoon
   , boonStatus
   , traitStatus
@@ -98,6 +99,7 @@ type alias Trait =
   , trait : TraitId
   , name : String
   , description : String
+  , tooltipData : Dict String Float
   , slot : Maybe SlotId
   , requiredSlottedTrait : Maybe SlotId
   , requiredMetaUpgradeSelected : Maybe TraitId
@@ -344,6 +346,7 @@ miscBoons =
     , trait = "BowLoadAmmoTrait"
     , name = "Aspect of Hera"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Weapon"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -356,6 +359,7 @@ miscBoons =
     , trait = "ShieldLoadAmmoTrait"
     , name = "Aspect of Beowulf"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Weapon"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -368,6 +372,7 @@ miscBoons =
     , trait = "AmmoMetaUpgrade"
     , name = "Infernal Soul"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Soul"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -380,6 +385,7 @@ miscBoons =
     , trait = "ReloadAmmoMetaUpgrade"
     , name = "Stygian Soul"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Soul"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -392,6 +398,7 @@ miscBoons =
     , trait = "HadesShoutKeepsake"
     , name = "Sigil of the Dead"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Keepsake"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing
@@ -413,6 +420,7 @@ miscBoons =
     , trait = "HadesShoutTrait"
     , name = "Hades Aid"
     , description = ""
+    , tooltipData = Dict.empty
     , slot = Just "Shout"
     , requiredSlottedTrait = Nothing
     , requiredMetaUpgradeSelected = Nothing

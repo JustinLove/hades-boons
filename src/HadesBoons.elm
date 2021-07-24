@@ -13,6 +13,10 @@ import Texts.Generated as Generated
 --import Traits.Stub as Generated
 import View
 
+import SuperText exposing (..)
+import SuperText.Parser as SuperText
+import Parser.Advanced as Parser
+
 import Browser
 import Browser.Dom as Dom
 import Browser.Events
@@ -109,12 +113,49 @@ init flags location key =
   else
     initWithGenerated model
 
+superPart texts tooltipData st =
+  case st of
+    Format f sub ->
+      List.concatMap (superPart texts tooltipData) sub
+    Keywords (Keyword k) ->
+      if Dict.get k texts == Nothing then
+        []
+      else
+      []
+    TooltipData (Tooltip t) ->
+      if Dict.get t tooltipData == Nothing then
+        [t]
+      else
+        []
+    TooltipData (PercentTooltip t) ->
+      if Dict.get t tooltipData == Nothing then
+        [t]
+      else
+        []
+    _ ->
+      []
+
+superCheck model =
+  let 
+    _ = Traits.allTraits model.traits
+      |> List.concatMap (\trait ->
+        Parser.run SuperText.parse trait.description
+          |> Result.map (List.concatMap (superPart model.texts trait.tooltipData))
+          --|> Result.mapError (Debug.log "supertext error")
+          |> Result.withDefault []
+        )
+      |> Set.fromList
+      --|> Debug.log "data"
+  in
+    model
+
 initWithGenerated : Model -> (Model, Cmd Msg)
 initWithGenerated model =
   ( { model
     | traits = Generated.traits
     , texts = Generated.texts
     }
+      --|> superCheck
       |> updateChartMetrics
       |> updateDerivedStatus
   , Cmd.batch
@@ -152,6 +193,7 @@ update msg model =
       ( { model
         | traits = traits
         }
+          --|> superCheck
           |> updateChartMetrics
           |> updateDerivedStatus
       , traits

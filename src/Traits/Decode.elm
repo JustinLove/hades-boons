@@ -46,6 +46,7 @@ trinkets godTag =
         , trait = "ForcePoseidonBoonTrait"
         , name = "Conch Shell"
         , description = ""
+        , tooltipData = Dict.empty
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
         , requiredMetaUpgradeSelected = Nothing
@@ -60,6 +61,7 @@ trinkets godTag =
         , trait = "FastClearDodgeBonusTrait"
         , name = "Lambent Plume"
         , description = ""
+        , tooltipData = Dict.empty
         , slot = Just "Keepsake"
         , requiredSlottedTrait = Nothing
         , requiredMetaUpgradeSelected = Nothing
@@ -96,6 +98,12 @@ trait godTag =
     |> map2 (|>) (field "trait" string)
     |> map2 (|>) (field "name" string)
     |> map2 (|>) (field "description" string)
+    |> map2 (|>) (field "TooltipData" (dict float))
+    --|> map2 (|>) (oneOf
+      --[ (field "TooltipData" (dict float))
+      --, succeed Dict.empty
+      --]
+    --)
     |> map2 (|>) (maybe (field "slot" string))
     |> map2 (|>) (maybe (field "RequiredSlottedTrait" string))
     |> map2 (|>) (maybe (field "RequiredMetaUpgradeSelected" string))

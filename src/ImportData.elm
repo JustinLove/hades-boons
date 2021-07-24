@@ -136,6 +136,10 @@ generateFile traits =
       Nothing
       Nothing
     , Elm.importStmt
+      ["Dict"]
+      Nothing
+      (Just (Elm.exposeExplicit [Elm.closedTypeExpose "Dict"]))
+    , Elm.importStmt
       ["Set"]
       Nothing
       (Just (Elm.exposeExplicit [Elm.closedTypeExpose "Set"]))
