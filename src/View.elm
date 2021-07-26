@@ -39,7 +39,6 @@ type Msg
   | SelectSlot SlotId
   | SelectPrimary TraitId SlotId
   | SelectKeepsake TraitId
-  | SelectSoul TraitId
   | SelectWeapon TraitId
   | Reset
   | Supergiant Bool

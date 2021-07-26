@@ -347,14 +347,6 @@ update msg model =
           |> selectBoon id
       , Cmd.none
       )
-    UI (View.SelectSoul id) ->
-      ( { model
-        | currentPrimaryMenu = Nothing
-        , metaUpgrade = id
-        }
-          |> updateDerivedStatus
-      , Cmd.none
-      )
     UI (View.SelectWeapon id) ->
       ( { model
         | currentPrimaryMenu = Nothing
