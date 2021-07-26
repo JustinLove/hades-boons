@@ -46,7 +46,9 @@ type Msg
 type Frame
   = Primary
   | Common
+  | Duo
   | Keepsake
+  | Legendary
   | MetaUpgrade
   | Tray
 
@@ -475,12 +477,32 @@ displayFrame scaled frame =
         , centerX
         , centerY
         ] none
+    Duo ->
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/duo.png"
+        , width (px (scaled 211))
+        , height (px (scaled 205))
+        , moveUp (scaled 1 |> toFloat)
+        , moveRight (scaled 6 |> toFloat)
+        , centerX
+        , centerY
+        ] none
     Keepsake ->
       el
         [ Background.image "GUI/HUD/PrimaryBoons/Keepsake_Backing.png"
         , width (px (scaled 173))
         , height (px (scaled 114))
         , moveDown (scaled 50 |> toFloat)
+        , centerX
+        , centerY
+        ] none
+    Legendary ->
+      el
+        [ Background.image "GUI/Screens/BoonIconFrames/legendary.png"
+        , width (px (scaled 211))
+        , height (px (scaled 205))
+        , moveUp (scaled 1 |> toFloat)
+        , moveRight (scaled 4 |> toFloat)
         , centerX
         , centerY
         ] none
@@ -538,7 +560,7 @@ displayDescription model =
               case boon.slot of
                 Just "Soul" -> metaIcon scaled MetaUpgrade (Just boon.icon) boon.name none
                 Just "Keepsake" -> keepsakeIcon scaled (Just boon.icon) boon.name Available none
-                _ -> boonIcon scaled Common (Just boon.icon) boon.name none
+                _ -> boonIcon scaled (viewFrame boon.frame) (Just boon.icon) boon.name none
             Nothing ->
               none
           , paragraph
@@ -549,6 +571,14 @@ displayDescription model =
         )
     Nothing ->
       none
+
+viewFrame : Traits.Frame -> Frame
+viewFrame frame =
+  case frame of
+    Traits.CommonFrame -> Common
+    Traits.DuoFrame -> Duo
+    Traits.KeepsakeFrame -> Keepsake
+    Traits.LegendaryFrame -> Legendary
 
 displayReset : Element Msg
 displayReset =
