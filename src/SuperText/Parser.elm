@@ -66,6 +66,8 @@ codeWord =
       |> map Keywords
     , tooltipData
       |> map TooltipData
+    , tempTextData
+      |> map TempTextData
     ]
 
 format : SuperTextParser Format
@@ -99,6 +101,12 @@ tooltipData =
       , succeed Tooltip
       ]
 
+tempTextData : SuperTextParser Tooltip
+tempTextData =
+  succeed Tooltip
+    |. symbol (Token "$TempTextData." "looking for temp text data")
+    |= getChompedString (chompWhile (\c -> c /= '}'))
+
 stringToFormat : String -> SuperTextParser Format
 stringToFormat s =
   case s of
@@ -108,6 +116,10 @@ stringToFormat s =
     "BoldFormatGraft" -> succeed BoldGraft
     "ItalicFormat" -> succeed Italic
     "PreviousFormat" -> succeed PreviousFormat
+    "RareFormat" -> succeed RareFormat
+    "StatFormat" -> succeed StatFormat
+    "TooltipUpgradeFormat" -> succeed TooltipUpgrade
+    "UpgradeFormat" -> succeed Upgrade
     _ -> problem ("unknown format " ++ s)
 
 stringToIcon : String -> SuperTextParser Icon

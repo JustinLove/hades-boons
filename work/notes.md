@@ -1,3 +1,12 @@
+- boon text
+  - x formatting
+  - x keyword translations
+  - x traitdata
+  - x hard coded traits descriptions
+  - chart hover
+  - tray hover
+- credit popup background
+- mobile
 - design issues
   - x any aid
   - poseidon - area asymetry
@@ -18,15 +27,6 @@
     - homing laser vs self laser
     - mirgeshot vs posiedon ares
   - x souls
-- boon text
-  - x formatting
-  - x keyword translations
-  - x traitdata
-  - chart hover
-  - tray hover
-  - hard coded traits descriptions
-- credit popup background
-- mobile
 - slot menu scaling for window width
 - languages?
 - line formatting

@@ -10,6 +10,11 @@
   }
 ,
   {
+    "Id": "BeowulfAspect",
+    "DisplayName": "Naegling's Board"
+  }
+,
+  {
     "Id": "BladeRift",
     "DisplayName": "Blade Rift"
   }
@@ -110,6 +115,11 @@
   }
 ,
   {
+    "Id": "Invisible",
+    "DisplayName": "Invisible"
+  }
+,
+  {
     "Id": "Invulnerable",
     "DisplayName": "Impervious"
   }
@@ -192,6 +202,11 @@
   {
     "Id": "WrathGauge",
     "DisplayName": "God Gauge"
+  }
+,
+  {
+    "Id": "WrathHades",
+    "DisplayName": "Call"
   }
 
 ]

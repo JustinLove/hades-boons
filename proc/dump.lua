@@ -199,7 +199,7 @@ local function TraitRequiredMetaUpgradeSelected(trait)
 	end
 end
 
-tooltipUsed = {"AddShout.SuperDuration","AmmoFieldWeapon.Interval.Min","DisplayDelta1","NewTotal1","TooltipAffectChance","TooltipChillStacks","TooltipCritChance","TooltipCriticalChance","TooltipDeathThreshold","TooltipDefense","TooltipDelay","TooltipDuration","TooltipRequiredPoisonedEnemies","TooltipRoomInterval","TooltipSpeedBoost","TooltipSpreadRate","TooltipThreshold"}
+tooltipUsed = {"AddShout.SuperDuration","AmmoFieldWeapon.Interval.Min","DisplayDelta1","NewTotal1","TooltipAffectChance","TooltipChillStacks","TooltipCritChance","TooltipCriticalChance","TooltipDeathThreshold","TooltipDefense","TooltipDelay","TooltipDuration","TooltipRequiredPoisonedEnemies","TooltipRoomInterval","TooltipSpeedBoost","TooltipSpreadRate","TooltipThreshold","TooltipDamageTaken","TooltipSuperGain"}
 
 local function TooltipData(obj, tooltipData)
 	if obj.TooltipSpreadRate then

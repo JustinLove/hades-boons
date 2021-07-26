@@ -64,6 +64,7 @@ printed = {}
 keywords =
   { "Armor"
   , "Attack"
+  , "BeowulfAspect"
   , "BladeRift"
   , "BlinkStrike"
   , "BossPlural"
@@ -84,6 +85,7 @@ keywords =
   , "FishingPoint"
   , "Fountain"
   , "GodBoonPlural"
+  , "Invisible"
   , "Invulnerable"
   , "Mark"
   , "Poison"
@@ -101,6 +103,7 @@ keywords =
   , "Wrath"
   , "WrathDerivedStocks"
   , "WrathGauge"
+  ,  "WrathHades"
   }
 
 terms = keywords

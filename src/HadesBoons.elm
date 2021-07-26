@@ -138,10 +138,11 @@ superPart texts tooltipData st =
 superCheck model =
   let 
     _ = Traits.allTraits model.traits
+      |> List.append Traits.miscBoons
       |> List.concatMap (\trait ->
         Parser.run SuperText.parse trait.description
           |> Result.map (List.concatMap (superPart model.texts trait.tooltipData))
-          --|> Result.mapError (Debug.log "supertext error")
+          --|> Result.mapError (Debug.log ("supertext error: " ++ trait.description))
           |> Result.withDefault []
         )
       |> Set.fromList
@@ -305,6 +306,14 @@ update msg model =
               "AmmoMetaUpgrade"
           else
             model.metaUpgrade
+        , descriptionBoon =
+          if slot == "Soul" then
+            if model.metaUpgrade == "AmmoMetaUpgrade" then
+               Just "ReloadAmmoMetaUpgrade"
+            else
+              Just "AmmoMetaUpgrade"
+          else
+            model.descriptionBoon
         }
           |> updateDerivedStatus
       , Cmd.none

@@ -80,10 +80,10 @@ view model =
       [ height fill
       , width fill
       , clip
+      , inFront (displayDescription model)
       , inFront (displayFooter model.artAttribution)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
-      , inFront (displayDescription model)
       , inFront displayReset
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
@@ -358,7 +358,7 @@ boonIconButton msg scaled frame mpath desc =
     (Input.button
       [ Border.width (scaled 80)
       , Border.rounded (scaled 80)
-      , Border.color (rgba 1 0 0 0)
+      , Border.color invisibleColor
       , centerX
       , centerY
       ]
@@ -396,7 +396,7 @@ keepsakeIconButton msg scaled mpath desc status =
       (Input.button
         [ Border.width (scaled 80)
         , Border.rounded (scaled 80)
-        , Border.color (rgba 1 0 0 0)
+        , Border.color invisibleColor
         , centerX
         , centerY
         ]
@@ -418,7 +418,7 @@ metaIconButton msg scaled frame mpath desc =
     (Input.button
       [ Border.width (scaled 80)
       , Border.rounded (scaled 80)
-      , Border.color (rgba 1 0 0 0)
+      , Border.color invisibleColor
       , centerX
       , centerY
       ]
@@ -543,6 +543,7 @@ displayDescription model =
           , Border.rounded 2
           , padding 10
           , Font.size descriptionSize
+          , Font.color descriptionColor
           ]
           desc
         )
@@ -598,7 +599,7 @@ displayFooter artAttribution =
         , Events.onLoseFocus (Supergiant False)
         ]
         { url = "https://www.supergiantgames.com/"
-        , label = row [ Font.color (rgb 202 0 0) ] [ icon "star-full", text "Supergiant Games" ]
+        , label = row [ Font.color superGiantColor ] [ icon "star-full", text "Supergiant Games" ]
         }
       ]
     ]
@@ -634,6 +635,17 @@ sizeStep = modular 16 1.25
 windowBackColor = rgb255 21 22 19
 buttonBackColor = rgb255 59 64 54
 buttonBorderColor = rgb255 255 255 160
+invisibleColor = rgba 1 0 0 0
+superGiantColor = rgb 202 0 0
+descriptionColor = rgb255 160 160 160
+boldColor = rgb255 210 210 210
+boldGraftColor = rgb255 210 210 210
+statColor = rgb255 160 190 160
+upgradeColor = rgb255 115 199 69
+penaltyColor = rgb255 199 15 15
+rareColor = rgb255 0 138 255
+duoColor = rgb255 210 255 97
+legendryColor = rgb255 255 144 0
 
 displayWindowPoints : List Point -> Element msg
 displayWindowPoints points =
@@ -679,14 +691,22 @@ superPart texts tooltipData st =
       superIcon i
     Keywords (Keyword k) ->
       el [ Font.bold ] (text (Dict.get k texts |> Maybe.withDefault k))
-    TooltipData (PercentTooltip t) ->
+    TempTextData t ->
+      superTip tooltipData t
+    TooltipData t ->
+      superTip tooltipData t
+
+superTip : Dict String Float -> Tooltip -> Element msg
+superTip tooltipData tooltip =
+  case tooltip of
+    PercentTooltip t ->
       Dict.get t tooltipData
-        |> Maybe.map String.fromFloat
-        |> Maybe.withDefault "X"
+        |> Maybe.map (\x -> if x < 0 then String.fromFloat x else "+" ++ (String.fromFloat x))
+        |> Maybe.withDefault "+X"
         |> (\x -> x ++ "%")
         |> text
         |> el [ Font.bold ]
-    TooltipData (Tooltip t) ->
+    Tooltip t ->
       Dict.get t tooltipData
         |> Maybe.map String.fromFloat
         |> Maybe.withDefault "X"
@@ -698,19 +718,47 @@ superFormat format =
   case format of
     AltPenalty ->
       [ Font.bold
-      , Font.color (rgb 1 0 0)
+      , Font.color penaltyColor
       ]
     AltUpgrade ->
       [ Font.bold
-      , Font.color (rgb 0 1 0)
+      , Font.color upgradeColor
       ]
     Bold ->
-      [ Font.bold ]
+      [ Font.extraBold
+      , Font.color boldColor
+      ]
     BoldGraft ->
-      [ Font.bold ]
+      [ Font.extraBold
+      , Font.color boldGraftColor
+      ]
     Italic ->
       [ Font.italic ]
     PreviousFormat -> []
+    RareFormat ->
+      [ Font.bold
+      , Font.color rareColor
+      ]
+    StatFormat ->
+      [ Font.color statColor ]
+    TooltipUpgrade ->
+      [ Font.bold
+      , Font.color upgradeColor
+      , Font.shadow
+        { offset = (0,4)
+        , blur = 0
+        , color = rgba 0 0 0 1
+        }
+      ]
+    Upgrade ->
+      [ Font.bold
+      , Font.color upgradeColor
+      , Font.shadow
+        { offset = (3,3)
+        , blur = 3
+        , color = rgba 0 0 0 1
+        }
+      ]
 
 superIcon : Icon -> Element msg
 superIcon i =

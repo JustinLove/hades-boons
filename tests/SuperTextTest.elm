@@ -32,6 +32,11 @@ suite =
         run tooltipData "$TooltipData.TooltipCritChance:P"
           |> Expect.equal (Ok (PercentTooltip "TooltipCritChance"))
       ]
+    , describe "TempTextData"
+      [ test "BaseValue" <| \_ ->
+        run tempTextData "$TempTextData.BaseValue"
+          |> Expect.equal (Ok (Tooltip "BaseValue"))
+      ]
     , describe "Icons"
       [ test "Ammo" <| \_ ->
         run icon "!Icons.Ammo"
@@ -58,6 +63,9 @@ suite =
       , test "percent" <| \_ ->
         run code "{$TooltipData.TooltipCritChance:P}"
           |> Expect.equal (Ok (TooltipData (PercentTooltip "TooltipCritChance")))
+      , test "TempText" <| \_ ->
+        run code "{$TempTextData.BaseValue}"
+          |> Expect.equal (Ok (TempTextData (Tooltip "BaseValue")))
       , test "BoldFormatGraft" <| \_ ->
         run code "{#BoldFormatGraft}"
           |> Expect.equal (Ok (Format BoldGraft []))

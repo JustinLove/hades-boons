@@ -5,6 +5,7 @@ type SuperText
   | Format Format (List SuperText)
   | Icons Icon
   | Keywords Keyword
+  | TempTextData Tooltip
   | TooltipData Tooltip
 
 type Format
@@ -13,7 +14,11 @@ type Format
   | Bold
   | BoldGraft
   | Italic
+  | RareFormat
   | PreviousFormat
+  | StatFormat
+  | TooltipUpgrade
+  | Upgrade
 
 type Icon
   = Ammo
@@ -32,6 +37,7 @@ keywords : List String
 keywords =
   [ "Armor"
   , "Attack"
+  , "BeowulfAspect"
   , "BladeRift"
   , "BlinkStrike"
   , "BossPlural"
@@ -52,6 +58,7 @@ keywords =
   , "FishingPoint"
   , "Fountain"
   , "GodBoonPlural"
+  , "Invisible"
   , "Invulnerable"
   , "Mark"
   , "Poison"
@@ -69,6 +76,7 @@ keywords =
   , "Wrath"
   , "WrathDerivedStocks"
   , "WrathGauge"
+  , "WrathHades"
   ]
 
 type Tooltip
