@@ -533,6 +533,15 @@ displayDescription model =
           mboon
             |> Maybe.map (superText model.texts)
             |> Maybe.withDefault []
+        backing =
+          case mboon of
+            Just boon ->
+              case boon.frame of
+                Traits.DuoFrame -> duoColor
+                Traits.LegendaryFrame -> legendryColor
+                _ -> windowBackColor
+            Nothing ->
+              windowBackColor
         scaled = (\x -> x/2 |> floor)
       in
       el
@@ -555,14 +564,29 @@ displayDescription model =
           , Font.size descriptionSize
           , Font.color descriptionColor
           ]
-          [ case mboon of
-            Just boon ->
-              case boon.slot of
-                Just "Soul" -> metaIcon scaled MetaUpgrade (Just boon.icon) boon.name none
-                Just "Keepsake" -> keepsakeIcon scaled (Just boon.icon) boon.name Available none
-                _ -> boonIcon scaled (viewFrame boon.frame) (Just boon.icon) boon.name none
-            Nothing ->
-              none
+          [ el
+            [ behindContent
+              (el
+                [ htmlAttribute <| Html.Attributes.class "boonbacking"
+                , Border.color backing
+                , Border.widthEach
+                  { top = 100
+                  , bottom = 0
+                  , right = 0
+                  , left = 130
+                  }
+                ] none
+              )
+            ]
+            ( case mboon of
+              Just boon ->
+                case boon.slot of
+                  Just "Soul" -> metaIcon scaled MetaUpgrade (Just boon.icon) boon.name none
+                  Just "Keepsake" -> keepsakeIcon scaled (Just boon.icon) boon.name Available none
+                  _ -> boonIcon scaled (viewFrame boon.frame) (Just boon.icon) boon.name none
+              Nothing ->
+                none
+            )
           , paragraph
             [
             ]

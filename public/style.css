@@ -37,6 +37,10 @@ a:hover, a:active { color: rgb(218, 216, 222); }
   display: inline-block;
 }
 
+div .boonbacking {
+  border-top-color: transparent; 
+}
+
 #top > * { animation: delay-appear 2s; }
 canvas { animation: delay-appear 2s; }
 @keyframes delay-appear {
