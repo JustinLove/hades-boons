@@ -240,6 +240,7 @@ slotTrayButton model scaled mpath desc slot =
         |> Traits.boonsForSlot slot
         |> List.filter (\{trait} -> Set.member trait model.activeTraits)
         |> List.head
+    button = (traitSelectButton (SelectSlot slot) scaled)
   in
   el
     [ if model.currentPrimaryMenu == Just slot then
@@ -252,9 +253,9 @@ slotTrayButton model scaled mpath desc slot =
     ]
     (case inSlot of
       Just boon ->
-        (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Common) (Just boon.icon) boon.name)
+        (boonIcon scaled (if slot == "Keepsake" then Keepsake else Common) (Just boon.icon) boon.name button)
       Nothing ->
-        (boonIconButton (SelectSlot slot) scaled (if slot == "Keepsake" then Keepsake else Primary) mpath desc)
+        (boonIcon scaled (if slot == "Keepsake" then Keepsake else Primary) mpath desc button)
     )
 
 keepsakeTrayButton model scaled =
@@ -264,6 +265,7 @@ keepsakeTrayButton model scaled =
         |> Traits.boonsForSlot "Keepsake"
         |> List.filter (\{trait} -> Set.member trait model.activeTraits)
         |> List.head
+    button = traitSelectButton (SelectSlot "Keepsake") scaled
   in
   el
     [ if model.currentPrimaryMenu == Just "Keepsake" then
@@ -274,9 +276,9 @@ keepsakeTrayButton model scaled =
     ]
     (case inSlot of
       Just boon ->
-        (keepsakeIconButton (SelectSlot "Keepsake") scaled (Just boon.icon) boon.name Active)
+        (keepsakeIcon scaled (Just boon.icon) boon.name Active button)
       Nothing ->
-        (keepsakeIconButton (SelectSlot "Keepsake") scaled Nothing "Keepsake" Active)
+        (keepsakeIcon scaled Nothing "Keepsake" Active button)
     )
 
 metaTrayButton model scaled =
@@ -286,15 +288,16 @@ metaTrayButton model scaled =
         |> List.filter (Traits.isSlot "Soul")
         |> List.filter (\{trait} -> trait == model.metaUpgrade)
         |> List.head
+    button = traitSelectButton (SelectSlot "Soul") scaled
   in
   el
     [ width (px (scaled 200))
     ]
     (case inSlot of
       Just boon ->
-        (metaIconButton (SelectSlot "Soul") scaled MetaUpgrade (Just boon.icon) boon.name)
+        (metaIcon scaled MetaUpgrade (Just boon.icon) boon.name button)
       Nothing ->
-        (metaIconButton (SelectSlot "Soul") scaled Tray Nothing "Soul")
+        (metaIcon scaled Tray Nothing "Soul" button)
     )
 
 slotMenu model scaled slot =
@@ -325,7 +328,7 @@ keepsakeMenu model scaled =
     ]
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
-      |> List.map (\boon -> keepsakeIconButton (SelectKeepsake boon.trait) scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)))
+      |> List.map (\boon -> keepsakeIcon scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)) (traitSelectButton (SelectKeepsake boon.trait) scaled))
     )
 
 weaponMenu model scaled =
@@ -334,7 +337,7 @@ weaponMenu model scaled =
     ]
     (Traits.miscBoons
       |> List.filter (Traits.isSlot "Weapon")
-      |> List.map (\boon -> boonIconButton (SelectWeapon boon.trait) scaled Common (Just boon.icon) (boon.name))
+      |> List.map (\boon -> boonIcon scaled Common (Just boon.icon) (boon.name) (traitSelectButton (SelectWeapon boon.trait) scaled))
     )
 
 boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Msg
@@ -343,31 +346,21 @@ boonSelectButton scaled slot god boon =
     [ inFront
       (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
-    (boonIconButton (SelectPrimary boon.trait slot) scaled Common (Just boon.icon) boon.name)
+    (boonIcon scaled Common (Just boon.icon) boon.name (traitSelectButton (SelectPrimary boon.trait slot) scaled))
 
-boonIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
-boonIconButton msg scaled frame mpath desc =
+boonIcon : (Float -> Int) -> Frame -> Maybe String -> String -> Element msg -> Element msg
+boonIcon scaled frame mpath desc content =
   el
     [ width (px (scaled 201))
     , height (px (scaled 187))
     , padding (scaled -100)
     , behindContent (displayFrame scaled frame)
-    , behindContent (boonIcon scaled mpath desc)
+    , behindContent (boonIconImage scaled mpath desc)
     ]
-    (Input.button
-      [ Border.width (scaled 80)
-      , Border.rounded (scaled 80)
-      , Border.color invisibleColor
-      , centerX
-      , centerY
-      ]
-      { onPress = Just msg
-      , label = none
-      }
-    )
+    content
 
-keepsakeIconButton : msg -> (Float -> Int) -> Maybe String -> String -> BoonStatus -> Element msg
-keepsakeIconButton msg scaled mpath desc status =
+keepsakeIcon : (Float -> Int) -> Maybe String -> String -> BoonStatus -> Element msg -> Element msg
+keepsakeIcon scaled mpath desc status content =
   let
     keepsakeScale = \f -> scaled (f * 0.8)
   in
@@ -382,7 +375,7 @@ keepsakeIconButton msg scaled mpath desc status =
         , height fill
         , if status == Excluded then alpha 0.5 else alpha 1
         ]
-        (boonIcon keepsakeScale mpath desc)
+        (boonIconImage keepsakeScale mpath desc)
       )
     , if status == Excluded then
         inFront (lockedIcon keepsakeScale)
@@ -392,42 +385,35 @@ keepsakeIconButton msg scaled mpath desc status =
     (if status == Excluded then
       none
     else
-      (Input.button
-        [ Border.width (scaled 80)
-        , Border.rounded (scaled 80)
-        , Border.color invisibleColor
-        , centerX
-        , centerY
-        ]
-        { onPress = Just msg
-        , label = none
-        }
-      )
+      content
     )
 
-metaIconButton : msg -> (Float -> Int) -> Frame -> Maybe String -> String -> Element msg
-metaIconButton msg scaled frame mpath desc =
+metaIcon : (Float -> Int) -> Frame -> Maybe String -> String -> Element msg -> Element msg
+metaIcon scaled frame mpath desc content =
   el
     [ width (px (scaled 201))
     , height (px (scaled 207))
     , padding (scaled -100)
     , behindContent (displayFrame scaled frame)
-    , behindContent (metaIcon scaled mpath desc)
+    , behindContent (metaIconImage scaled mpath desc)
     ]
-    (Input.button
-      [ Border.width (scaled 80)
-      , Border.rounded (scaled 80)
-      , Border.color invisibleColor
-      , centerX
-      , centerY
-      ]
-      { onPress = Just msg
-      , label = none
-      }
-    )
+    content
 
-boonIcon : (Float -> Int) -> Maybe String -> String -> Element msg
-boonIcon scaled mpath desc =
+traitSelectButton : msg -> (Float -> Int) -> Element msg
+traitSelectButton msg scaled =
+  Input.button
+    [ Border.width (scaled 80)
+    , Border.rounded (scaled 80)
+    , Border.color invisibleColor
+    , centerX
+    , centerY
+    ]
+    { onPress = Just msg
+    , label = none
+    }
+
+boonIconImage : (Float -> Int) -> Maybe String -> String -> Element msg
+boonIconImage scaled mpath desc =
   case mpath of
     Just path ->
       image
@@ -454,8 +440,8 @@ lockedIcon scaled =
     , description = "Locked"
     }
 
-metaIcon : (Float -> Int) -> Maybe String -> String -> Element msg
-metaIcon scaled mpath desc =
+metaIconImage : (Float -> Int) -> Maybe String -> String -> Element msg
+metaIconImage scaled mpath desc =
   case mpath of
     Just path ->
       image
@@ -520,10 +506,12 @@ displayDescription model =
   case model.descriptionBoon of
     Just id ->
       let
+        mboon = Traits.findBoon model.traits id
         desc =
-          Traits.findBoon model.traits id
+          mboon
             |> Maybe.map (superText model.texts)
             |> Maybe.withDefault []
+        scaled = (\x -> x/2 |> floor)
       in
       el
         [ paddingEach
@@ -535,16 +523,29 @@ displayDescription model =
         , alignBottom
         , centerX
         ]
-        ( paragraph
+        ( row
           [ Background.color windowBackColor
           , Border.color buttonBorderColor
           , Border.width 2
           , Border.rounded 2
           , padding 10
+          , spacing 10
           , Font.size descriptionSize
           , Font.color descriptionColor
           ]
-          desc
+          [ case mboon of
+            Just boon ->
+              case boon.slot of
+                Just "Soul" -> metaIcon scaled MetaUpgrade (Just boon.icon) boon.name none
+                Just "Keepsake" -> keepsakeIcon scaled (Just boon.icon) boon.name Available none
+                _ -> boonIcon scaled Common (Just boon.icon) boon.name none
+            Nothing ->
+              none
+          , paragraph
+            [
+            ]
+            desc
+          ]
         )
     Nothing ->
       none
