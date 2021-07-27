@@ -744,7 +744,11 @@ superPart texts tooltipData st =
     Icons i ->
       superIcon i
     Keywords (Keyword k) ->
-      el [ Font.bold ] (text (Dict.get k texts |> Maybe.withDefault k))
+      el
+        [ Font.bold
+        , Font.color (rgba 1 1 1 1)
+        ]
+        (text (Dict.get k texts |> Maybe.withDefault k))
     TempTextData t ->
       superTip tooltipData t
     TooltipData t ->
