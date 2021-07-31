@@ -29,7 +29,8 @@ import Json.Decode
 type alias Point = (Float, Float)
 
 type Msg
-  = OnMouseMove Point
+  = None
+  | OnMouseMove Point
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
@@ -40,6 +41,8 @@ type Msg
   | SelectPrimary TraitId SlotId
   | SelectKeepsake TraitId
   | SelectWeapon TraitId
+  | OnTrayEnter TraitId
+  | OnTrayLeave TraitId
   | Reset
   | Supergiant Bool
 
@@ -242,7 +245,7 @@ slotTrayButton model scaled mpath desc slot =
         |> Traits.boonsForSlot slot
         |> List.filter (\{trait} -> Set.member trait model.activeTraits)
         |> List.head
-    button = (traitSelectButton (SelectSlot slot) scaled)
+    button = (traitSelectButton (SelectSlot slot) None None scaled)
   in
   el
     [ if model.currentPrimaryMenu == Just slot then
@@ -267,7 +270,7 @@ keepsakeTrayButton model scaled =
         |> Traits.boonsForSlot "Keepsake"
         |> List.filter (\{trait} -> Set.member trait model.activeTraits)
         |> List.head
-    button = traitSelectButton (SelectSlot "Keepsake") scaled
+    button = traitSelectButton (SelectSlot "Keepsake") None None scaled
   in
   el
     [ if model.currentPrimaryMenu == Just "Keepsake" then
@@ -290,7 +293,7 @@ metaTrayButton model scaled =
         |> List.filter (Traits.isSlot "Soul")
         |> List.filter (\{trait} -> trait == model.metaUpgrade)
         |> List.head
-    button = traitSelectButton (SelectSlot "Soul") scaled
+    button = traitSelectButton (SelectSlot "Soul") None None scaled
   in
   el
     [ width (px (scaled 200))
@@ -330,7 +333,7 @@ keepsakeMenu model scaled =
     ]
     (model.traits
       |> Traits.boonsForSlot "Keepsake"
-      |> List.map (\boon -> keepsakeIcon scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)) (traitSelectButton (SelectKeepsake boon.trait) scaled))
+      |> List.map (\boon -> keepsakeIcon scaled (Just boon.icon) (boon.name) ((if Set.intersect boon.requiredFalseTraits model.activeTraits |> Set.isEmpty then Available else Excluded)) (traitSelectButton (SelectKeepsake boon.trait) (OnTrayEnter boon.trait) (OnTrayLeave boon.trait) scaled))
     )
 
 weaponMenu model scaled =
@@ -339,7 +342,7 @@ weaponMenu model scaled =
     ]
     (Traits.miscBoons
       |> List.filter (Traits.isSlot "Weapon")
-      |> List.map (\boon -> boonIcon scaled Common (Just boon.icon) (boon.name) (traitSelectButton (SelectWeapon boon.trait) scaled))
+      |> List.map (\boon -> boonIcon scaled Common (Just boon.icon) (boon.name) (traitSelectButton (SelectWeapon boon.trait) (OnTrayEnter boon.trait) (OnTrayLeave boon.trait) scaled))
     )
 
 boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Msg
@@ -348,7 +351,7 @@ boonSelectButton scaled slot god boon =
     [ inFront
       (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
-    (boonIcon scaled Common (Just boon.icon) boon.name (traitSelectButton (SelectPrimary boon.trait slot) scaled))
+    (boonIcon scaled Common (Just boon.icon) boon.name (traitSelectButton (SelectPrimary boon.trait slot) (OnTrayEnter boon.trait) (OnTrayLeave boon.trait) scaled))
 
 boonIcon : (Float -> Int) -> Frame -> Maybe String -> String -> Element msg -> Element msg
 boonIcon scaled frame mpath desc content =
@@ -401,16 +404,18 @@ metaIcon scaled frame mpath desc content =
     ]
     content
 
-traitSelectButton : msg -> (Float -> Int) -> Element msg
-traitSelectButton msg scaled =
+traitSelectButton : msg -> msg -> msg -> (Float -> Int) -> Element msg
+traitSelectButton select enter leave scaled =
   Input.button
     [ Border.width (scaled 80)
     , Border.rounded (scaled 80)
     , Border.color invisibleColor
     , centerX
     , centerY
+    , Events.onMouseEnter enter
+    , Events.onMouseLeave leave
     ]
-    { onPress = Just msg
+    { onPress = Just select
     , label = none
     }
 
@@ -566,6 +571,7 @@ displayDescription model =
           }
         , alignBottom
         , centerX
+        , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
         ]
         ( row
           [ Background.color windowBackColor
@@ -574,6 +580,7 @@ displayDescription model =
           , Border.rounded 2
           , padding 10
           , spacing 10
+          , htmlAttribute <| Html.Attributes.style "pointer-events" "auto"
           ]
           [ el
             [ behindContent
@@ -679,7 +686,10 @@ displayFooter artAttribution =
 
 supergiantAttribution : Element msg
 supergiantAttribution =
-  column [ padding (sizeStep -1 |> round) ]
+  column
+    [ padding (sizeStep -1 |> round)
+    , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
+    ]
     [ paragraph []
       [ text "God and boon icons and frames are from "
       , link []

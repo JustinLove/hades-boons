@@ -241,6 +241,8 @@ update msg model =
       )
     --TextSize {text, width} ->
       --( {model | labelWidths = Dict.insert text (width/100) model.labelWidths}, Cmd.none)
+    UI (View.None) ->
+      (model, Cmd.none)
     UI (View.OnMouseMove point) ->
       ( { model
         | offset = dragTo model.drag point model.offset
@@ -358,6 +360,18 @@ update msg model =
           )
         }
           |> selectBoon id
+      , Cmd.none
+      )
+    UI (View.OnTrayEnter id) ->
+      ( { model
+        | descriptionBoon = Just id
+        }
+      , Cmd.none
+      )
+    UI (View.OnTrayLeave id) ->
+      ( { model
+        | descriptionBoon = Nothing
+        }
       , Cmd.none
       )
     UI (View.Reset) ->
