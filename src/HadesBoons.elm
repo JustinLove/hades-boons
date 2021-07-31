@@ -41,6 +41,7 @@ type Msg
   | WindowSize (Int, Int)
   | WindowReSize (Int, Int)
   | Rotate Float
+  | Fade Float
 
 type alias Model =
   { location : Url
@@ -61,6 +62,8 @@ type alias Model =
   , currentPrimaryMenu : Maybe SlotId
   , artAttribution : Bool
   , descriptionBoon : Maybe TraitId
+  , descriptionBoonLast : Maybe TraitId
+  , descriptionVisibility : Float
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -98,6 +101,8 @@ initialModel flags location key =
   , currentPrimaryMenu = Nothing
   , artAttribution = False
   , descriptionBoon = Nothing
+  , descriptionBoonLast = Nothing
+  , descriptionVisibility = 0.0
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -239,11 +244,40 @@ update msg model =
       ( focusFollow Poseidon { model | rotation = Geometry.modAngle (model.rotation + (dt/10000)) }
       , Cmd.none
       )
+    Fade dt ->
+      ( if model.descriptionBoon /= Nothing then
+          let vis = model.descriptionVisibility + (dt / 100) in
+          if vis >= 1.0 then
+            { model
+            | descriptionBoonLast = model.descriptionBoon
+            , descriptionVisibility = 1.0
+            }
+          else
+            { model
+            | descriptionBoonLast = model.descriptionBoon
+            , descriptionVisibility = vis
+            }
+        else
+          let vis = model.descriptionVisibility - (dt / 500) in
+          if vis <= 0.0 then
+            { model
+            | descriptionBoonLast = Nothing
+            , descriptionVisibility = 0.0
+            }
+          else
+            { model
+            | descriptionVisibility = vis
+            }
+      , Cmd.none
+      )
     UI (View.None) ->
       (model, Cmd.none)
     UI (View.OnMouseMove point) ->
       if model.drag == Released then
-        ( { model | descriptionBoon =  hitBoon model point }
+        let hit = hitBoon model point in
+        ( { model
+          | descriptionBoon = hit
+          }
         , Cmd.none
         )
       else
@@ -529,6 +563,10 @@ subscriptions model =
       else
         Sub.none
     --, Browser.Events.onAnimationFrameDelta Rotate
+    , if (model.descriptionBoon /= Nothing && model.descriptionVisibility < 1.0) || (model.descriptionBoon == Nothing && model.descriptionVisibility > 0.0) then
+        Browser.Events.onAnimationFrameDelta Fade
+      else
+        Sub.none
     ]
 
 fetchTraits : Cmd Msg

@@ -530,7 +530,7 @@ displayFrame scaled frame =
         ] none
 
 displayDescription model =
-  case model.descriptionBoon of
+  case model.descriptionBoonLast of
     Just id ->
       let
         mboon = Traits.findBoon model.traits id
@@ -572,6 +572,7 @@ displayDescription model =
         , alignBottom
         , centerX
         , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
+        , alpha model.descriptionVisibility
         ]
         ( row
           [ Background.color windowBackColor
@@ -654,7 +655,15 @@ displayReset =
 
 displayFooter : Bool -> Element Msg
 displayFooter artAttribution =
-  row [ Region.footer, spacing 10, alignBottom, padding 8, Font.size footerSize, width fill ]
+  row
+    [ Region.footer
+    , spacing 10
+    , alignBottom
+    , padding 8
+    , Font.size footerSize
+    , width fill
+    , Background.color (rgba 0 0 0 0.5)
+    ]
     [ link []
       { url = "https://github.com/JustinLove/hades-boons"
       , label = row [] [ icon "github", text "hades-boons" ]
@@ -688,7 +697,8 @@ supergiantAttribution : Element msg
 supergiantAttribution =
   column
     [ padding (sizeStep -1 |> round)
-    , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
+    , Background.color (rgba 0 0 0 0.5)
+    ---, htmlAttribute <| Html.Attributes.style "pointer-events" "none"
     ]
     [ paragraph []
       [ text "God and boon icons and frames are from "
