@@ -82,7 +82,7 @@ boonChart attributes model =
       , when (model.drag == Released) (Events.on "mousedown" (mouseDecoder model.onMouseDown))
       , when (model.drag /= Released) (Events.on "mouseup" (mouseDecoder model.onMouseUp))
       , when (model.drag /= Released) (Events.on "mouseleave" (mouseDecoder model.onMouseUp))
-      , when (model.drag /= Released) (Events.on "mousemove" (mouseDecoder model.onMouseMove))
+      , (Events.on "mousemove" (mouseDecoder model.onMouseMove))
       ] 
     )
     [ clear (0, 0) (model.width |> toFloat) (model.height |> toFloat)

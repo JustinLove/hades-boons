@@ -3,8 +3,9 @@
   - x keyword translations
   - x traitdata
   - x hard coded traits descriptions
-  - chart hover
-  - tray hover
+  - x chart hover
+  - x tray hover
+  - fade
 - credit popup background
 - mobile
 - design issues

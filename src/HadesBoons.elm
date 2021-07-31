@@ -239,16 +239,19 @@ update msg model =
       ( focusFollow Poseidon { model | rotation = Geometry.modAngle (model.rotation + (dt/10000)) }
       , Cmd.none
       )
-    --TextSize {text, width} ->
-      --( {model | labelWidths = Dict.insert text (width/100) model.labelWidths}, Cmd.none)
     UI (View.None) ->
       (model, Cmd.none)
     UI (View.OnMouseMove point) ->
-      ( { model
-        | offset = dragTo model.drag point model.offset
-        }
-      , Cmd.none
-      )
+      if model.drag == Released then
+        ( { model | descriptionBoon =  hitBoon model point }
+        , Cmd.none
+        )
+      else
+        ( { model
+          | offset = dragTo model.drag point model.offset
+          }
+        , Cmd.none
+        )
     UI (View.OnMouseDown point) ->
       ( case hitBoon model point of
           Just id -> selectBoon id { model | drag = Dragging model.offset point }
