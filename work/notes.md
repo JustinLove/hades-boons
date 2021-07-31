@@ -34,6 +34,19 @@
 - save calculated metrics
 - rotation outside metrics?
 
+- mechanics
+  - revenge: athena, zeus, aphrodite, ares, demeter
+  - call: zeus, aphrodite, athena, poseidon, artemis, (hermes)
+  - stickycast: artemis, athena, posiedon, aphrodite, zeus
+  - status: aphrodite, aries, demeter, dionysus, posiedon/zeus?
+  - delayed damage: dionysus, aries, posiedon, zeus, demeter?
+  - damage reduction: aphrodite, demeter, athena, dionysus, posiedon(knockback)?
+  - bosses: posiedon (athena)
+  - static projectiles: demeter, aries, dionysus, athena? (zeus)
+  - spreading: zeus, dionysis, aphrodite, aries, artemis(support), posiedon(knockback)
+  - healing: posiedon, dionysis, aphrodite, athena, ? (hermes)
+  - resourceing: posiedon, dionysus, demeter, athena, ? (hermes)
+
 - god layouts?
   - figure out duo boon connctions
     - 24.84
