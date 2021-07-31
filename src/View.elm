@@ -533,6 +533,10 @@ displayDescription model =
           mboon
             |> Maybe.map (superText model.texts)
             |> Maybe.withDefault []
+        title =
+          mboon
+            |> Maybe.map .name
+            |> Maybe.withDefault ""
         backing =
           case mboon of
             Just boon ->
@@ -542,6 +546,15 @@ displayDescription model =
                 _ -> windowBackColor
             Nothing ->
               windowBackColor
+        titleColor =
+          case mboon of
+            Just boon ->
+              case boon.frame of
+                Traits.DuoFrame -> duoColor
+                Traits.LegendaryFrame -> legendryColor
+                _ -> rgba 1 1 1 1
+            Nothing ->
+              rgba 1 1 1 1
         scaled = (\x -> x/2 |> floor)
       in
       el
@@ -561,8 +574,6 @@ displayDescription model =
           , Border.rounded 2
           , padding 10
           , spacing 10
-          , Font.size descriptionSize
-          , Font.color descriptionColor
           ]
           [ el
             [ behindContent
@@ -587,10 +598,18 @@ displayDescription model =
               Nothing ->
                 none
             )
-          , paragraph
-            [
+          , column [ width fill, alignTop, spacing 10 ]
+            [ el
+              [ Font.size titleSize
+              , Font.color titleColor
+              ]
+              (text title)
+            , paragraph
+              [ Font.size descriptionSize
+              , Font.color descriptionColor
+              ]
+              desc
             ]
-            desc
           ]
         )
     Nothing ->
@@ -683,6 +702,7 @@ icon name =
 footerSize = sizeStep -1 |> round
 resetSize = sizeStep 2 |> round
 descriptionSize = sizeStep 2 |> round
+titleSize = sizeStep 3 |> round
 
 sizeStep = modular 16 1.25
 
