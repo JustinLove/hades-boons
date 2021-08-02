@@ -566,7 +566,7 @@ displayDescription model =
         [ paddingEach
           { top = 0
           , right = resetSize * 5
-          , bottom = footerSize * 2
+          , bottom = footerSize * 2 + 2
           , left = 200
           }
         , alignBottom

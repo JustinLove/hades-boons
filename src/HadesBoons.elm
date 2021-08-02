@@ -26,6 +26,7 @@ import Dict exposing (Dict)
 import Http
 import Json.Decode as Decode exposing (Value)
 import Parser.Advanced
+import Process
 import Set exposing (Set)
 import Task
 import Time
@@ -42,6 +43,7 @@ type Msg
   | WindowReSize (Int, Int)
   | Rotate Float
   | Fade Float
+  | HoverHeld TraitId
 
 type alias Model =
   { location : Url
@@ -61,6 +63,7 @@ type alias Model =
   , boonStatus : Dict TraitId BoonStatus
   , currentPrimaryMenu : Maybe SlotId
   , artAttribution : Bool
+  , hoverBoon : Maybe TraitId
   , descriptionBoon : Maybe TraitId
   , descriptionBoonLast : Maybe TraitId
   , descriptionVisibility : Float
@@ -100,6 +103,7 @@ initialModel flags location key =
   , boonStatus = Dict.empty
   , currentPrimaryMenu = Nothing
   , artAttribution = False
+  , hoverBoon = Nothing
   , descriptionBoon = Nothing
   , descriptionBoonLast = Nothing
   , descriptionVisibility = 0.0
@@ -246,7 +250,7 @@ update msg model =
       )
     Fade dt ->
       ( if model.descriptionBoon /= Nothing then
-          let vis = model.descriptionVisibility + (dt / 100) in
+          let vis = model.descriptionVisibility + (dt / 300) in
           if vis >= 1.0 then
             { model
             | descriptionBoonLast = model.descriptionBoon
@@ -270,16 +274,37 @@ update msg model =
             }
       , Cmd.none
       )
+    HoverHeld id ->
+      if Just id == model.hoverBoon then
+        ( { model
+          | descriptionBoon = Just id
+          }
+        , Cmd.none
+        )
+      else
+        (model, Cmd.none)
     UI (View.None) ->
       (model, Cmd.none)
     UI (View.OnMouseMove point) ->
       if model.drag == Released then
         let hit = hitBoon model point in
-        ( { model
-          | descriptionBoon = hit
-          }
-        , Cmd.none
-        )
+          case hit of
+            Just id ->
+              ( { model
+                | hoverBoon = hit
+                }
+              , if hit /= model.hoverBoon then
+                  Process.sleep 200 |> Task.perform (always (HoverHeld id))
+                else
+                  Cmd.none
+              )
+            Nothing ->
+              ( { model
+                | hoverBoon = Nothing
+                , descriptionBoon = Nothing
+                }
+              , Cmd.none
+              )
       else
         ( { model
           | offset = dragTo model.drag point model.offset
@@ -401,13 +426,17 @@ update msg model =
       )
     UI (View.OnTrayEnter id) ->
       ( { model
-        | descriptionBoon = Just id
+        | hoverBoon = Just id
         }
-      , Cmd.none
+      , if Just id /= model.hoverBoon then
+          Process.sleep 200 |> Task.perform (always (HoverHeld id))
+        else
+          Cmd.none
       )
     UI (View.OnTrayLeave id) ->
       ( { model
-        | descriptionBoon = Nothing
+        | hoverBoon = Nothing
+        , descriptionBoon = Nothing
         }
       , Cmd.none
       )
