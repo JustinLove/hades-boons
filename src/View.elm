@@ -4,6 +4,7 @@ import BoonChart
 --import BoonChart.Svg
 import BoonChart.Canvas
 import Geometry
+import MouseWheel
 import SuperText exposing (..)
 import SuperText.Parser as SuperText
 import Traits exposing (TraitId, God, Trait, SlotId, BoonStatus(..))
@@ -19,12 +20,13 @@ import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
---import Html.Events exposing (on)
+import Html.Events
+import Json.Decode as Decode
 import Parser.Advanced as Parser
 import Set exposing (Set)
 import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
-import Json.Decode
+import Touch
 
 type alias Point = (Float, Float)
 
@@ -45,6 +47,7 @@ type Msg
   | OnTrayLeave TraitId
   | Reset
   | Supergiant Bool
+  | TouchMsg Touch.Msg
 
 type Frame
   = Primary
@@ -89,6 +92,7 @@ view model =
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront displayReset
+      , behindContent (touchEvents model.drag)
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
       {-, inFront (displayWindowPoints
@@ -125,10 +129,6 @@ view model =
           , activeBasicGroups = model.activeBasicGroups
           , activeDuoGroups = model.activeDuoGroups
           , boonStatus = model.boonStatus
-          , onMouseMove = OnMouseMove
-          , onMouseDown = OnMouseDown
-          , onMouseUp = OnMouseUp
-          , onWheel = OnWheel
           , onTexture = TextureLoaded
           , drag = model.drag
           , offset = model.offset
@@ -137,10 +137,26 @@ view model =
           , width = model.windowWidth//1
           , height = model.windowHeight
           , textures = model.canvasTextures
-          } |> html
+          }
+          |> html
         else
           none
       ]
+
+
+touchEvents : BoonChart.DragMode -> Element Msg
+touchEvents drag =
+  Touch.element
+    [ MouseWheel.onWheel OnWheel
+    , when (drag == BoonChart.Released) (Html.Events.on "mousedown" (mouseDecoder OnMouseDown))
+    , when (drag /= BoonChart.Released) (Html.Events.on "mouseup" (mouseDecoder OnMouseUp))
+    , when (drag /= BoonChart.Released) (Html.Events.on "mouseleave" (mouseDecoder OnMouseUp))
+    , (Html.Events.on "mousemove" (mouseDecoder OnMouseMove))
+    , Html.Attributes.style "width" "100vw"
+    , Html.Attributes.style "height" "100vh"
+    ] 
+    TouchMsg
+    |> html
 
 displayGodSelect model =
   row [ spacing 10, centerX, padding 8 ]
@@ -931,3 +947,16 @@ atMost = min
 
 atLeast : number -> number -> number
 atLeast = max
+
+when : Bool -> Html.Attribute msg -> Html.Attribute msg
+when test att =
+  if test then att else Html.Attributes.class ""
+
+mouseDecoder tagger =
+  (Decode.map tagger clientDecoder)
+
+clientDecoder : Decode.Decoder Point
+clientDecoder =
+  Decode.map2 Tuple.pair
+    (Decode.field "clientX" Decode.float)
+    (Decode.field "clientY" Decode.float)

@@ -4,7 +4,6 @@ import BoonChart exposing (..)
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonStatus(..), Frame(..))
 import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
-import MouseWheel
 
 import Array exposing (Array)
 import Canvas exposing (..)
@@ -18,7 +17,6 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events as Events
-import Json.Decode as Decode
 import Set exposing (Set)
 
 type alias Point = (Float, Float)
@@ -28,10 +26,6 @@ type alias BoonChart msg =
   , activeBasicGroups : List (Set GroupId)
   , activeDuoGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
-  , onMouseMove : Point -> msg
-  , onMouseDown : Point -> msg
-  , onMouseUp : Point -> msg
-  , onWheel : Point -> Int -> msg
   , onTexture : String -> Maybe Canvas.Texture -> msg
   , drag : DragMode
   , offset : Point
@@ -76,15 +70,7 @@ boonChart attributes model =
         |> List.map (\path -> Canvas.loadFromImageUrl path (model.onTexture path))
       )
     }
-    (List.append
-      attributes
-      [ MouseWheel.onWheel model.onWheel
-      , when (model.drag == Released) (Events.on "mousedown" (mouseDecoder model.onMouseDown))
-      , when (model.drag /= Released) (Events.on "mouseup" (mouseDecoder model.onMouseUp))
-      , when (model.drag /= Released) (Events.on "mouseleave" (mouseDecoder model.onMouseUp))
-      , (Events.on "mousemove" (mouseDecoder model.onMouseMove))
-      ] 
-    )
+    attributes
     [ clear (0, 0) (model.width |> toFloat) (model.height |> toFloat)
     --, displayPoint 1 model.offset
     --, shapes [ fill Color.white ] [ circle model.offset 4 ]
@@ -606,15 +592,6 @@ pointX (x,_) = x
 
 pointY : Point -> Float
 pointY (_,y) = y
-
-mouseDecoder tagger =
-  (Decode.map tagger clientDecoder)
-
-clientDecoder : Decode.Decoder Point
-clientDecoder =
-  Decode.map2 Tuple.pair
-    (Decode.field "clientX" Decode.float)
-    (Decode.field "clientY" Decode.float)
 
 transform = Canvas.transform
 translate (x,y) = Canvas.translate x -y
