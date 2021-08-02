@@ -592,7 +592,7 @@ subscriptions model =
       else
         Sub.none
     --, Browser.Events.onAnimationFrameDelta Rotate
-    , if (model.descriptionBoon /= Nothing && model.descriptionVisibility < 1.0) || (model.descriptionBoon == Nothing && model.descriptionVisibility > 0.0) then
+    , if (model.descriptionBoon /= Nothing && model.descriptionVisibility < 1.0) || (model.descriptionBoon == Nothing && model.descriptionVisibility > 0.0) || model.descriptionBoon /= model.descriptionBoonLast then
         Browser.Events.onAnimationFrameDelta Fade
       else
         Sub.none
