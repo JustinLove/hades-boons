@@ -4,7 +4,6 @@ import BoonChart exposing (..)
 import Geometry
 import Traits exposing (TraitId, Traits, Trait, GodData, God(..), BoonType(..), BoonStatus(..))
 import Layout exposing (Layout, GroupId, Boundary(..), Winding(..))
-import MouseWheel
 
 import Array exposing (Array)
 import Collage exposing (..)
@@ -19,15 +18,11 @@ import Set exposing (Set)
 import Svg
 import Svg.Attributes
 
-type alias BoonChart msg =
+type alias BoonChart =
   { metrics : ChartMetrics
   , activeBasicGroups : List (Set GroupId)
   , activeDuoGroups : Set GroupId
   , boonStatus : Dict TraitId BoonStatus
-  , onMouseMove : Point -> msg
-  , onMouseDown : Point -> msg
-  , onMouseUp : Point -> msg
-  , onWheel : Point -> Int -> msg
   , drag : DragMode
   , offset : Point
   , zoom : Float
@@ -36,7 +31,7 @@ type alias BoonChart msg =
 
 tau = pi*2
 
-boonChart : List (Svg.Attribute msg) -> BoonChart msg -> Html msg
+boonChart : List (Svg.Attribute msg) -> BoonChart -> Html msg
 boonChart attributes model =
   let
     metrics = model.metrics
@@ -70,11 +65,7 @@ boonChart attributes model =
     |> shift (flip model.offset)
     |> scale model.diameter
     |> scale model.zoom
-    |> when (model.drag == Released) (Events.onMouseDown model.onMouseDown)
-    |> when (model.drag /= Released) (Events.onMouseUp model.onMouseUp)
-    |> when (model.drag /= Released) (Events.onMouseLeave model.onMouseUp)
-    |> when (model.drag /= Released) (Events.onMouseMove model.onMouseMove)
-    |> Collage.Render.svgExplicit ((MouseWheel.onWheel model.onWheel) :: attributes)
+    |> Collage.Render.svgExplicit attributes
 
 when : Bool -> (Collage msg -> Collage msg) -> Collage msg -> Collage msg
 when test f collage =

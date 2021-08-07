@@ -102,25 +102,27 @@ view model =
         ])
         -}
       ]
-      [ {-BoonChart.Svg.boonChart
-        [ Html.Attributes.style "width" "50vw"
-        , Html.Attributes.style "height" "100vh"
-        , Html.Attributes.id "graph"
-        ]
-        { metrics = model.chartMetrics
-        , activeBasicGroups = model.activeBasicGroups
-        , activeDuoGroups = model.activeDuoGroups
-        , boonStatus = model.boonStatus
-        , onMouseMove = OnMouseMove
-        , onMouseDown = OnMouseDown
-        , onMouseUp = OnMouseUp
-        , onWheel = OnWheel
-        , drag = model.drag
-        , offset = model.offset
-        , zoom = model.zoom
-        , diameter = chartDiameter model.windowWidth model.windowHeight
-        } |> html
-      , -} if model.windowKnown then
+      [{- if model.windowKnown then
+        Element.lazy
+          (BoonChart.Svg.boonChart
+            [ Html.Attributes.style "width" "100vw"
+            , Html.Attributes.style "height" "100vh"
+            , Html.Attributes.id "graph"
+            ]
+            >> html
+          )
+          { metrics = model.chartMetrics
+          , activeBasicGroups = model.activeBasicGroups
+          , activeDuoGroups = model.activeDuoGroups
+          , boonStatus = model.boonStatus
+          , drag = model.drag
+          , offset = model.offset
+          , zoom = model.zoom
+          , diameter = chartDiameter model.windowWidth model.windowHeight
+          }
+        else
+          none
+      , -}if model.windowKnown then
         Element.lazy
           (BoonChart.Canvas.boonChart
             [ Html.Attributes.style "width" "100vw"
