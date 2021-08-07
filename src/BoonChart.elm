@@ -31,6 +31,7 @@ type alias Point = (Float, Float)
 type DragMode
   = Released
   | Dragging Point Point
+  | Pinching Float Float
 
 type alias ChartMetrics =
   { gods : Array GodMetrics

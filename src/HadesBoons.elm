@@ -30,7 +30,6 @@ import Process
 import Set exposing (Set)
 import Task
 import Time
-import Touch
 import Url exposing (Url)
 
 type Msg
@@ -45,8 +44,6 @@ type Msg
   | Rotate Float
   | Fade Float
   | HoverHeld TraitId
-  | TouchMove Float Float
-  | TouchPinch Float
 
 type alias Model =
   { location : Url
@@ -70,7 +67,6 @@ type alias Model =
   , descriptionBoon : Maybe TraitId
   , descriptionBoonLast : Maybe TraitId
   , descriptionVisibility : Float
-  , touchTracking : Touch.Model Msg
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -111,10 +107,6 @@ initialModel flags location key =
   , descriptionBoon = Nothing
   , descriptionBoonLast = Nothing
   , descriptionVisibility = 0.0
-  , touchTracking = Touch.initModel
-    [ Touch.onMove {fingers = 1} TouchMove
-    , Touch.onPinch TouchPinch
-    ]
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -291,29 +283,6 @@ update msg model =
         )
       else
         (model, Cmd.none)
-    TouchMove dx dy ->
-      ( { model
-        | offset = model.offset
-          |> Geometry.add (dx, dy)
-        }
-      , Cmd.none
-      )
-    TouchPinch pinch ->
-      let
-        screen = min model.windowWidth model.windowHeight |> toFloat
-        tweak = pinch / screen |> clamp -0.2 1.0
-        newZoom = model.zoom + model.zoom * tweak |> clamp 0.8 32
-        clampedTweak = newZoom / model.zoom
-        diff = (View.chartCenter model.windowWidth model.windowHeight) |> Geometry.sub model.offset
-      in
-      ( { model
-        | zoom = newZoom
-        , offset = diff
-          |> Geometry.sub model.offset
-          |> Geometry.add (Geometry.scale clampedTweak diff)
-        }
-      , Cmd.none
-      )
     UI (View.None) ->
       (model, Cmd.none)
     UI (View.OnMouseMove point) ->
@@ -370,6 +339,43 @@ update msg model =
         }
       , Cmd.none
       )
+    UI (View.OnTouchMove event) ->
+      case List.map .clientPos event.touches of
+        [] ->
+          (model, Cmd.none)
+        point :: [] ->
+          ( { model
+            | offset = dragTo model.drag point model.offset
+            }
+          , Cmd.none
+          )
+        a :: b :: _ ->
+          let
+            distance = b |> Geometry.minus a |> Geometry.length
+              |> Debug.log "distance"
+          in
+          case model.drag of
+            Released ->
+              ({ model | drag = Pinching model.zoom distance }, Cmd.none)
+            Dragging _ _ ->
+              ({ model | drag = Pinching model.zoom distance }, Cmd.none)
+            Pinching zoom start ->
+              let
+
+                tweak = distance / start
+                screen = min model.windowWidth model.windowHeight |> toFloat
+                newZoom = zoom * tweak |> clamp 0.8 32
+                clampedTweak = newZoom / model.zoom
+                diff = (View.chartCenter model.windowWidth model.windowHeight) |> Geometry.sub model.offset
+              in
+              ( { model
+                | zoom = newZoom
+                , offset = diff
+                  |> Geometry.sub model.offset
+                  |> Geometry.add (Geometry.scale clampedTweak diff)
+                }
+              , Cmd.none
+              )
     UI (View.TextureLoaded key mtexture) ->
       ( { model
         | canvasTextures =
@@ -478,11 +484,6 @@ update msg model =
       )
     UI (View.Supergiant hover) ->
       ( { model | artAttribution = hover }, Cmd.none )
-    UI (View.TouchMsg touchMsg) ->
-      Touch.update
-        touchMsg
-        model.touchTracking
-        ( \newTouchModel -> { model | touchTracking = newTouchModel } )
 
 hitBoon : Model -> Point -> Maybe TraitId
 hitBoon model point =
@@ -618,6 +619,7 @@ dragTo drag point oldOffset =
       start
         |> Geometry.sub point
         |> Geometry.add offset
+    Pinching _ _ -> oldOffset
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

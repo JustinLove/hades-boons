@@ -1,6 +1,6 @@
 - mobile
   - x zoom/pan
-  - basic touch events
+  - x basic touch events
   - responsive
 - design issues
   - x any aid

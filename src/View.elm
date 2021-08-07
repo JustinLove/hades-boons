@@ -22,12 +22,12 @@ import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Html.Events.Extra.Touch as Touch
 import Json.Decode as Decode
 import Parser.Advanced as Parser
 import Set exposing (Set)
 import Svg exposing (svg, use)
 import Svg.Attributes exposing (xlinkHref)
-import Touch
 
 type alias Point = (Float, Float)
 
@@ -37,6 +37,7 @@ type Msg
   | OnMouseDown Point
   | OnMouseUp Point
   | OnWheel Point Int
+  | OnTouchMove Touch.Event
   | TextureLoaded String (Maybe Canvas.Texture)
   | SelectGod God
   | ViewAll
@@ -48,7 +49,6 @@ type Msg
   | OnTrayLeave TraitId
   | Reset
   | Supergiant Bool
-  | TouchMsg Touch.Msg
 
 type Frame
   = Primary
@@ -151,17 +151,19 @@ view model =
 
 touchEvents : BoonChart.DragMode -> Element Msg
 touchEvents drag =
-  Touch.element
-    [ MouseWheel.onWheel OnWheel
-    , when (drag == BoonChart.Released) (Html.Events.on "mousedown" (mouseDecoder OnMouseDown))
-    , when (drag /= BoonChart.Released) (Html.Events.on "mouseup" (mouseDecoder OnMouseUp))
-    , when (drag /= BoonChart.Released) (Html.Events.on "mouseleave" (mouseDecoder OnMouseUp))
-    , (Html.Events.on "mousemove" (mouseDecoder OnMouseMove))
-    , Html.Attributes.style "width" "100vw"
-    , Html.Attributes.style "height" "100vh"
-    ] 
-    TouchMsg
-    |> html
+  [ MouseWheel.onWheel OnWheel
+  , when (drag == BoonChart.Released) (Html.Events.on "mousedown" (mouseDecoder OnMouseDown))
+  , when (drag /= BoonChart.Released) (Html.Events.on "mouseup" (mouseDecoder OnMouseUp))
+  , when (drag /= BoonChart.Released) (Html.Events.on "mouseleave" (mouseDecoder OnMouseUp))
+  , (Html.Events.on "mousemove" (mouseDecoder OnMouseMove))
+  , when (drag == BoonChart.Released) (Touch.onStart (touchDecoder OnMouseDown))
+  , when (drag /= BoonChart.Released) (Touch.onEnd (touchDecoder OnMouseUp))
+  , when (drag /= BoonChart.Released) (Touch.onMove OnTouchMove)
+  , Html.Attributes.style "width" "100vw"
+  , Html.Attributes.style "height" "100vh"
+  ] 
+    |> List.map htmlAttribute
+    |> (\attr -> el attr none)
 
 displayGodSelect : Traits.Traits -> Element Msg
 displayGodSelect traits =
@@ -1003,3 +1005,12 @@ clientDecoder =
   Decode.map2 Tuple.pair
     (Decode.field "clientX" Decode.float)
     (Decode.field "clientY" Decode.float)
+
+touchDecoder tagger event =
+  tagger (touchCoordinates event)
+
+touchCoordinates : Touch.Event -> ( Float, Float )
+touchCoordinates touchEvent =
+    List.head touchEvent.changedTouches
+        |> Maybe.map .clientPos
+        |> Maybe.withDefault ( 0, 0 )
