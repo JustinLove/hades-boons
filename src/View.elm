@@ -17,6 +17,7 @@ import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
+import Element.Lazy as Element
 import Element.Region as Region
 import Html exposing (Html)
 import Html.Attributes
@@ -88,11 +89,11 @@ view model =
       , width fill
       , clip
       , inFront (displayDescription model)
-      , inFront (displayFooter model.artAttribution)
-      , inFront (displayGodSelect model)
+      , inFront (Element.lazy displayFooter model.artAttribution)
+      , inFront (Element.lazy displayGodSelect model.traits)
       , inFront (displaySlotSelect model)
       , inFront displayReset
-      , behindContent (touchEvents model.drag)
+      , behindContent (Element.lazy touchEvents model.drag)
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
       {-, inFront (displayWindowPoints
@@ -120,11 +121,14 @@ view model =
         , diameter = chartDiameter model.windowWidth model.windowHeight
         } |> html
       , -} if model.windowKnown then
-        BoonChart.Canvas.boonChart
-          [ Html.Attributes.style "width" "100vw"
-          , Html.Attributes.style "height" "100vh"
-          , Html.Attributes.id "graph"
-          ]
+        Element.lazy
+          (BoonChart.Canvas.boonChart
+            [ Html.Attributes.style "width" "100vw"
+            , Html.Attributes.style "height" "100vh"
+            , Html.Attributes.id "graph"
+            ]
+            >> html
+          )
           { metrics = model.chartMetrics
           , activeBasicGroups = model.activeBasicGroups
           , activeDuoGroups = model.activeDuoGroups
@@ -138,7 +142,6 @@ view model =
           , height = model.windowHeight
           , textures = model.canvasTextures
           }
-          |> html
         else
           none
       ]
@@ -158,10 +161,11 @@ touchEvents drag =
     TouchMsg
     |> html
 
-displayGodSelect model =
+displayGodSelect : Traits.Traits -> Element Msg
+displayGodSelect traits =
   row [ spacing 10, centerX, padding 8 ]
     ( List.append
-      (model.traits
+      (traits
         |> Traits.allGods
         |> List.map Traits.dataGod
         |> List.map displayGod
@@ -197,6 +201,24 @@ displayGodIcon scaled iconPath name =
   )
 
 displaySlotSelect model =
+  Element.lazy displaySlotSelectLazy
+    { activeTraits = model.activeTraits
+    , boonStatus = model.boonStatus
+    , currentPrimaryMenu = model.currentPrimaryMenu
+    , metaUpgrade = model.metaUpgrade
+    , traits = model.traits
+    , windowHeight = model.windowHeight
+    }
+
+displaySlotSelectLazy :
+  { activeTraits : Set TraitId
+  , boonStatus : Dict TraitId BoonStatus
+  , currentPrimaryMenu : Maybe SlotId
+  , metaUpgrade : TraitId
+  , traits : Traits.Traits
+  , windowHeight : Int
+  } -> Element Msg
+displaySlotSelectLazy model =
   let 
     scale = (((toFloat model.windowHeight) - 60) / 1188.0)
       |> atMost 0.5
@@ -365,7 +387,12 @@ boonSelectButton : (Float -> Int) -> SlotId -> God -> Traits.Trait -> Element Ms
 boonSelectButton scaled slot god boon =
   el
     [ inFront
-      (el [ alignBottom, alignRight ] (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
+      (el
+        [ alignBottom
+        , alignRight
+        , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
+        ]
+        (displayGodIcon scaled (god |> Traits.godIcon) (god |> Traits.godName)))
     ]
     (boonIcon scaled Common (Just boon.icon) boon.name (traitSelectButton (SelectPrimary boon.trait slot) (OnTrayEnter boon.trait) (OnTrayLeave boon.trait) scaled))
 
@@ -546,6 +573,20 @@ displayFrame scaled frame =
         ] none
 
 displayDescription model =
+  Element.lazy displayDescriptionLazy
+    { descriptionBoonLast = model.descriptionBoonLast
+    , descriptionVisibility = model.descriptionVisibility
+    , texts = model.texts
+    , traits = model.traits
+    }
+
+displayDescriptionLazy :
+  { descriptionBoonLast : Maybe TraitId
+  , descriptionVisibility : Float
+  , texts : Dict String String
+  , traits : Traits.Traits
+  } -> Element Msg
+displayDescriptionLazy model =
   case model.descriptionBoonLast of
     Just id ->
       let

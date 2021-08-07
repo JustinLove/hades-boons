@@ -1,4 +1,7 @@
 - mobile
+  - x zoom/pan
+  - basic touch events
+  - responsive
 - design issues
   - x any aid
   - poseidon - area asymetry
@@ -32,11 +35,11 @@
   - stickycast: artemis, athena, posiedon, aphrodite, zeus
   - status: aphrodite, aries, demeter, dionysus, posiedon/zeus?
   - delayed damage: dionysus, aries, posiedon, zeus, demeter?
-  - damage reduction: aphrodite, demeter, athena, dionysus, posiedon(knockback)?
+  - damage reduction: aphrodite, demeter, athena, dionysus, posiedon(knockback)?, (hermes)
   - bosses: posiedon (athena)
   - static projectiles: demeter, aries, dionysus, athena? (zeus)
   - spreading: zeus, dionysis, aphrodite, aries, artemis(support), posiedon(knockback)
-  - healing: posiedon, dionysis, aphrodite, athena, ? (hermes)
+  - healing: posiedon, dionysis, aphrodite, athena, demeter (hermes)
   - resourceing: posiedon, dionysus, demeter, athena, ? (hermes)
 
 - god layouts?
