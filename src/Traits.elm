@@ -23,7 +23,9 @@ module Traits exposing
   , godName
   , godIcon
   , godColor
+  , godTraits
   , duoBoons
+  , duoBoonsOf
   , miscBoons
   , boonsForSlot
   , isSlot
@@ -305,6 +307,16 @@ boonsOf target (Traits {gods}) =
 
 duoBoons : Traits -> List Trait
 duoBoons (Traits {duos}) = duos
+
+duoBoonsOf : God -> Traits -> List Trait
+duoBoonsOf target (Traits {duos}) =
+  duos
+    |> List.filter (\{boonType} ->
+      case boonType of
+        BasicBoon _ -> False
+        DuoBoon a b -> a == target || b == target
+        Keepsake -> False
+      )
 
 singleBoons : Traits -> List Trait
 singleBoons (Traits {gods}) =

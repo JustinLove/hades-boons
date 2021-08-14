@@ -90,7 +90,7 @@ view model =
       , clip
       , inFront (displayDescription model)
       , inFront (Element.lazy displayFooter model.artAttribution)
-      , inFront (Element.lazy displayGodSelect model.traits)
+      , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront displayReset
       , behindContent (Element.lazy touchEvents model.drag)
@@ -165,34 +165,74 @@ touchEvents drag =
     |> List.map htmlAttribute
     |> (\attr -> el attr none)
 
-displayGodSelect : Traits.Traits -> Element Msg
-displayGodSelect traits =
+--displayGodSelect : Model -> Element Msg
+displayGodSelect model =
+  Element.lazy displayGodSelectLazy
+    { traits = model.traits
+    , boonStatus = model.boonStatus
+    }
+
+displayGodSelectLazy :
+  { traits : Traits.Traits
+  , boonStatus : Dict TraitId BoonStatus
+  } -> Element Msg
+displayGodSelectLazy model =
   wrappedRow
     [ spacing 10
     , centerX
     , padding 8
     ]
     ( List.append
-      (traits
+      (model.traits
         |> Traits.allGods
-        |> List.map Traits.dataGod
-        |> List.map displayGod
+        |> List.map (displayGod model.traits model.boonStatus)
       )
-      [ displayGodButton ViewAll "favicon.ico" "All"]
+      [ displayGodButton ViewAll "favicon.ico" "All" []]
     )
 
-displayGod : God -> Element Msg
-displayGod god =
-  displayGodButton (SelectGod god) (god |> Traits.godIcon) (god |> Traits.godName)
+displayGod : Traits.Traits -> Dict TraitId BoonStatus -> Traits.GodData -> Element Msg
+displayGod traits boonStatus godData =
+  let
+    god = Traits.dataGod godData
+    duos = Traits.duoBoonsOf god traits
+      |> List.filter (\{trait} -> (Dict.get trait boonStatus) == Just Available)
+      |> List.map .frame
+    legendaries = Traits.godTraits godData
+      |> List.filter (\{frame} -> frame == Traits.LegendaryFrame)
+      |> List.filter (\{trait} -> (Dict.get trait boonStatus) == Just Available)
+      |> List.map .frame
+  in
+    displayGodButton (SelectGod god) (god |> Traits.godIcon) (god |> Traits.godName) (duos ++ legendaries)
 
-displayGodButton : Msg -> String -> String -> Element Msg
-displayGodButton message iconPath name =
+displayGodButton : Msg -> String -> String -> List Traits.Frame -> Element Msg
+displayGodButton message iconPath name dots =
   Input.button
     [ width (px 40)
     ]
     { onPress = Just message
-    , label = displayGodIcon (\s -> s/2 |> round) iconPath name
+    , label = el
+      [ inFront (el [ alignBottom, centerX ] (miniBoon dots))
+      , paddingEach
+        { top = 0
+        , right = 0
+        , bottom = 6
+        , left = 0
+        }
+      ]
+      (displayGodIcon (\s -> s/2 |> round) iconPath name)
     }
+
+miniBoon : List Traits.Frame -> Element msg
+miniBoon dots =
+  dots
+    |> List.map boonFrameColor
+    |> List.map (\color ->
+      el [ Font.color color ] (icon "locate")
+    )
+    |> row
+      [ Font.size miniSize
+      , spacing -4
+      ]
 
 displayGodIcon : (Float -> Int) -> String -> String -> Element Msg
 displayGodIcon scaled iconPath name =
@@ -789,6 +829,7 @@ icon name =
   |> html
 
 footerSize = sizeStep -1 |> round
+miniSize = sizeStep -1 |> round
 resetSize = sizeStep 2 |> round
 descriptionSize = sizeStep 2 |> round
 titleSize = sizeStep 3 |> round
@@ -987,6 +1028,13 @@ superImage props =
       ]
       props
     )
+
+boonFrameColor : Traits.Frame -> Color
+boonFrameColor frame =
+  case frame of
+    Traits.DuoFrame -> duoColor
+    Traits.LegendaryFrame -> legendryColor
+    _ -> windowBackColor
 
 printFloat : Float -> String
 printFloat x =
