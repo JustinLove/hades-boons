@@ -104,7 +104,7 @@ view model =
       , width fill
       , clip
       , inFront (displayDescription model)
-      , inFront (Element.lazy displayFooter model.artAttribution)
+      , inFront (if model.sidebarsVisible then Element.lazy displayFooter model.artAttribution else none)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
       , inFront (if model.sidebarsVisible then displayReset else none)
@@ -803,11 +803,16 @@ displayReset =
 
 displayFooter : Bool -> Element Msg
 displayFooter artAttribution =
-  row
+  wrappedRow
     [ Region.footer
     , spacing 10
     , alignBottom
-    , padding 8
+    , paddingEach
+      { top = 8
+      , right = 100
+      , bottom = 8
+      , left = 8
+      }
     , Font.size footerSize
     , width fill
     , Background.color (rgba 0 0 0 0.5)
