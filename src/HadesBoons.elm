@@ -414,7 +414,7 @@ update msg model =
             else
               Just "AmmoMetaUpgrade"
           else
-            model.descriptionBoon
+            Nothing
         }
           |> updateDerivedStatus
       , Cmd.none
@@ -475,6 +475,10 @@ update msg model =
         | hoverBoon = Nothing
         , descriptionBoon = Nothing
         }
+      , Cmd.none
+      )
+    UI (View.DismissDescription) ->
+      ( { model | descriptionBoon = Nothing }
       , Cmd.none
       )
     UI (View.Reset) ->

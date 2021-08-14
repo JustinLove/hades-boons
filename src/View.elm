@@ -47,6 +47,7 @@ type Msg
   | SelectWeapon TraitId
   | OnTrayEnter TraitId
   | OnTrayLeave TraitId
+  | DismissDescription
   | Reset
   | Supergiant Bool
 
@@ -681,6 +682,7 @@ displayDescriptionLazy model =
         , alignBottom
         , centerX
         , htmlAttribute <| Html.Attributes.style "pointer-events" "none"
+        , Events.onClick DismissDescription
         , alpha model.descriptionVisibility
         ]
         ( row
