@@ -1,7 +1,3 @@
-- mobile
-  - x zoom/pan
-  - x basic touch events
-  - x responsive
 - design issues
   - x any aid
   - poseidon - area asymetry

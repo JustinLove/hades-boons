@@ -67,6 +67,7 @@ type alias Model =
   , descriptionBoon : Maybe TraitId
   , descriptionBoonLast : Maybe TraitId
   , descriptionVisibility : Float
+  , sidebarsVisible : Bool
   , focusGod : Maybe God
   , rotation : Float
   , drag : DragMode
@@ -107,6 +108,7 @@ initialModel flags location key =
   , descriptionBoon = Nothing
   , descriptionBoonLast = Nothing
   , descriptionVisibility = 0.0
+  , sidebarsVisible = True
   , focusGod = Nothing
   , rotation = rotation
   , drag = Released
@@ -236,7 +238,7 @@ update msg model =
       , Cmd.none)
     WindowReSize (width, height) ->
       let
-        oldCenter = screenToChart model (View.chartCenter model.windowWidth model.windowHeight)
+        oldCenter = screenToChart model (View.chartCenter model.sidebarsVisible model.windowWidth model.windowHeight)
           |> Geometry.add (-0.5, -0.5)
           |> (\(x,y) -> (x, -y))
       in
@@ -366,7 +368,7 @@ update msg model =
                 screen = min model.windowWidth model.windowHeight |> toFloat
                 newZoom = zoom * tweak |> clamp 0.8 32
                 clampedTweak = newZoom / model.zoom
-                diff = (View.chartCenter model.windowWidth model.windowHeight) |> Geometry.sub model.offset
+                diff = (View.chartCenter model.sidebarsVisible model.windowWidth model.windowHeight) |> Geometry.sub model.offset
               in
               ( { model
                 | zoom = newZoom
@@ -481,6 +483,18 @@ update msg model =
       ( { model | descriptionBoon = Nothing }
       , Cmd.none
       )
+    UI (View.ToggleSidebars visible) ->
+      let
+        oldCenter = screenToChart model (View.chartCenter model.sidebarsVisible model.windowWidth model.windowHeight)
+          |> Geometry.add (-0.5, -0.5)
+          |> (\(x,y) -> (x, -y))
+      in
+      ( { model
+        | sidebarsVisible = visible
+        }
+        |> focusView oldCenter (1/model.zoom) model.rotation
+      , Cmd.none
+      )
     UI (View.Reset) ->
       ( { model | activeTraits = Set.empty }
         |> updateDerivedStatus
@@ -499,7 +513,7 @@ screenToChart : Viewable model -> Point -> Point
 screenToChart model point =
   point
     |> Geometry.minus model.offset
-    |> Geometry.scale (1/(View.chartDiameter model.windowWidth model.windowHeight))
+    |> Geometry.scale (1/(View.chartDiameter model.sidebarsVisible model.windowWidth model.windowHeight))
     |> Geometry.scale (1/model.zoom)
 
 selectBoon : TraitId -> Model -> Model
@@ -591,6 +605,7 @@ type alias Viewable r =
   , rotation : Float
   , offset : Point
   , zoom : Float
+  , sidebarsVisible : Bool
   }
 
 focusView : Point -> Float -> Float -> Viewable model -> Viewable model
@@ -600,9 +615,9 @@ focusView center diameter rotation model =
     offset = center
       |> (\(x,y) -> (-x,y))
       |> Geometry.add (-0.5,-0.5)
-      |> Geometry.scale (View.chartDiameter model.windowWidth model.windowHeight)
+      |> Geometry.scale (View.chartDiameter model.sidebarsVisible model.windowWidth model.windowHeight)
       |> Geometry.scale zoom
-      |> Geometry.add (View.chartCenter model.windowWidth model.windowHeight)
+      |> Geometry.add (View.chartCenter model.sidebarsVisible model.windowWidth model.windowHeight)
   in
   { model
   | rotation = rotation

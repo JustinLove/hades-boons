@@ -48,6 +48,7 @@ type Msg
   | OnTrayEnter TraitId
   | OnTrayLeave TraitId
   | DismissDescription
+  | ToggleSidebars Bool
   | Reset
   | Supergiant Bool
 
@@ -60,20 +61,33 @@ type Frame
   | MetaUpgrade
   | Tray
 
-chartDiameter : Int -> Int -> Float
-chartDiameter width height =
+chartDiameter : Bool -> Int -> Int -> Float
+chartDiameter sidebarsVisible width height =
   let
-    displayWidth = ((width//1)-80-16)
-    displayHeight = (height-40-16)
+    displayWidth =
+      if sidebarsVisible then
+        ((width//1)-80-16)
+      else
+        ((width//1)-16)
+    displayHeight =
+      if sidebarsVisible then
+        (height-40-16)
+      else
+        (height-16)
   in
     min displayWidth displayHeight
       |> toFloat
 
-chartCenter : Int -> Int -> Point
-chartCenter width height =
-  ( (toFloat (width//1)+80)/2
-  , (toFloat height+40)/2
-  )
+chartCenter : Bool -> Int -> Int -> Point
+chartCenter sidebarsVisible width height =
+  if sidebarsVisible then
+    ( (toFloat (width//1)+80)/2
+    , (toFloat height+40)/2
+    )
+  else
+    ( (toFloat (width//1))/2
+    , (toFloat height)/2
+    )
 
 document tagger model =
   { title = "Hades Boon Chart"
@@ -93,13 +107,14 @@ view model =
       , inFront (Element.lazy displayFooter model.artAttribution)
       , inFront (displayGodSelect model)
       , inFront (displaySlotSelect model)
-      , inFront displayReset
+      , inFront (if model.sidebarsVisible then displayReset else none)
+      , inFront (displaySidebarToggle model.sidebarsVisible)
       , behindContent (Element.lazy touchEvents model.drag)
       --, inFront (model.zoom |> printFloat |> text)
       --, inFront (model.rotation |> printFloat |> text)
       {-, inFront (displayWindowPoints
         [ model.offset
-        , chartCenter model.windowWidth model.windowHeight
+        , chartCenter model.sidebarsVisible model.windowWidth model.windowHeight
         ])
         -}
       ]
@@ -119,7 +134,7 @@ view model =
           , drag = model.drag
           , offset = model.offset
           , zoom = model.zoom
-          , diameter = chartDiameter model.windowWidth model.windowHeight
+          , diameter = chartDiameter model.sidebarsVisible model.windowWidth model.windowHeight
           }
         else
           none
@@ -140,7 +155,7 @@ view model =
           , drag = model.drag
           , offset = model.offset
           , zoom = model.zoom
-          , diameter = chartDiameter model.windowWidth model.windowHeight
+          , diameter = chartDiameter model.sidebarsVisible model.windowWidth model.windowHeight
           , width = model.windowWidth//1
           , height = model.windowHeight
           , textures = model.canvasTextures
@@ -166,22 +181,41 @@ touchEvents drag =
     |> List.map htmlAttribute
     |> (\attr -> el attr none)
 
+displaySidebarToggle : Bool -> Element Msg
+displaySidebarToggle visible =
+  Input.checkbox
+    [
+    ]
+    { onChange = ToggleSidebars
+    , icon = Input.defaultCheckbox
+    , checked = visible
+    , label = Input.labelRight [] (text "UI")
+    }
+
 --displayGodSelect : Model -> Element Msg
 displayGodSelect model =
-  Element.lazy displayGodSelectLazy
-    { traits = model.traits
-    , boonStatus = model.boonStatus
-    }
+  if model.sidebarsVisible then
+    Element.lazy displayGodSelectLazy
+      { traits = model.traits
+      , boonStatus = model.boonStatus
+      , windowWidth = model.windowWidth
+      }
+  else
+    none
 
 displayGodSelectLazy :
   { traits : Traits.Traits
   , boonStatus : Dict TraitId BoonStatus
+  , windowWidth : Int
   } -> Element Msg
 displayGodSelectLazy model =
   wrappedRow
     [ spacing 10
     , centerX
     , padding 8
+    , width (shrink
+        |> maximum (model.windowWidth - 80) -- allowance for UI
+      )
     ]
     ( List.append
       (model.traits
@@ -250,15 +284,18 @@ displayGodIcon scaled iconPath name =
   )
 
 displaySlotSelect model =
-  Element.lazy displaySlotSelectLazy
-    { activeTraits = model.activeTraits
-    , boonStatus = model.boonStatus
-    , currentPrimaryMenu = model.currentPrimaryMenu
-    , metaUpgrade = model.metaUpgrade
-    , traits = model.traits
-    , windowWidth = model.windowWidth
-    , windowHeight = model.windowHeight
-    }
+  if model.sidebarsVisible then
+    Element.lazy displaySlotSelectLazy
+      { activeTraits = model.activeTraits
+      , boonStatus = model.boonStatus
+      , currentPrimaryMenu = model.currentPrimaryMenu
+      , metaUpgrade = model.metaUpgrade
+      , traits = model.traits
+      , windowWidth = model.windowWidth
+      , windowHeight = model.windowHeight
+      }
+  else
+    none
 
 displaySlotSelectLazy :
   { activeTraits : Set TraitId
