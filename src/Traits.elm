@@ -490,7 +490,7 @@ legendaryRequirements : List GodData -> Requirements -> Bool
 legendaryRequirements gods requirements =
   case requirements of
     None -> False
-    OneOf set -> setHasRequirements gods set
+    OneOf set -> (setHasRequirements gods set) || (Set.member "FastClearDodgeBonusTrait" set)
     OneFromEachSet list -> True
 
 setHasRequirements : List GodData -> Set TraitId -> Bool

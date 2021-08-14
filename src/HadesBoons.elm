@@ -354,7 +354,6 @@ update msg model =
         a :: b :: _ ->
           let
             distance = b |> Geometry.minus a |> Geometry.length
-              |> Debug.log "distance"
           in
           case model.drag of
             Released ->
