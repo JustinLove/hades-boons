@@ -167,7 +167,11 @@ touchEvents drag =
 
 displayGodSelect : Traits.Traits -> Element Msg
 displayGodSelect traits =
-  row [ spacing 10, centerX, padding 8 ]
+  wrappedRow
+    [ spacing 10
+    , centerX
+    , padding 8
+    ]
     ( List.append
       (traits
         |> Traits.allGods
@@ -211,6 +215,7 @@ displaySlotSelect model =
     , currentPrimaryMenu = model.currentPrimaryMenu
     , metaUpgrade = model.metaUpgrade
     , traits = model.traits
+    , windowWidth = model.windowWidth
     , windowHeight = model.windowHeight
     }
 
@@ -220,11 +225,13 @@ displaySlotSelectLazy :
   , currentPrimaryMenu : Maybe SlotId
   , metaUpgrade : TraitId
   , traits : Traits.Traits
+  , windowWidth : Int
   , windowHeight : Int
   } -> Element Msg
 displaySlotSelectLazy model =
   let 
-    scale = (((toFloat model.windowHeight) - 60) / 1188.0)
+    size = min model.windowHeight model.windowWidth |> toFloat
+    scale = ((size - 60) / 1188.0)
       |> atMost 0.5
       |> atLeast 0.2
     scaled = (\x -> x * scale |> round)
@@ -348,8 +355,9 @@ metaTrayButton model scaled =
     )
 
 slotMenu model scaled slot =
-  row
+  wrappedRow
     [ centerY
+    , width (px (model.windowWidth - 60))
     ]
     (model.traits
       |> Traits.linkableGods
