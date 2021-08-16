@@ -184,7 +184,7 @@ touchEvents drag =
 displaySidebarToggle : Bool -> Element Msg
 displaySidebarToggle visible =
   Input.checkbox
-    [
+    [ width shrink
     ]
     { onChange = ToggleSidebars
     , icon = Input.defaultCheckbox
